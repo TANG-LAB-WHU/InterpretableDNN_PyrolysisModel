@@ -1,0 +1,218 @@
+=== Starting GPM_SHAP Full Analysis Job ===
+Job ID: 1485889
+Running on: ccc0292
+Start time: Fri Apr  4 16:25:44 CDT 2025
+Working directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone
+Creating complete directory structure...
+Model directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/model
+Training directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/training
+Best model directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/best_model
+Optimization directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/optimization
+Analysis directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full
+Checking data files...
+Checking model files...
+Checking script files...
+Checking visualization files...
+Copying data files to model directory...
+Data files copied to model directory
+Checking for SHAP feature metadata...
+MATLAB temp directory: /scratch/siqi/matlab_temp_1485889
+Loading MATLAB module...
+Running full SHAP analysis script...
+MATLAB will use following directories:
+- Working directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone
+- Scripts directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/scripts
+- Model directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/model
+- Visualization directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/visualization
+- Results directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full
+- Training directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/training
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2024 The MathWorks, Inc.
+                  R2024a (24.1.0.2537033) 64-bit (glnxa64)
+                             February 21, 2024
+
+ 
+To get started, type doc.
+For product information, visit www.mathworks.com.
+ 
+===== STARTING FULL ANALYSIS =====
+Analysis mode explicitly set to: full
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Connected to parallel pool with 16 workers.
+Root directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone
+SHAP directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full
+Training directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/training
+Running run_analysis.m with full mode...
+Logging to file: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/scripts/run_analysis_log.txt
+Root directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone
+Added to path: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/shap
+Directory does not exist (skipping): /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/dnn
+Directory does not exist (skipping): /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/utils
+Added to path: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/scripts
+Added to path: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/visualization
+Paths setup complete.
+Running in full mode
+Using full analysis directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full
+Setting shapDir to /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full
+Directory exists: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/training
+Directory exists: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/best_model
+Directory exists: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/optimization
+Directory exists: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full
+Directory exists: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/data
+Directory exists: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/figures
+Best model not found, loading trained model from: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/training/Results_trained.mat
+
+===== RUNNING FULL SHAP ANALYSIS =====
+Calculating SHAP values using calc_shap_values.m...
+Starting simplified SHAP value calculation...
+Using existing data directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/data
+Detected input with features in columns (samples in rows), transposing...
+After transposing: input size is [20, 5] (features x samples)
+Detected target with outputs in columns (samples in rows), transposing...
+After transposing: target size is [20, 2] (outputs x samples)
+Data dimensions: 20 features, 5 samples, 20 outputs
+Created generic feature names
+Created generic target names
+Calculating SHAP values (simplified approach for demonstration)...
+Processed 5/5 samples
+Saving SHAP results...
+SHAP results saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/data/shap_results.mat
+SHAP calculation completed successfully.
+SHAP calculation completed successfully.
+SHAP results saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/data/shap_results.mat
+
+===== Creating Visualizations =====
+Calling plot_shap_results.m...
+  Checking requirements for plot_shap_results.m:
+    - shapValues: 5 x 20 x 20 array
+    - baseValue: [0.478233424438575 0.419874088775509 0.383815335450709 0.458525191508463 0.718683047981859 0.267181488249715 0.571157165109244 0.489097498229385 0.767238575943471 0.260426899264315 0.534275425517819 0.389772344422785 0.842998963008471 0.242109247304903 0.529969441537481 0.671030710946534 0.222824972412421 0.14080376954669 0.72449839750283 0.347407500030029]
+    - varNames: 20 cell array
+    - featureNames: 20 cell array
+SHAP data loaded successfully
+Shape of shapValues: [5 20 20]
+Shape of input data: [20 5]
+Number of features: 20
+Found 3D SHAP values with 5 instances, 20 features, and 20 targets
+Creating feature importance plots for each target...
+Creating instance explanation plots...
+Launching updater executable
+Creating SHAP summary plot...
+Feature importance bar plot saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/figures/feature_importance_bar.png
+Creating SHAP force plots...
+Force plot for instance 1 saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/figures/force_plot_instance_1.png
+Force plot for instance 2 saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/figures/force_plot_instance_2.png
+Force plot for instance 3 saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/figures/force_plot_instance_3.png
+Force plot for instance 4 saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/figures/force_plot_instance_4.png
+Force plot for instance 5 saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/figures/force_plot_instance_5.png
+Creating SHAP dependence plots...
+Input dimensions (20 x 5) do not match SHAP values dimensions (5 x 20)
+Transposing input to match SHAP values dimensions
+Dependence plot for feature Feature_14 saved
+Dependence plot for feature Feature_7 saved
+Dependence plot for feature Feature_13 saved
+Dependence plot for feature Feature_1 saved
+Dependence plot for feature Feature_6 saved
+Dependence plot for feature Feature_11 saved
+Dependence plot for feature Feature_9 saved
+Dependence plot for feature Feature_2 saved
+Dependence plot for feature Feature_8 saved
+Dependence plot for feature Feature_15 saved
+SHAP plotting complete. All visualizations saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/figures
+  Successfully executed plot_shap_results.m
+Calling plot_shap_beeswarm.m...
+  Checking requirements for plot_shap_beeswarm.m:
+    - shapValues: 5 x 20 x 20 array
+    - baseValue: [0.478233424438575 0.419874088775509 0.383815335450709 0.458525191508463 0.718683047981859 0.267181488249715 0.571157165109244 0.489097498229385 0.767238575943471 0.260426899264315 0.534275425517819 0.389772344422785 0.842998963008471 0.242109247304903 0.529969441537481 0.671030710946534 0.222824972412421 0.14080376954669 0.72449839750283 0.347407500030029]
+    - varNames: 20 cell array
+    - featureNames: 20 cell array
+Using figure directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/figures
+Found 3D SHAP values with 5 instances, 20 features, and 20 targets
+Found 12 significant features with importance above 0.2433
+Creating SHAP beeswarm plots...
+Creating beeswarm plot for top 20 features...
+Creating beeswarm plot for 12 significant features...
+[Warning: Feature index 14 is out of bounds. Max index is 12.] 
+[> In plot_shap_beeswarm>createBeeswarmPlot (line 265)
+In plot_shap_beeswarm (line 483)
+In run (line 112)
+In run_analysis (line 371)
+In run (line 112)] 
+[Warning: Feature index 13 is out of bounds. Max index is 12.] 
+[> In plot_shap_beeswarm>createBeeswarmPlot (line 265)
+In plot_shap_beeswarm (line 483)
+In run (line 112)
+In run_analysis (line 371)
+In run (line 112)] 
+[Warning: Feature index 15 is out of bounds. Max index is 12.] 
+[> In plot_shap_beeswarm>createBeeswarmPlot (line 265)
+In plot_shap_beeswarm (line 483)
+In run (line 112)
+In run_analysis (line 371)
+In run (line 112)] 
+[Warning: Feature index 17 is out of bounds. Max index is 12.] 
+[> In plot_shap_beeswarm>createBeeswarmPlot (line 265)
+In plot_shap_beeswarm (line 483)
+In run (line 112)
+In run_analysis (line 371)
+In run (line 112)] 
+Creating beeswarm plot for all 20 features...
+Created standardized colorbar legend in: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/figures
+SHAP beeswarm plots created and saved to /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/figures
+  Successfully executed plot_shap_beeswarm.m
+Calling plot_shap_original_summary.m...
+  Checking requirements for plot_shap_original_summary.m:
+    - shapValues: 5 x 20 x 1 array
+    - baseValue: [0.478233424438575 0.419874088775509 0.383815335450709 0.458525191508463 0.718683047981859 0.267181488249715 0.571157165109244 0.489097498229385 0.767238575943471 0.260426899264315 0.534275425517819 0.389772344422785 0.842998963008471 0.242109247304903 0.529969441537481 0.671030710946534 0.222824972412421 0.14080376954669 0.72449839750283 0.347407500030029]
+    - varNames: 20 cell array
+    - featureNames: 20 cell array
+Found 2D SHAP values with 5 instances and 20 features
+Creating original SHAP summary plot with top 20 features
+Original SHAP summary plot saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/figures/shap_summary.png
+Original SHAP summary plot saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/figures/shap_summary.fig
+  Successfully executed plot_shap_original_summary.m
+Calling fix_colorbar_style.m...
+  Checking requirements for fix_colorbar_style.m:
+    - shapValues: 5 x 20 x 1 array
+    - baseValue: [0.478233424438575 0.419874088775509 0.383815335450709 0.458525191508463 0.718683047981859 0.267181488249715 0.571157165109244 0.489097498229385 0.767238575943471 0.260426899264315 0.534275425517819 0.389772344422785 0.842998963008471 0.242109247304903 0.529969441537481 0.671030710946534 0.222824972412421 0.14080376954669 0.72449839750283 0.347407500030029]
+    - varNames: 20 cell array
+    - featureNames: 20 cell array
+Using provided shapDir: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full
+Creating standardized colorbar legend...
+Created standardized colorbar legend in: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/figures
+Done. Colorbar style updated in all SHAP result directories.
+  Successfully executed fix_colorbar_style.m
+
+===== Exporting SHAP values to Excel =====
+Running export_shap_to_excel.m...
+
+===== Starting SHAP Excel Export =====
+Using SHAP directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full
+Using existing data directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/data
+Processing SHAP values for Excel export...
+Checking for SHAP results file: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/data/shap_results.mat
+Using SHAP variables from current workspace
+Found 2D SHAP values with 5 instances and 20 features
+Truncated target names to match target count
+Creating SHAP_metadata.xlsx...
+Error during Excel export: To assign to or create a variable in a table, the number of rows must match the height of the table.
+  Error in file: /sw/apps/matlab/R2024a/toolbox/matlab/datatypes/tabular/@tabular/dotAssign.m
+  Line: 507
+
+===== ANALYSIS EXECUTION COMPLETE =====
+Total execution time: 464.55 seconds (7.74 minutes)
+
+===== OUTPUT FILE INTEGRITY CHECK =====
+[OK] /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/training/Results_trained.mat exists
+[OK] /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/data/shap_results.mat exists
+[OK] /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/figures exists
+
+
+Run analysis completed successfully!
+Parallel pool using the 'Processes' profile is shutting down.
+SHAP analysis completed successfully with exit code: 0
+Cleaning up any incorrect SHAP outputs in src/shap directory...
+Creating job summary...
+Cleaning up temporary files...
+Full analysis completed. Check the results/ directory for output.
+End time: Fri Apr  4 16:34:28 CDT 2025
