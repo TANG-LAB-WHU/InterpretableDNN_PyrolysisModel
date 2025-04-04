@@ -1,0 +1,55 @@
+Debug Hyperparameter Optimization Log
+Date: 03-Apr-2025 21:45:02
+
+Testing 16 hyperparameter configurations
+
+Config 1 - LR: 0.010, MC: 0.80, Layers: [10], TF: tansig
+  Train MSE: 0.0255, Val MSE: 0.0329, Test MSE: 0.0377
+  NEW BEST MODEL!
+
+Config 2 - LR: 0.010, MC: 0.80, Layers: [10], TF: logsig
+  Train MSE: 0.0255, Val MSE: 0.0329, Test MSE: 0.0377
+
+Config 3 - LR: 0.010, MC: 0.80, Layers: [8  5], TF: tansig
+  Train MSE: 0.0255, Val MSE: 0.0329, Test MSE: 0.0377
+
+Config 4 - LR: 0.010, MC: 0.80, Layers: [8  5], TF: logsig
+  Train MSE: 0.0255, Val MSE: 0.0329, Test MSE: 0.0377
+
+Config 5 - LR: 0.010, MC: 0.90, Layers: [10], TF: tansig
+  Train MSE: 0.0155, Val MSE: 0.0200, Test MSE: 0.0229
+  NEW BEST MODEL!
+
+Config 6 - LR: 0.010, MC: 0.90, Layers: [10], TF: logsig
+  Train MSE: 0.0155, Val MSE: 0.0200, Test MSE: 0.0229
+
+Config 7 - LR: 0.010, MC: 0.90, Layers: [8  5], TF: tansig
+  Train MSE: 0.0155, Val MSE: 0.0200, Test MSE: 0.0229
+
+Config 8 - LR: 0.010, MC: 0.90, Layers: [8  5], TF: logsig
+  Train MSE: 0.0155, Val MSE: 0.0200, Test MSE: 0.0229
+
+Config 9 - LR: 0.100, MC: 0.80, Layers: [10], TF: tansig
+  Train MSE: 0.0165, Val MSE: 0.0213, Test MSE: 0.0244
+
+Config 10 - LR: 0.100, MC: 0.80, Layers: [10], TF: logsig
+  Train MSE: 0.0165, Val MSE: 0.0213, Test MSE: 0.0244
+
+Config 11 - LR: 0.100, MC: 0.80, Layers: [8  5], TF: tansig
+  Train MSE: 0.0165, Val MSE: 0.0213, Test MSE: 0.0244
+
+Config 12 - LR: 0.100, MC: 0.80, Layers: [8  5], TF: logsig
+  Train MSE: 0.0165, Val MSE: 0.0213, Test MSE: 0.0244
+
+Config 13 - LR: 0.100, MC: 0.90, Layers: [10], TF: tansig
+  Train MSE: 0.0065, Val MSE: 0.0084, Test MSE: 0.0096
+  NEW BEST MODEL!
+
+Config 14 - LR: 0.100, MC: 0.90, Layers: [10], TF: logsig
+  Train MSE: 0.0065, Val MSE: 0.0084, Test MSE: 0.0096
+
+Config 15 - LR: 0.100, MC: 0.90, Layers: [8  5], TF: tansig
+  Train MSE: 0.0065, Val MSE: 0.0084, Test MSE: 0.0096
+
+Config 16 - LR: 0.100, MC: 0.90, Layers: [8  5], TF: logsig
+  Train MSE: 0.0065, Val MSE: 0.0084, Test MSE: 0.0096

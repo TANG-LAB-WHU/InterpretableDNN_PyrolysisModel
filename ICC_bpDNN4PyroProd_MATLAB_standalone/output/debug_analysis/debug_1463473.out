@@ -1,0 +1,259 @@
+=== Starting GPM_SHAP Debug Analysis Job ===
+Job ID: 1463473
+Running on: ccc0290
+Start time: Thu Apr  3 21:44:19 CDT 2025
+Creating complete directory structure...
+Working directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone
+Checking data files...
+Checking model files...
+Checking script files...
+Checking visualization files...
+Creating placeholder visualization files if needed...
+Copying data files to model directory...
+Data files copied to model directory
+Checking for SHAP feature metadata...
+MATLAB temp directory: /scratch/siqi/matlab_temp_1463473
+Loading MATLAB module...
+Running debug SHAP analysis script...
+MATLAB will use following directories:
+- Working directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone
+- Scripts directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/scripts
+- Model directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/model
+- Visualization directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/visualization
+- Results directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug
+- Training directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/debug
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2024 The MathWorks, Inc.
+                  R2024a (24.1.0.2537033) 64-bit (glnxa64)
+                             February 21, 2024
+
+ 
+To get started, type doc.
+For product information, visit www.mathworks.com.
+ 
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Connected to parallel pool with 8 workers.
+MATLAB environment setup:
+- Root directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone
+- Training directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/debug
+- SHAP directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug
+- Debug results directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug
+- Results trained file: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/debug/Results_trained.mat
+ Results file does not exist!
+Starting debug_run_analysis.m
+Logging to debug_run_analysis_log.txt
+Root directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone
+Added to path: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/shap
+Directory does not exist (skipping): /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/dnn
+Directory does not exist (skipping): /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/utils
+Added to path: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/scripts
+Added to path: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/visualization
+Paths setup complete.
+Directory exists: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/debug
+Directory exists: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/best_model
+Directory exists: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/optimization
+Directory exists: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug
+Directory exists: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/data
+Directory exists: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/figures
+Creating test model file: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/debug/Results_trained.mat
+Saved test model to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/debug/Results_trained.mat
+
+===== RUNNING SIMPLIFIED HYPERPARAMETER OPTIMIZATION (DEBUG MODE) =====
+Testing 16 hyperparameter configurations in debug mode
+Configuration 1/16:
+  LR: 0.010, MC: 0.80, Layers: [10], TF: tansig
+  Simulating training (debug mode)...
+  Results - Train MSE: 0.0255, Val MSE: 0.0329, Test MSE: 0.0377
+  New best model found! Saving...
+Configuration 2/16:
+  LR: 0.010, MC: 0.80, Layers: [10], TF: logsig
+  Simulating training (debug mode)...
+  Results - Train MSE: 0.0255, Val MSE: 0.0329, Test MSE: 0.0377
+Configuration 3/16:
+  LR: 0.010, MC: 0.80, Layers: [8  5], TF: tansig
+  Simulating training (debug mode)...
+  Results - Train MSE: 0.0255, Val MSE: 0.0329, Test MSE: 0.0377
+Configuration 4/16:
+  LR: 0.010, MC: 0.80, Layers: [8  5], TF: logsig
+  Simulating training (debug mode)...
+  Results - Train MSE: 0.0255, Val MSE: 0.0329, Test MSE: 0.0377
+Configuration 5/16:
+  LR: 0.010, MC: 0.90, Layers: [10], TF: tansig
+  Simulating training (debug mode)...
+  Results - Train MSE: 0.0155, Val MSE: 0.0200, Test MSE: 0.0229
+  New best model found! Saving...
+Configuration 6/16:
+  LR: 0.010, MC: 0.90, Layers: [10], TF: logsig
+  Simulating training (debug mode)...
+  Results - Train MSE: 0.0155, Val MSE: 0.0200, Test MSE: 0.0229
+Configuration 7/16:
+  LR: 0.010, MC: 0.90, Layers: [8  5], TF: tansig
+  Simulating training (debug mode)...
+  Results - Train MSE: 0.0155, Val MSE: 0.0200, Test MSE: 0.0229
+Configuration 8/16:
+  LR: 0.010, MC: 0.90, Layers: [8  5], TF: logsig
+  Simulating training (debug mode)...
+  Results - Train MSE: 0.0155, Val MSE: 0.0200, Test MSE: 0.0229
+Configuration 9/16:
+  LR: 0.100, MC: 0.80, Layers: [10], TF: tansig
+  Simulating training (debug mode)...
+  Results - Train MSE: 0.0165, Val MSE: 0.0213, Test MSE: 0.0244
+Configuration 10/16:
+  LR: 0.100, MC: 0.80, Layers: [10], TF: logsig
+  Simulating training (debug mode)...
+  Results - Train MSE: 0.0165, Val MSE: 0.0213, Test MSE: 0.0244
+Configuration 11/16:
+  LR: 0.100, MC: 0.80, Layers: [8  5], TF: tansig
+  Simulating training (debug mode)...
+  Results - Train MSE: 0.0165, Val MSE: 0.0213, Test MSE: 0.0244
+Configuration 12/16:
+  LR: 0.100, MC: 0.80, Layers: [8  5], TF: logsig
+  Simulating training (debug mode)...
+  Results - Train MSE: 0.0165, Val MSE: 0.0213, Test MSE: 0.0244
+Configuration 13/16:
+  LR: 0.100, MC: 0.90, Layers: [10], TF: tansig
+  Simulating training (debug mode)...
+  Results - Train MSE: 0.0065, Val MSE: 0.0084, Test MSE: 0.0096
+  New best model found! Saving...
+Configuration 14/16:
+  LR: 0.100, MC: 0.90, Layers: [10], TF: logsig
+  Simulating training (debug mode)...
+  Results - Train MSE: 0.0065, Val MSE: 0.0084, Test MSE: 0.0096
+Configuration 15/16:
+  LR: 0.100, MC: 0.90, Layers: [8  5], TF: tansig
+  Simulating training (debug mode)...
+  Results - Train MSE: 0.0065, Val MSE: 0.0084, Test MSE: 0.0096
+Configuration 16/16:
+  LR: 0.100, MC: 0.90, Layers: [8  5], TF: logsig
+  Simulating training (debug mode)...
+  Results - Train MSE: 0.0065, Val MSE: 0.0084, Test MSE: 0.0096
+
+Best configuration found:
+  LR: 0.100, MC: 0.90, Layers: [10], TF: tansig
+  MSE - Train: 0.0065, Val: 0.0084, Test: 0.0096
+Optimization log saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/optimization/debug_optimization_log.txt
+Best model saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/optimization/debug_best_model.mat
+
+===== RUNNING SIMPLIFIED SHAP ANALYSIS (DEBUG MODE) =====
+Generating simplified SHAP values...
+Loading test model data from: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/debug/Results_trained.mat
+Trying to read real feature names from /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/data/raw/RawInputData.xlsx...
+Successfully read 5 real feature names
+Processed 5/20 samples
+Processed 10/20 samples
+Processed 15/20 samples
+Processed 20/20 samples
+Saving SHAP results to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/data/shap_results.mat
+SHAP results saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/data/shap_results.mat
+
+===== Running Full SHAP Analysis Pipeline =====
+Results will be saved in: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug
+=== Starting SHAP Analysis (debug mode) ===
+
+=== Step 1: Calculating SHAP Values ===
+SHAP results file already exists at: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/data/shap_results.mat
+Checking if file contains required variables...
+Existing SHAP results file contains required variables. Loading...
+✓ Successfully loaded existing SHAP results.
+Step 1 completed in 0.01 seconds.
+
+=== Step 2: Generating Visualizations ===
+Creating beeswarm plots...
+Using figure directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/figures
+Found 3D SHAP values with 20 instances, 5 features, and 2 targets
+Found 3 significant features with importance above 0.0253
+Creating SHAP beeswarm plots...
+Creating beeswarm plot for top 5 features...
+Creating beeswarm plot for 3 significant features...
+[Warning: Feature index 5 is out of bounds. Max index is 3.] 
+[> In plot_shap_beeswarm>createBeeswarmPlot (line 247)
+In plot_shap_beeswarm (line 465)
+In run_shap_analysis (line 189)
+In debug_run_analysis (line 379)] 
+Creating beeswarm plot for all 5 features...
+Created standardized colorbar legend in: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/figures
+SHAP beeswarm plots created and saved to /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/figures
+✓ Beeswarm plots created successfully!
+Creating original summary plots...
+Found 2D SHAP values with 20 instances and 5 features
+Creating original SHAP summary plot with top 5 features
+Original SHAP summary plot saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/figures/shap_summary.png
+Original SHAP summary plot saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/figures/shap_summary.fig
+✓ Original summary plots created successfully!
+Creating enhanced visualization plots...
+SHAP data loaded successfully
+Shape of shapValues: [20 5]
+Shape of input data: [20 5]
+Number of features: 5
+Found 2D SHAP values with 20 instances and 5 features
+Creating feature importance plots for each target...
+Creating instance explanation plots...
+Creating SHAP summary plot...
+Feature importance bar plot saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/figures/feature_importance_bar.png
+Creating SHAP force plots...
+Force plot for instance 1 saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/figures/force_plot_instance_1.png
+Force plot for instance 2 saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/figures/force_plot_instance_2.png
+Force plot for instance 3 saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/figures/force_plot_instance_3.png
+Force plot for instance 4 saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/figures/force_plot_instance_4.png
+Force plot for instance 5 saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/figures/force_plot_instance_5.png
+Creating SHAP dependence plots...
+Dependence plot for feature C saved
+Dependence plot for feature FixedCarbon saved
+Dependence plot for feature VolatileMatters saved
+Dependence plot for feature Location saved
+Dependence plot for feature Ash saved
+SHAP plotting complete. All visualizations saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/figures
+✓ Enhanced visualization plots created successfully!
+✓ 3 of 3 visualization types created successfully.
+Step 2 completed in 80.53 seconds.
+
+=== Step 3: Exporting Results to Excel ===
+Exporting SHAP data to Excel files...
+
+===== Starting SHAP Excel Export =====
+Using SHAP directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug
+Using existing data directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/data
+Processing SHAP values for Excel export...
+Checking for SHAP results file: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/data/shap_results.mat
+Using SHAP variables from current workspace
+Found 2D SHAP values with 20 instances and 5 features
+Truncated target names to match target count
+Creating SHAP_metadata.xlsx...
+Filling metadata table with 5 feature rows...
+Metadata table created with 5 rows and 4 columns.
+SHAP metadata exported to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/data/SHAP_metadata.xlsx
+Creating SHAP_summary_all_targets.xlsx...
+Exported ranking for Target 1
+SHAP summary exported to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/data/SHAP_summary_all_targets.xlsx
+Exporting SHAP values to Excel files...
+SHAP values for Target 1 exported to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/data/SHAP_values_Target 1.xlsx
+All SHAP results successfully exported to Excel files in /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/data
+✓ SHAP data exported successfully!
+Step 3 completed in 0.89 seconds.
+
+=== SHAP Analysis Completed ===
+Total execution time: 81.43 seconds (1.36 minutes)
+
+Results can be found in the following locations:
+- Figures: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/figures
+- Data files: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/data
+- Excel exports: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/data
+
+Output file summary:
+- Figure files (.png): 23
+- Excel files (.xlsx): 3
+
+SHAP analysis complete! You can now review the results in the output directories.
+
+===== Full SHAP Analysis Pipeline Completed Successfully =====
+
+===== DEBUG RUN ANALYSIS COMPLETE =====
+Saved SHAP results to /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/debug/data/shap_results.mat
+Parallel pool using the 'Processes' profile is shutting down.
+SHAP analysis completed successfully with exit code: 0
+Cleaning up any incorrect SHAP outputs in src/shap directory...
+Creating job summary...
+Cleaning up temporary files...
+Debug analysis completed. Check the results/ directory for output.
+End time: Thu Apr  3 21:46:38 CDT 2025
