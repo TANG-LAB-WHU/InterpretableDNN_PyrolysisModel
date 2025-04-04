@@ -1,0 +1,107 @@
+=== Starting GPM_SHAP Full Analysis Job ===
+Job ID: 1485608
+Running on: ccc0292
+Start time: Fri Apr  4 16:05:21 CDT 2025
+Working directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone
+Creating complete directory structure...
+Model directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/model
+Training directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/training
+Best model directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/best_model
+Optimization directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/optimization
+Analysis directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full
+Checking data files...
+Checking model files...
+Checking script files...
+Checking visualization files...
+Copying data files to model directory...
+Data files copied to model directory
+Checking for SHAP feature metadata...
+MATLAB temp directory: /scratch/siqi/matlab_temp_1485608
+Loading MATLAB module...
+Creating temporary MATLAB script at: /scratch/siqi/matlab_temp_1485608/run_full_analysis_temp.m
+Running full SHAP analysis script...
+MATLAB will use following directories:
+- Working directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone
+- Scripts directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/scripts
+- Model directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/model
+- Visualization directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/visualization
+- Results directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full
+- Training directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/training
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2024 The MathWorks, Inc.
+                  R2024a (24.1.0.2537033) 64-bit (glnxa64)
+                             February 21, 2024
+
+ 
+To get started, type doc.
+For product information, visit www.mathworks.com.
+ 
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Connected to parallel pool with 16 workers.
+Logging to file: /scratch/siqi/matlab_temp_1485608/run_analysis_log.txt
+===== RUNNING FULL ANALYSIS MODE =====
+Analysis mode is set to: full
+Root directory: /scratch/siqi/matlab_temp_1485608
+SHAP directory: /scratch/siqi/matlab_temp_1485608/results/analysis/full
+Training directory: /scratch/siqi/matlab_temp_1485608/results/training
+[Warning: Name is nonexistent or not a directory:
+/scratch/siqi/matlab_temp_1485608/src/scripts] 
+[> In path (line 109)
+In addpath>doPathAddition (line 126)
+In addpath (line 90)
+In run_full_analysis_temp (line 24)
+In run (line 112)] 
+[Warning: Name is nonexistent or not a directory:
+/scratch/siqi/matlab_temp_1485608/src/model] 
+[> In path (line 109)
+In addpath>doPathAddition (line 126)
+In addpath (line 90)
+In run_full_analysis_temp (line 25)
+In run (line 112)] 
+[Warning: Name is nonexistent or not a directory:
+/scratch/siqi/matlab_temp_1485608/src/visualization] 
+[> In path (line 109)
+In addpath>doPathAddition (line 126)
+In addpath (line 90)
+In run_full_analysis_temp (line 26)
+In run (line 112)] 
+Error using run (line 74)
+run_analysis.m not found.
+
+Error in run_full_analysis_temp (line 29)
+run('run_analysis.m');
+
+Error in run (line 112)
+evalin('caller', strcat(scriptStem, ';'));
+Parallel pool using the 'Processes' profile is shutting down.
+ERROR: MATLAB execution failed with exit code: 1
+Trying export_shap_to_excel.m directly to ensure Excel files are created...
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2024 The MathWorks, Inc.
+                  R2024a (24.1.0.2537033) 64-bit (glnxa64)
+                             February 21, 2024
+
+ 
+To get started, type doc.
+For product information, visit www.mathworks.com.
+ 
+
+===== Starting SHAP Excel Export =====
+Using SHAP directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full
+Using existing data directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/data
+Processing SHAP values for Excel export...
+Checking for SHAP results file: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/data/shap_results.mat
+SHAP results file not found. File: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/data/shap_results.mat
+Looking for alternative files in data directory...
+Error using export_shap_to_excel (line 58)
+No SHAP results files found in
+/projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/data.
+Run calc_shap_values.m first.
+ERROR: Excel export also failed with exit code: 1
+Cleaning up any incorrect SHAP outputs in src/shap directory...
+Creating job summary...
+Cleaning up temporary files...
+Full analysis completed. Check the results/ directory for output.
+End time: Fri Apr  4 16:06:25 CDT 2025

@@ -1,0 +1,46 @@
+=== Full Analysis Summary ===
+Job ID: 1485608
+Completion time: Fri Apr  4 16:06:20 CDT 2025
+
+MATLAB log file:
+
+Results directory structure:
+total 28
+drwxrws---+ 7 siqi siqi-ic 4096 Apr  4 16:02 .
+drwxrws---+ 9 siqi siqi-ic 4096 Apr  4 16:04 ..
+drwxrws---+ 4 siqi siqi-ic 4096 Apr  4 16:02 analysis
+drwxrws---+ 3 siqi siqi-ic 4096 Apr  4 16:02 best_model
+drwxrws---+ 3 siqi siqi-ic 4096 Apr  4 16:02 debug
+drwxrws---+ 2 siqi siqi-ic 4096 Apr  4 16:02 optimization
+drwxrws---+ 3 siqi siqi-ic 4096 Apr  4 16:02 training
+
+Optimization results:
+total 8
+drwxrws---+ 2 siqi siqi-ic 4096 Apr  4 16:02 .
+drwxrws---+ 7 siqi siqi-ic 4096 Apr  4 16:02 ..
+
+Best model from optimization:
+total 12
+drwxrws---+ 3 siqi siqi-ic 4096 Apr  4 16:02 .
+drwxrws---+ 7 siqi siqi-ic 4096 Apr  4 16:02 ..
+drwxrws---+ 2 siqi siqi-ic 4096 Apr  4 16:02 Figures
+
+Training results directory:
+total 16
+drwxrws---+ 3 siqi siqi-ic 4096 Apr  4 16:02 .
+drwxrws---+ 7 siqi siqi-ic 4096 Apr  4 16:02 ..
+drwxrws---+ 2 siqi siqi-ic 4096 Apr  4 16:02 Figures
+-rw-rw----+ 1 siqi siqi-ic 2423 Apr  4 15:32 Results_trained.mat
+
+SHAP Full Analysis directory:
+total 16
+drwxrws---+ 4 siqi siqi-ic 4096 Apr  4 16:02 .
+drwxrws---+ 4 siqi siqi-ic 4096 Apr  4 16:02 ..
+drwxrws---+ 2 siqi siqi-ic 4096 Apr  4 16:02 data
+drwxrws---+ 2 siqi siqi-ic 4096 Apr  4 16:02 figures
+
+SHAP Excel outputs:
+
+Verifying correct output locations:
+PASS: All SHAP results are correctly saved to results/analysis/full directory.
+      No incorrect outputs found in src/shap directory.

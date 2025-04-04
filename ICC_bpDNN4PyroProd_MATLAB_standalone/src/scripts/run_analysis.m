@@ -2,7 +2,9 @@
 % This script performs simplified testing of the neural network model
 
 % Clear workspace and command window
-clc; clear all; close all;
+%clc; 
+%clear all; 
+%close all;
 
 % Start timing execution
 analysisStartTime = tic;
@@ -38,12 +40,31 @@ try
     
     % Define directory paths relative to root directory
     scriptDir = fullfile(rootDir, 'src', 'scripts');
-    shapDir = fullfile(rootDir, 'src', 'shap');
     modelDir = fullfile(rootDir, 'src', 'model'); % Using src/model instead of model_data
     tempTrainingDir = fullfile(rootDir, 'results', 'training'); % Using results/training instead of training_data
     bestModelDir = fullfile(rootDir, 'results', 'best_model'); % Best model directory
     optimizationDir = fullfile(rootDir, 'results', 'optimization'); % Optimization directory
-    analysisDir = fullfile(rootDir, 'results', 'analysis', 'full'); % Specify full analysis directory
+    
+    % Check if analysisMode is defined, default to 'debug' if not
+    if ~exist('analysisMode', 'var')
+        analysisMode = 'debug';
+        fprintf('analysisMode not defined, defaulting to debug mode\n');
+    else
+        fprintf('Running in %s mode\n', analysisMode);
+    end
+    
+    % Set up analysis directory based on mode
+    if strcmpi(analysisMode, 'full')
+        analysisDir = fullfile(rootDir, 'results', 'analysis', 'full');
+        fprintf('Using full analysis directory: %s\n', analysisDir);
+    else
+        analysisDir = fullfile(rootDir, 'results', 'analysis', 'debug');
+        fprintf('Using debug analysis directory: %s\n', analysisDir);
+    end
+    
+    % Make sure shapDir points to the correct analysis directory
+    shapDir = analysisDir;
+    fprintf('Setting shapDir to %s\n', shapDir);
     
     % Create the data directories
     analysisDataDir = fullfile(analysisDir, 'data');
@@ -67,48 +88,138 @@ try
         end
     end
     
-    % Create a simple test model data file
-    testModelFile = fullfile(tempTrainingDir, 'Results_trained.mat');
-    if ~exist(testModelFile, 'file')
-        fprintf('Creating test model file: %s\n', testModelFile);
+    % Check for and load existing model file based on analysis mode
+    if strcmpi(analysisMode, 'full')
+        % In full mode, we should use the best model from training
+        bestModelFile = fullfile(bestModelDir, 'best_model.mat');
+        trainedModelFile = fullfile(tempTrainingDir, 'Results_trained.mat');
         
-        % Create simple test data
-        input = rand(5, 20);  % 5 features, 20 samples
-        target = rand(2, 20); % 2 outputs, 20 samples
-        
-        % Create a simple network
-        net = struct();
-        net.inputs = {struct('size', 5)};
-        net.layers = {struct('size', 10), struct('size', 2)};
-        net.outputs = {struct('size', 2)};
-        net.biases = {1, 1};
-        net.inputWeights = {struct('size', [10, 5])};
-        net.layerWeights = {[], struct('size', [2, 10])};
-        net.trainFcn = 'trainlm';
-        net.performFcn = 'mse';
-        
-        % Create preprocessing structures
-        PS = struct();
-        PS.name = 'mapminmax';
-        PS.xoffset = min(input, [], 2);
-        PS.gain = 2./(max(input, [], 2) - min(input, [], 2));
-        PS.ymin = -1;
-        
-        TS = struct();
-        TS.name = 'mapminmax';
-        TS.xoffset = min(target, [], 2);
-        TS.gain = 2./(max(target, [], 2) - min(target, [], 2));
-        TS.ymin = -1;
-        
-        % Create global versions
-        PS_global = PS;
-        TS_global = TS;
-        
-        % Save the data
-        save(testModelFile, 'input', 'target', 'net', 'PS', 'TS', 'PS_global', 'TS_global');
-        fprintf('Saved test model to: %s\n', testModelFile);
+        if exist(bestModelFile, 'file')
+            fprintf('Loading best model from: %s\n', bestModelFile);
+            modelData = load(bestModelFile);
+            modelFileUsed = bestModelFile;
+        elseif exist(trainedModelFile, 'file')
+            fprintf('Best model not found, loading trained model from: %s\n', trainedModelFile);
+            modelData = load(trainedModelFile);
+            modelFileUsed = trainedModelFile;
+        else
+            fprintf('WARNING: No existing model found. Creating test model...\n');
+            % Create a simple test model data file
+            testModelFile = fullfile(tempTrainingDir, 'Results_trained.mat');
+            
+            % Create simple test data
+            input = rand(5, 20);  % 5 features, 20 samples
+            target = rand(2, 20); % 2 outputs, 20 samples
+            
+            % Create a simple network
+            net = struct();
+            net.inputs = {struct('size', 5)};
+            net.layers = {struct('size', 10), struct('size', 2)};
+            net.outputs = {struct('size', 2)};
+            net.biases = {1, 1};
+            net.inputWeights = {struct('size', [10, 5])};
+            net.layerWeights = {[], struct('size', [2, 10])};
+            net.trainFcn = 'trainlm';
+            net.performFcn = 'mse';
+            
+            % Create preprocessing structures
+            PS = struct();
+            PS.name = 'mapminmax';
+            PS.xoffset = min(input, [], 2);
+            PS.gain = 2./(max(input, [], 2) - min(input, [], 2));
+            PS.ymin = -1;
+            
+            TS = struct();
+            TS.name = 'mapminmax';
+            TS.xoffset = min(target, [], 2);
+            TS.gain = 2./(max(target, [], 2) - min(target, [], 2));
+            TS.ymin = -1;
+            
+            % Create global versions
+            PS_global = PS;
+            TS_global = TS;
+            
+            % Save the data
+            save(testModelFile, 'input', 'target', 'net', 'PS', 'TS', 'PS_global', 'TS_global');
+            fprintf('Saved test model to: %s\n', testModelFile);
+            
+            % Load the just-created test model
+            modelData = load(testModelFile);
+            modelFileUsed = testModelFile;
+        end
     else
-        fprintf('Test model file already exists: %s\n', testModelFile);
+        % In debug mode, create or use a simplified test model
+        testModelFile = fullfile(tempTrainingDir, 'Results_trained.mat');
+        if ~exist(testModelFile, 'file')
+            fprintf('Creating test model file: %s\n', testModelFile);
+            
+            % Create simple test data
+            input = rand(5, 20);  % 5 features, 20 samples
+            target = rand(2, 20); % 2 outputs, 20 samples
+            
+            % Create a simple network
+            net = struct();
+            net.inputs = {struct('size', 5)};
+            net.layers = {struct('size', 10), struct('size', 2)};
+            net.outputs = {struct('size', 2)};
+            net.biases = {1, 1};
+            net.inputWeights = {struct('size', [10, 5])};
+            net.layerWeights = {[], struct('size', [2, 10])};
+            net.trainFcn = 'trainlm';
+            net.performFcn = 'mse';
+            
+            % Create preprocessing structures
+            PS = struct();
+            PS.name = 'mapminmax';
+            PS.xoffset = min(input, [], 2);
+            PS.gain = 2./(max(input, [], 2) - min(input, [], 2));
+            PS.ymin = -1;
+            
+            TS = struct();
+            TS.name = 'mapminmax';
+            TS.xoffset = min(target, [], 2);
+            TS.gain = 2./(max(target, [], 2) - min(target, [], 2));
+            TS.ymin = -1;
+            
+            % Create global versions
+            PS_global = PS;
+            TS_global = TS;
+            
+            % Save the data
+            save(testModelFile, 'input', 'target', 'net', 'PS', 'TS', 'PS_global', 'TS_global');
+            fprintf('Saved test model to: %s\n', testModelFile);
+        else
+            fprintf('Test model file already exists: %s\n', testModelFile);
+        end
+        
+        % Load the test model data
+        modelData = load(testModelFile);
+        modelFileUsed = testModelFile;
+    end
+    
+    % Extract data components from loaded model
+    if isfield(modelData, 'input')
+        input = modelData.input;
+    elseif isfield(modelData, 'X')
+        input = modelData.X;
+        fprintf('Using X as input\n');
+    else
+        error('No input data found in model file');
+    end
+    
+    if isfield(modelData, 'target')
+        target = modelData.target;
+    elseif isfield(modelData, 'Y')
+        target = modelData.Y;
+        fprintf('Using Y as target\n');
+    else
+        error('No target data found in model file');
+    end
+    
+    if isfield(modelData, 'net')
+        net = modelData.net;
+    else
+        error('No neural network model found in model file');
     end
     
     % Add model directory to path if it's not already
@@ -117,161 +228,85 @@ try
         fprintf('Added model directory to path: %s\n', modelDir);
     end
     
-    % Skip hyperparameter optimization for simplified testing
-    fprintf('\n===== SKIPPING HYPERPARAMETER OPTIMIZATION FOR SIMPLIFIED TESTING =====\n');
-    
-    % Run the SHAP analysis
-    fprintf('\n===== RUNNING SIMPLIFIED SHAP ANALYSIS =====\n');
-    
-    % Make sure the shapDir variable is defined properly
-    shapDir = fullfile(rootDir, 'src', 'shap');
-    if ~exist(shapDir, 'dir')
-        % If src/shap doesn't exist, use results/analysis/shap instead
-        shapDir = fullfile(analysisDir, 'shap');
-        fprintf('Created SHAP directory at: %s\n', shapDir);
-        if ~exist(shapDir, 'dir')
-            mkdir(shapDir);
+    % Run the SHAP analysis based on mode
+    if strcmpi(analysisMode, 'full')
+        fprintf('\n===== RUNNING FULL SHAP ANALYSIS =====\n');
+        
+        % Call calc_shap_values.m to compute real SHAP values
+        fprintf('Calculating SHAP values using calc_shap_values.m...\n');
+        
+        % Make sure required variables are defined for calc_shap_values.m
+        if ~exist('shapDir', 'var')
+            shapDir = analysisDir;
         end
-    end
-    
-    % Create simplified SHAP values
-    fprintf('Generating simplified SHAP values...\n');
-    
-    % Load the test model data
-    fprintf('Loading test model data from: %s\n', testModelFile);
-    data = load(testModelFile);
-    
-    % Extract data components
-    input = data.input;
-    target = data.target;
-    net = data.net;
-    PS = data.PS;
-    TS = data.TS;
-    
-    % Create SHAP values - simplified approach
-    [numFeatures, numSamples] = size(input);
-    [numOutputs, ~] = size(target);
-    
-    % Initialize SHAP values
-    shapValues = zeros(numSamples, numFeatures, numOutputs);
-    baseValue = mean(target, 2)'; % Use mean of target as base value
-    
-    % Create feature names
-    varNames = cell(numFeatures, 1);
-    
-    % Try to read real feature names from original data file
-    try
-        % Check the original data file
-        rawDataFile = fullfile(rootDir, 'data', 'raw', 'RawInputData.xlsx');
-        if exist(rawDataFile, 'file')
-            fprintf('Trying to read real feature names from %s...\n', rawDataFile);
-            % Read Excel file, get the first row as feature names
-            [~, ~, raw] = xlsread(rawDataFile, 1, 'A1:Z1');
-            if ~isempty(raw) && length(raw) >= numFeatures
-                for i = 1:numFeatures
-                    if ~isempty(raw{i}) && ischar(raw{i})
-                        varNames{i} = raw{i};
-                    else
-                        varNames{i} = sprintf('Feature_%d', i);
-                    end
-                end
-                fprintf('Successfully read %d real feature names\n', numFeatures);
+        
+        % Check if calc_shap_values.m exists and call it
+        calc_shap_script = fullfile(scriptDir, 'calc_shap_values.m');
+        if exist(calc_shap_script, 'file')
+            % Set up any additional variables needed by calc_shap_values.m
+            featureNames = {}; % Will be created by calc_shap_values.m if not available
+            
+            % Run the SHAP calculation script
+            run(calc_shap_script);
+            
+            % Check if SHAP values were generated
+            resultFile = fullfile(analysisDataDir, 'shap_results.mat');
+            if ~exist(resultFile, 'file')
+                error('calc_shap_values.m did not generate shap_results.mat');
             else
-                fprintf('Insufficient feature names in the original data file, using default names\n');
-                for i = 1:numFeatures
-                    varNames{i} = sprintf('Feature_%d', i);
-                end
+                fprintf('SHAP calculation completed successfully.\n');
+                fprintf('SHAP results saved to: %s\n', resultFile);
             end
         else
-            % Check metadata file in SHAP_Analysis directory
-            metadataFile = fullfile(rootDir, 'SHAP_Analysis', 'Data', 'SHAP_metadata.xlsx');
-            if exist(metadataFile, 'file')
-                fprintf('Trying to read real feature names from %s...\n', metadataFile);
-                % Read Excel file, get the first column as feature names
-                [~, txt, ~] = xlsread(metadataFile);
-                if ~isempty(txt) && size(txt, 1) >= numFeatures
-                    for i = 1:numFeatures
-                        if i <= size(txt, 1) && ~isempty(txt{i,1})
-                            varNames{i} = txt{i,1};
-                        else
-                            varNames{i} = sprintf('Feature_%d', i);
-                        end
-                    end
-                    fprintf('Successfully read %d real feature names from metadata file\n', numFeatures);
-                else
-                    fprintf('Insufficient feature names in metadata file, using default names\n');
-                    for i = 1:numFeatures
-                        varNames{i} = sprintf('Feature_%d', i);
-                    end
-                end
-            else
-                % Check metadata file in results directory
-                resultsMetadataFile = fullfile(rootDir, 'results', 'analysis', 'full', 'data', 'SHAP_metadata.xlsx');
-                if exist(resultsMetadataFile, 'file')
-                    fprintf('Trying to read real feature names from %s...\n', resultsMetadataFile);
-                    % Read Excel file, get the first column as feature names
-                    [~, txt, ~] = xlsread(resultsMetadataFile);
-                    if ~isempty(txt) && size(txt, 1) >= numFeatures
-                        for i = 1:numFeatures
-                            if i <= size(txt, 1) && ~isempty(txt{i,1})
-                                varNames{i} = txt{i,1};
-                            else
-                                varNames{i} = sprintf('Feature_%d', i);
-                            end
-                        end
-                        fprintf('Successfully read %d real feature names from results directory metadata file\n', numFeatures);
-                    else
-                        fprintf('Insufficient feature names in results directory metadata file, using default names\n');
-                        for i = 1:numFeatures
-                            varNames{i} = sprintf('Feature_%d', i);
-                        end
-                    end
-                else
-                    fprintf('Feature name file not found, using default names\n');
-                    for i = 1:numFeatures
-                        varNames{i} = sprintf('Feature_%d', i);
-                    end
-                end
-            end
+            error('calc_shap_values.m not found at %s', calc_shap_script);
         end
-    catch err
-        fprintf('Error reading real feature names: %s\n', err.message);
-        % Use default names when error occurs
+    else
+        fprintf('\n===== RUNNING SIMPLIFIED SHAP ANALYSIS (DEBUG MODE) =====\n');
+        
+        % Use simplified approach for debug mode
+        fprintf('Generating simplified SHAP values for debugging...\n');
+        
+        % Create simplified SHAP values
+        [numFeatures, numSamples] = size(input);
+        [numOutputs, ~] = size(target);
+        
+        % Initialize SHAP values
+        shapValues = zeros(numSamples, numFeatures, numOutputs);
+        baseValue = mean(target, 2)'; % Use mean of target as base value
+        
+        % Create feature names
+        varNames = cell(numFeatures, 1);
         for i = 1:numFeatures
             varNames{i} = sprintf('Feature_%d', i);
         end
-    end
-    
-    % Simplified prediction function for testing
-    nnpredict = @(net, x) ones(numOutputs, 1) .* rand(numOutputs, 1); % Dummy prediction that returns a vector of length numOutputs
-    
-    % Generate SHAP values
-    for i = 1:numSamples
-        for j = 1:numOutputs
-            % Get a dummy prediction for this sample
-            sample_pred = nnpredict(net, input(:, i));
-            sample_pred = sample_pred(j);
+        
+        % Generate random SHAP values
+        for i = 1:numSamples
+            for j = 1:numOutputs
+                % Get a dummy prediction for this sample
+                sample_pred = rand(); % Dummy prediction
+                
+                % Calculate the difference from base value
+                diff_from_base = sample_pred - baseValue(j);
+                
+                % Distribute this difference among features as SHAP values
+                feature_importances = rand(1, numFeatures);
+                feature_importances = feature_importances / sum(feature_importances);
+                shapValues(i, :, j) = diff_from_base * feature_importances;
+            end
             
-            % Calculate the difference from base value
-            diff_from_base = sample_pred - baseValue(j);
-            
-            % Distribute this difference among features as SHAP values
-            feature_importances = rand(1, numFeatures);
-            feature_importances = feature_importances / sum(feature_importances);
-            shapValues(i, :, j) = diff_from_base * feature_importances;
+            % Report progress
+            if mod(i, 5) == 0 || i == numSamples
+                fprintf('Processed %d/%d samples\n', i, numSamples);
+            end
         end
         
-        % Report progress
-        if mod(i, 5) == 0 || i == numSamples
-            fprintf('Processed %d/%d samples\n', i, numSamples);
-        end
+        % Save SHAP results
+        fprintf('Saving SHAP results...\n');
+        resultFile = fullfile(analysisDataDir, 'shap_results.mat');
+        save(resultFile, 'shapValues', 'baseValue', 'varNames', 'input', 'target');
+        fprintf('SHAP results saved to: %s\n', resultFile);
     end
-    
-    % Save SHAP results
-    fprintf('Saving SHAP results...\n');
-    resultFile = fullfile(analysisDataDir, 'shap_results.mat');
-    save(resultFile, 'shapValues', 'baseValue', 'varNames', 'input', 'target');
-    fprintf('SHAP results saved to: %s\n', resultFile);
     
     % Create visualizations if the visualization scripts exist
     fprintf('\n===== Creating Visualizations =====\n');
@@ -281,6 +316,26 @@ try
     plot_shap_beeswarm_path = fullfile(rootDir, 'src', 'visualization', 'plot_shap_beeswarm.m');
     plot_shap_original_summary_path = fullfile(rootDir, 'src', 'visualization', 'plot_shap_original_summary.m');
     fix_colorbar_style_path = fullfile(rootDir, 'src', 'visualization', 'fix_colorbar_style.m');
+    
+    % Load SHAP results if not already in workspace
+    if ~exist('shapValues', 'var') || ~exist('baseValue', 'var') || ~exist('varNames', 'var')
+        resultFile = fullfile(analysisDataDir, 'shap_results.mat');
+        if exist(resultFile, 'file')
+            fprintf('Loading SHAP results from: %s\n', resultFile);
+            results = load(resultFile);
+            shapValues = results.shapValues;
+            baseValue = results.baseValue;
+            varNames = results.varNames;
+            if isfield(results, 'input')
+                input = results.input;
+            end
+            if isfield(results, 'target')
+                target = results.target;
+            end
+        else
+            error('SHAP results file not found and shapValues not in workspace');
+        end
+    end
     
     % Load variables needed for plotting
     featureNames = varNames;
@@ -340,31 +395,9 @@ try
                             if ~isempty(alt_err.stack)
                                 fprintf('    Line: %d\n', alt_err.stack(1).line);
                                 fprintf('    File: %s\n', alt_err.stack(1).file);
-            end
-        end
+                            end
+                        end
                     end
-                end
-                
-                if ~exist(script_path, 'file') && ~any(cellfun(@(x) exist(x, 'file'), alternative_paths))
-                    fprintf('  No valid paths found for %s, creating placeholder...\n', script_name);
-                    
-                    % Create a placeholder script in the visualization directory
-                    mkdir(fileparts(script_path));
-                    fid = fopen(script_path, 'w');
-                    fprintf(fid, '%% Placeholder for %s\n', script_name);
-                    fprintf(fid, '%% This script was automatically generated as a placeholder\n\n');
-                    fprintf(fid, 'disp(''This is a placeholder for %s'');\n', script_name);
-                    fprintf(fid, 'warning(''The actual %s implementation is missing. This is a placeholder.'');\n\n', script_name);
-                    fprintf(fid, '%% Check if required variables exist\n');
-                    fprintf(fid, 'if exist(''shapValues'', ''var'')\n');
-                    fprintf(fid, '    disp([''shapValues size: '' num2str(size(shapValues))]);\n');
-                    fprintf(fid, 'else\n');
-                    fprintf(fid, '    warning(''shapValues not found in workspace'');\n');
-                    fprintf(fid, 'end\n');
-                    fclose(fid);
-                    
-                    fprintf('  Created placeholder script at %s\n', script_path);
-                    fprintf('  Please replace with the actual implementation before running in production.\n');
                 end
             end
         catch viz_error
@@ -374,56 +407,33 @@ try
             if ~isempty(viz_error.stack)
                 fprintf('  Error in file: %s\n', viz_error.stack(1).file);
                 fprintf('  Line: %d\n', viz_error.stack(1).line);
-                
-                % Show the line that caused the error if possible
-                try
-                    error_file = viz_error.stack(1).file;
-                    error_line = viz_error.stack(1).line;
-                    
-                    if exist(error_file, 'file')
-                        fid = fopen(error_file, 'r');
-                        if fid ~= -1
-                            all_lines = textscan(fid, '%s', 'Delimiter', '\n');
-                            fclose(fid);
-                            
-                            all_lines = all_lines{1};
-                            if error_line <= length(all_lines)
-                                fprintf('  Error-causing code: %s\n', all_lines{error_line});
-                            end
-                        end
-                    end
-                catch read_err
-                    fprintf('  Could not read error-causing line: %s\n', read_err.message);
+            end
+            
+            % Continue with next visualization script
+            fprintf('  Continuing with other visualization scripts...\n');
+        end
+    end
+
+    % Export to Excel if in full mode
+    if strcmpi(analysisMode, 'full')
+        fprintf('\n===== Exporting SHAP values to Excel =====\n');
+        
+        % Check if export_shap_to_excel.m exists and call it
+        export_script = fullfile(scriptDir, 'export_shap_to_excel.m');
+        if exist(export_script, 'file')
+            try
+                fprintf('Running export_shap_to_excel.m...\n');
+                run(export_script);
+                fprintf('Excel export completed successfully.\n');
+            catch export_error
+                fprintf('Error during Excel export: %s\n', export_error.message);
+                if ~isempty(export_error.stack)
+                    fprintf('  Error in file: %s\n', export_error.stack(1).file);
+                    fprintf('  Line: %d\n', export_error.stack(1).line);
                 end
             end
-            
-            % Check workspace variables
-            fprintf('  Workspace variable check:\n');
-            if ~exist('shapValues', 'var')
-                fprintf('    - shapValues: MISSING\n');
-            else
-                fprintf('    - shapValues: PRESENT (%d x %d x %d)\n', size(shapValues, 1), size(shapValues, 2), size(shapValues, 3));
-            end
-            
-            if ~exist('baseValue', 'var')
-                fprintf('    - baseValue: MISSING\n');
-            else
-                fprintf('    - baseValue: PRESENT (%s)\n', mat2str(baseValue));
-            end
-            
-            if ~exist('varNames', 'var')
-                fprintf('    - varNames: MISSING\n');
-            else
-                fprintf('    - varNames: PRESENT (%d elements)\n', length(varNames));
-            end
-            
-            if ~exist('featureNames', 'var')
-                fprintf('    - featureNames: MISSING\n');
-            else
-                fprintf('    - featureNames: PRESENT (%d elements)\n', length(featureNames));
-            end
-            
-            fprintf('  Continuing with other visualization scripts...\n');
+        else
+            fprintf('Warning: export_shap_to_excel.m not found at %s\n', export_script);
         end
     end
 
@@ -440,7 +450,7 @@ try
     % Run integrity check on output files
     fprintf('\n===== OUTPUT FILE INTEGRITY CHECK =====\n');
     checkFiles = {
-        testModelFile,
+        modelFileUsed,
         resultFile,
         analysisFigDir
     };
