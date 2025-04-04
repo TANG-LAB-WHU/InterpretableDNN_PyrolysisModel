@@ -1,16 +1,19 @@
 #!/bin/bash
 # Full analysis script for GPM_SHAP neural network model
-# This script runs the complete SHAP analysis with all samples
+# This script runs the complete workflow from optimization to SHAP analysis
 # Usage: sbatch run_full_analysis.sh
 # 
 # This script will:
 # 1. Initialize the project structure and check for required files
 # 2. Check and copy necessary data files
 # 3. Create required directories
-# 4. Run the full version of the SHAP analysis (with all samples/iterations)
-# 5. Generate a summary of results
+# 4. Run the complete workflow:
+#    a. Hyperparameter optimization (finds best neural network configuration)
+#    b. Best model training (trains a model with optimal hyperparameters)
+#    c. Full SHAP analysis (with all samples/iterations)
+# 5. Generate a comprehensive summary of results
 # 
-# Note: This script requires more computational resources and time than the debug version
+# Note: This script requires significant computational resources and time
 
 #SBATCH --job-name=full_GPM_SHAP
 #SBATCH --account=siqi-ic       # Replace with your ICC account name
@@ -84,7 +87,7 @@ done
 
 # Check script files
 echo "Checking script files..."
-SCRIPT_FILES=("run_analysis.m" "debug_run_analysis.m" "calc_shap_values.m" "export_shap_to_excel.m")
+SCRIPT_FILES=("run_analysis.m" "debug_run_analysis.m" "calc_shap_values.m" "export_shap_to_excel.m" "optimize_hyperparameters.m" "train_best_model.m")
 SCRIPT_MISSING=0
 
 for file in "${SCRIPT_FILES[@]}"; do
@@ -93,6 +96,12 @@ for file in "${SCRIPT_FILES[@]}"; do
         SCRIPT_MISSING=1
     fi
 done
+
+if [ $SCRIPT_MISSING -eq 1 ]; then
+    echo "CRITICAL: Some required script files are missing. The full workflow may not complete successfully."
+else
+    echo "All required script files found."
+fi
 
 # Check visualization files
 echo "Checking visualization files..."
@@ -342,17 +351,46 @@ echo "Loading MATLAB module..."
 module load matlab/24.1
 
 # Run MATLAB full analysis script
-echo "Running full SHAP analysis script..."
+echo "Running full SHAP analysis workflow..."
 echo "MATLAB will use following directories:"
 echo "- Working directory: $WORK_DIR"
 echo "- Scripts directory: $WORK_DIR/src/scripts"
 echo "- Model directory: $WORK_DIR/src/model"
 echo "- Visualization directory: $WORK_DIR/src/visualization"
-echo "- Results directory: $WORK_DIR/results/analysis/full"
+echo "- Optimization directory: $WORK_DIR/results/optimization"
+echo "- Best model directory: $WORK_DIR/results/best_model"
 echo "- Training directory: $WORK_DIR/results/training"
+echo "- Full analysis directory: $WORK_DIR/results/analysis/full"
 
 # Ensure proper directory variables and structure for MATLAB script
-matlab -nodisplay -nosplash -nodesktop -r "try; cd('$WORK_DIR'); addpath('$WORK_DIR/src/scripts'); addpath('$WORK_DIR/src/model'); addpath('$WORK_DIR/src/visualization'); pc = parcluster('local'); pc.NumWorkers = str2num(getenv('SLURM_NTASKS')); pc.JobStorageLocation = getenv('MATLAB_TEMP_DIR'); parpool(pc, pc.NumWorkers); rootDir='$WORK_DIR'; analysisMode='full'; trainingDir=fullfile(rootDir,'results','training'); shapDir=fullfile(rootDir,'results','analysis','full'); full_results_dir=shapDir; fprintf('MATLAB environment setup:\n'); fprintf('- Root directory: %s\n', rootDir); fprintf('- Training directory: %s\n', trainingDir); fprintf('- SHAP directory: %s\n', shapDir); fprintf('- Full results directory: %s\n', full_results_dir); fprintf('- Results trained file: %s\n', fullfile(trainingDir,'Results_trained.mat')); if exist(fullfile(trainingDir,'Results_trained.mat'),'file'), fprintf('  Results file exists!\n'); else, fprintf('  Results file does not exist!\n'); end; run_analysis; delete(gcp('nocreate')); exit; catch ME; disp(getReport(ME)); exit(1); end;"
+matlab -nodisplay -nosplash -nodesktop -r "try; cd('$WORK_DIR'); addpath('$WORK_DIR/src/scripts'); addpath('$WORK_DIR/src/model'); addpath('$WORK_DIR/src/visualization'); pc = parcluster('local'); pc.NumWorkers = str2num(getenv('SLURM_NTASKS')); pc.JobStorageLocation = getenv('MATLAB_TEMP_DIR'); parpool(pc, pc.NumWorkers); rootDir='$WORK_DIR'; 
+% Setup common paths
+fprintf('===== RUNNING FULL WORKFLOW =====\n');
+optimizationDir = fullfile(rootDir, 'results', 'optimization');
+bestModelDir = fullfile(rootDir, 'results', 'best_model');
+trainingDir = fullfile(rootDir, 'results', 'training');
+shapDir = fullfile(rootDir, 'results', 'analysis', 'full');
+full_results_dir = shapDir;
+
+% Step 1: Hyperparameter Optimization
+fprintf('\n===== STEP 1: RUNNING HYPERPARAMETER OPTIMIZATION =====\n');
+if exist(fullfile(optimizationDir, 'best_model.mat'), 'file')
+    fprintf('Found existing optimization results. Skipping optimization step.\n');
+else
+    fprintf('Starting hyperparameter optimization...\n');
+    optimize_hyperparameters;
+end
+
+% Step 2: Train Best Model
+fprintf('\n===== STEP 2: TRAINING MODEL WITH BEST HYPERPARAMETERS =====\n');
+train_best_model;
+
+% Step 3: SHAP Analysis
+fprintf('\n===== STEP 3: RUNNING FULL SHAP ANALYSIS =====\n');
+analysisMode = 'full';
+run_analysis;
+
+delete(gcp('nocreate')); exit; catch ME; disp(getReport(ME)); exit(1); end;"
 
 # Check MATLAB execution status
 MATLAB_STATUS=$?
@@ -393,8 +431,14 @@ echo "Job ID: $SLURM_JOB_ID" >> $SUMMARY_FILE
 echo "Completion time: $(date)" >> $SUMMARY_FILE
 echo -e "\nMATLAB log file:" >> $SUMMARY_FILE
 ls -lh run_analysis_log.txt >> $SUMMARY_FILE 2>/dev/null
+ls -lh optimization_log.txt >> $SUMMARY_FILE 2>/dev/null
+ls -lh train_best_model_log.txt >> $SUMMARY_FILE 2>/dev/null
 echo -e "\nResults directory structure:" >> $SUMMARY_FILE
 ls -la results/ >> $SUMMARY_FILE 2>/dev/null
+echo -e "\nOptimization results:" >> $SUMMARY_FILE
+ls -la results/optimization >> $SUMMARY_FILE 2>/dev/null
+echo -e "\nBest model directory:" >> $SUMMARY_FILE
+ls -la results/best_model >> $SUMMARY_FILE 2>/dev/null
 echo -e "\nTraining results directory:" >> $SUMMARY_FILE
 ls -la results/training >> $SUMMARY_FILE 2>/dev/null
 echo -e "\nSHAP Full Analysis directory:" >> $SUMMARY_FILE
@@ -422,6 +466,41 @@ if [ -d "src/shap/figures" ] || [ -d "src/shap/data" ]; then
 else
     echo "PASS: All SHAP results are correctly saved to results/analysis/full directory." >> $SUMMARY_FILE
     echo "      No incorrect outputs found in src/shap directory." >> $SUMMARY_FILE
+fi
+
+# Verify all key files exist
+echo -e "\nVerifying workflow completion:" >> $SUMMARY_FILE
+WORKFLOW_COMPLETE=true
+
+# Check optimization results
+if [ ! -f "results/optimization/best_model.mat" ]; then
+    echo "WARNING: Optimization results (best_model.mat) not found. Optimization may have failed." >> $SUMMARY_FILE
+    WORKFLOW_COMPLETE=false
+fi
+
+# Check best model training results
+if [ ! -f "results/best_model/best_model.mat" ]; then
+    echo "WARNING: Best model file (best_model.mat) not found. Model training may have failed." >> $SUMMARY_FILE
+    WORKFLOW_COMPLETE=false
+fi
+
+# Check training results
+if [ ! -f "results/training/Results_trained.mat" ]; then
+    echo "WARNING: Training results file (Results_trained.mat) not found. Model training may have failed." >> $SUMMARY_FILE
+    WORKFLOW_COMPLETE=false
+fi
+
+# Check SHAP analysis results
+if [ ! -f "results/analysis/full/data/shap_results.mat" ]; then
+    echo "WARNING: SHAP results file (shap_results.mat) not found. SHAP analysis may have failed." >> $SUMMARY_FILE
+    WORKFLOW_COMPLETE=false
+fi
+
+# Overall workflow status
+if [ "$WORKFLOW_COMPLETE" = true ]; then
+    echo "SUCCESS: All workflow stages completed successfully. Full analysis workflow is complete." >> $SUMMARY_FILE
+else
+    echo "WARNING: Some workflow stages may have failed. Check the logs for more information." >> $SUMMARY_FILE
 fi
 
 # Clean up MATLAB temporary directory
