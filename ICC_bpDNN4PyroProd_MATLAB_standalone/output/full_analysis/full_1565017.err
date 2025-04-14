@@ -1,7 +1,0 @@
-df: /boot: No such file or directory
-{Error using run_optimized_model (line 409)
-Error training neural network: Too many output arguments.
-
-Error in run (line 112)
-evalin('caller', strcat(scriptStem, ';'));
-} 

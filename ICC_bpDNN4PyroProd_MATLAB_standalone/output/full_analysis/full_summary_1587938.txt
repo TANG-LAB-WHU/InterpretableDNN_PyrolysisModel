@@ -1,7 +1,0 @@
-=== Full Analysis Summary ===
-Job ID: 1587938
-Completion time: Mon Apr  7 10:12:41 CDT 2025
-
-ERROR: Model training failed with exit code: 1
-The script was unable to complete model training.
-Please check run_optimized_model_log.txt for detailed error information.
