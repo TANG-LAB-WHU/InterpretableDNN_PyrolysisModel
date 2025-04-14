@@ -21,10 +21,10 @@ data.pdb = pdb;
 
 validation = false;
 testing = false;
-if ~isempty(data.valInd)
+if ~isempty(data.valInd) && length(data.valInd) > 0
     validation = true;
 end
-if ~isempty(data.testInd)
+if ~isempty(data.testInd) && length(data.testInd) > 0
     testing = true;
 end
 option.validation = validation;

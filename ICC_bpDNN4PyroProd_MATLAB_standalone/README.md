@@ -305,3 +305,41 @@ This code is configured to run on the NCSA Illinois Campus Cluster (ICC). The ba
 - Clean up temporary files after completion
 
 For more details on running MATLAB jobs on the ICC, see the [NCSA ICC MATLAB documentation](https://docs.ncsa.illinois.edu/systems/icc/en/latest/user_guide/software.html#matlab).
+
+## Error Handling and Workflow Behavior
+
+Important note about the workflow behavior:
+
+- The workflow will stop and report errors if any step fails.
+- SHAP analysis will not be executed if model training fails to avoid misleading results.
+- If hyperparameter optimization fails, the workflow will attempt to use the best available results but will stop if no valid results are found.
+- If model training fails (for example, due to a matrix dimension mismatch error), the workflow will stop immediately and will not proceed to SHAP analysis.
+
+## Error Log Locations
+
+If errors occur, check the following locations for error messages:
+
+- Main workflow logs: `output/full_analysis/full_[JOB_ID].out` and `output/full_analysis/full_[JOB_ID].err`
+- Training failure log: `results/training_failure_log.txt`
+- MATLAB execution log: `run_optimized_model_log.txt`
+- Summary file: `output/full_analysis/full_summary_[JOB_ID].txt`
+
+## Training Strategies
+
+The code supports two different training strategies:
+
+1. **TVT (Train-Validation-Test)**: Uses separate validation and test sets.
+2. **TT (Train-Test)**: Uses only training and test sets (no validation set).
+
+Both strategies are handled correctly by the optimized model script, which includes safety checks to prevent dimension mismatch errors. If using the TT strategy, the validation ratio is explicitly set to 0 to prevent matrix dimension issues.
+
+## Output Files
+
+After successful execution, check these key output files:
+
+- Optimization results: `results/optimization/best_model.mat`
+- Best model: `results/best_model/best_model.mat`
+- SHAP results: `results/analysis/full/data/shap_results.mat`
+- SHAP Excel output: `results/analysis/full/shap_analysis_results.xlsx`
+- SHAP figures: `results/analysis/full/figures/`
+- Summary report: `output/full_analysis/full_summary_[JOB_ID].txt`

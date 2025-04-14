@@ -3,12 +3,27 @@ function [error, output] = nneval(net, input, target)
 
 global PS TS
 
+% Check for empty input or target and ensure we have the right number of output arguments
+if isempty(input) || isempty(target)
+    error = NaN;
+    output = [];
+    return;
+end
+
 % normalization for input and target.
 input = nnpreprocess(net.processFcn, input, PS);
 target = nnpreprocess(net.processFcn, target, TS);
 
 % Calculate normalization output.
-outLayer = nnff(net, input, target);
+try
+    [outLayer, ~, ~] = nnff(net, input, target);
+catch ME
+    % 如果nnff调用失败，提供默认值
+    warning('NeuralNet:EvaluationFailed', '%s', ME.message);
+    error = NaN;
+    output = [];
+    return;
+end
 Nl = net.numLayer;
 output = outLayer{Nl};
 

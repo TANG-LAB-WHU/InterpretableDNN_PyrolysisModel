@@ -559,26 +559,40 @@ end
 
 fprintf('SHAP plotting complete. All visualizations saved to: %s\n', figDir);
 
-%% Function to format feature names for display
-function formattedName = formatFeatureName(featureName, maxLength)
-    % Ensure feature name is a string
-    if ~ischar(featureName)
-        featureName = char(featureName);
+%% Helper functions
+function formattedName = formatFeatureName(featureName)
+    % This function formats feature names for better display in plots
+    
+    % Replace underscore with space
+    formattedName = strrep(featureName, '_', ' ');
+    
+    % Handle special units in parentheses or after slash
+    if contains(formattedName, '/%')
+        % Replace /% with (%)
+        formattedName = strrep(formattedName, '/%', ' (%)');
     end
     
-    % Default maximum length is 25 characters
-    if nargin < 2
-        maxLength = 25;
+    if contains(formattedName, '/Celsius')
+        % Replace /Celsius with (°C)
+        formattedName = strrep(formattedName, '/Celsius', ' (°C)');
     end
     
-    % Truncate long feature names
-    if length(featureName) > maxLength
-        formattedName = [featureName(1:maxLength-3) '...'];
-    else
-        formattedName = featureName;
+    if contains(formattedName, '/min')
+        % Replace /min with (min)
+        formattedName = strrep(formattedName, '/min', ' (min)');
     end
     
-    % Replace special characters to avoid display issues
-    formattedName = strrep(formattedName, '_', ' ');
-    formattedName = strrep(formattedName, '%', '%%');  % Prevent MATLAB interpreting as format specifier
+    if contains(formattedName, '/(K/min)')
+        % Replace /(K/min) with (K/min)
+        formattedName = strrep(formattedName, '/(K/min)', ' (K/min)');
+    end
+    
+    % Capitalize first letter of each word
+    words = strsplit(formattedName, ' ');
+    for i = 1:length(words)
+        if ~isempty(words{i})
+            words{i}(1) = upper(words{i}(1));
+        end
+    end
+    formattedName = strjoin(words, ' ');
 end

@@ -7,8 +7,8 @@ if isempty(count)
 end
 
 stop = 'normal';
-if ~isempty(validPerf)
-    if i > 1 && validPerf(i) - validPerf(i - 1) > 0
+if ~isempty(validPerf) && i > 1 && ~isnan(validPerf(i)) && ~isnan(validPerf(i-1))
+    if validPerf(i) - validPerf(i - 1) > 0
         count = count + 1;
     else
         count = 0;
@@ -22,12 +22,12 @@ if  i == net.trainParam.epoch
     return;
 end
 
-if  trainPerf(i) < net.trainParam.goal
+if  ~isnan(trainPerf(i)) && trainPerf(i) < net.trainParam.goal
     stop = 'goal';
     return;
 end
 
-if gradient(i) < net.trainParam.min_grad
+if ~isnan(gradient(i)) && gradient(i) < net.trainParam.min_grad
     stop = 'mingrad';
     return;
 end

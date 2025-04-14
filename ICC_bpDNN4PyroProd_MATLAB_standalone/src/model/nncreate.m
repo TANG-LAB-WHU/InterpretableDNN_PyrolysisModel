@@ -1,4 +1,4 @@
-function net = nncreate(hiddenLayer)
+function net = nncreate(numInputs, hiddenLayer, numOutputs, hiddenTF, outputTF)
 % NNCREATE forges a neural network with a certain number of weights and 
 %       biases. All parametes including learning ratio (lr), momoent 
 %       coefficient (mc) , trasnsfer fucntion(transferFcn), 
@@ -7,7 +7,12 @@ function net = nncreate(hiddenLayer)
 %       valdation performance failing to decrease (maxfail) ), divide 
 %       function (divideFcn) and etc, are set up.    
 %
+%   Inputs:
+%       numInputs - Number of input features
 %       hiddenLayer - A array to specify number of neurons in each hidden layer.
+%       numOutputs - Number of output targets
+%       hiddenTF - Transfer function for hidden layers (e.g., 'tansig', 'logsig', 'poslin')
+%       outputTF - Transfer function for output layer (e.g., 'purelin')
 %   output: 
 %           net - The created network with default parameters.
 % Main parameters are listed as follows.
@@ -20,20 +25,35 @@ function net = nncreate(hiddenLayer)
 %           showCommandLine - display information about training using 
 %   command-line.
 
-net.numInput = 0;
-net.numOutput = 0;
-
-if nargin < 1
+% Set defaults for missing arguments
+if nargin < 5
+    outputTF = 'purelin';
+end
+if nargin < 4
+    hiddenTF = 'logsig';
+end
+if nargin < 3
+    numOutputs = 1;
+end
+if nargin < 2
     hiddenLayer = 10;
 end
+if nargin < 1
+    numInputs = 1;
+end
 
-hiddenLayerSize = [hiddenLayer, net.numOutput];
+% Initialize network structure
+net.numInput = numInputs;
+net.numOutput = numOutputs;
+
+% Set up layer structure
+hiddenLayerSize = [hiddenLayer, numOutputs];
 Nl = size(hiddenLayer, 2) + 1;
 for i = 1 : Nl
     if i == Nl
-        net.layer{i}.transferFcn = 'purelin';
+        net.layer{i}.transferFcn = outputTF;
     else
-        net.layer{i}.transferFcn = 'logsig';
+        net.layer{i}.transferFcn = hiddenTF;
     end
      net.layer{i}.size = hiddenLayerSize(i);
 end

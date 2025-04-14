@@ -1,4 +1,21 @@
-%clc;clear all % clean workspace for new job
+function [varargout] = bpDNN4PyroProd()
+%% bpDNN4PyroProd - Neural Network for Pyrolysis Product Prediction
+%
+% This script performs complete neural network training for pyrolysis product prediction
+% It can be used in two ways:
+% 1. As a standalone script: Run directly to perform complete training and visualization
+% 2. As a function: Call with output arguments to get prepared data matrices
+%
+% Usage as function:
+%   [input_data, target_data, PS_global, TS_global] = bpDNN4PyroProd()
+%
+% Author: Original code author
+
+% Check if script is being called as a function
+isFunction = nargout > 0;
+
+global PS TS
+
 %% Prepare Input and Target data used for learning
 % Convert feedstocks in mono-pyrolysis and co-pyrolysis to digitalized data
 load('CopyrolysisFeedstock.mat') % load feedstock encoding data
@@ -27,7 +44,7 @@ Location =  PreparedInputData(:, 1);
 VolatileMatters =  PreparedInputData(:, 2); FixedCarbon =  PreparedInputData(:, 3); Ash =  PreparedInputData(:, 4);
 C =  PreparedInputData(:, 5); H =  PreparedInputData(:, 6); N =  PreparedInputData(:, 7); O =  PreparedInputData(:, 8); S =  PreparedInputData(:, 9);
 TargetTemperature =  PreparedInputData(:, 10); ReactionTime =  PreparedInputData(:, 11); HeatingRate =  PreparedInputData(:, 12);
-    ReactorType =  PreparedInputData(:, 13);
+ReactorType =  PreparedInputData(:, 13);
 Variables0 = [Location VolatileMatters FixedCarbon Ash C H N O S TargetTemperature ReactionTime...
     HeatingRate ReactorType];
 Variables = [Variables0 Feedstock4training];
@@ -43,10 +60,34 @@ Target = table(ProductsYield(:, 1), ProductsYield(:, 2), ProductsYield(:, 3));
 Target.Properties.VariableNames([1 2 3]) = {'Char/%' 'Liquid/%' 'Gas/%'};
 
 % Assign training dataset
-input = Variables'; % In Variables,  the name of each column was named by the order of {'Location' 'VolatileMatters/%'...
+input_data = Variables'; % In Variables, the name of each column was named by the order of {'Location' 'VolatileMatters/%'...
     % 'FixedCarbon/%' 'Ash/%' 'C/%' 'H/%' 'N/%' 'O/%' 'S/%'...
  % 'TargetTemperature/Celsius' 'ReactionTime/min' 'HeatingRate/(K/min)' 'ReactorType' 'FeedstockType'}
-target = Target.Variables';
+target_data = Target.Variables';
+
+% Create preprocessing structures if not already defined
+if ~exist('PS', 'var') || isempty(PS)
+    PS = struct();
+end
+
+if ~exist('TS', 'var') || isempty(TS)
+    TS = struct();
+end
+
+PS_global = PS;
+TS_global = TS;
+
+% If called as a function, return the prepared data and exit
+if isFunction
+    varargout{1} = input_data;
+    varargout{2} = target_data;
+    varargout{3} = PS_global;
+    varargout{4} = TS_global;
+    return;
+end
+
+% The rest of the code only runs when used as a script
+% When called as a function, execution stops at the return statement above
 
 %% Settings of bp-DNN architecture
 hiddenLayer = [37, 37, 37, 37, 37];
@@ -123,8 +164,7 @@ net.trainParam.showWindow = true;
 %% 
 
 % Initialize the training for the desirable neural network
-[net, tr] = nntrain(net, input, target);
-global PS TS
+[net, tr] = nntrain(net, input_data, target_data);
 
 trainInd = tr.trainInd;
 valInd = tr.valInd;
@@ -140,19 +180,19 @@ else
     fprintf('Training using TVT strategy\n');
 end
 
-trainInp = input(:, trainInd);
-trainTarg = target(:, trainInd);
+trainInp = input_data(:, trainInd);
+trainTarg = target_data(:, trainInd);
 trainOut = nnpredict(net, trainInp);
 
 if validation
-    valInp = input(:, valInd);
-    valTarg = target(:, valInd);
+    valInp = input_data(:, valInd);
+    valTarg = target_data(:, valInd);
     valOut = nnpredict(net, valInp);
 end
 
 if testing
-    testInp = input(:, testInd);
-    testTarg = target(:, testInd);
+    testInp = input_data(:, testInd);
+    testTarg = target_data(:, testInd);
     testOut = nnpredict(net, testInp);
 end
 
@@ -170,7 +210,16 @@ else
 end
 
 % Plot the training performance in the output of triple products between the observed and predicted
-trainPerformance = nneval(net, trainInp, trainTarg);
+try
+    [trainPerformance, ~] = nneval(net, trainInp, trainTarg);
+catch ME
+    if ~isempty(ME.identifier)
+        warning(ME.identifier, '%s', ME.message);
+    else
+        warning('NeuralNet:EvalError', '%s', ME.message);
+    end
+    trainPerformance = NaN;
+end
 figure('Name',['Whole training perforance in MSE = ' num2str(trainPerformance)])
 % index_train = 1 : length(trainInd);
 subplot(3, 1, 1)
@@ -185,7 +234,16 @@ legend({'Observed gas yield (%)', 'Predicted gas yield (%)'}, 'Location','northw
 
 % Plot the validation performance in the output of triple products between the observed and predicted
 if validation
-    valPerformance = nneval(net, valInp, valTarg);
+    try
+        [valPerformance, ~] = nneval(net, valInp, valTarg);
+    catch ME
+        if ~isempty(ME.identifier)
+            warning(ME.identifier, '%s', ME.message);
+        else
+            warning('NeuralNet:EvalError', '%s', ME.message);
+        end
+        valPerformance = NaN;
+    end
     figure('Name',['Whole validation perforance in MSE = ' num2str(valPerformance)])
     % index_val = 1 : length(valInd);
     subplot(3, 1, 1)
@@ -204,7 +262,16 @@ end
 
 % Plot the testing performance in the output of triple products between the observed and predicted
 if testing
-    testPerformance = nneval(net, testInp, testTarg);
+    try
+        [testPerformance, ~] = nneval(net, testInp, testTarg);
+    catch ME
+        if ~isempty(ME.identifier)
+            warning(ME.identifier, '%s', ME.message);
+        else
+            warning('NeuralNet:EvalError', '%s', ME.message);
+        end
+        testPerformance = NaN;
+    end
     figure('Name', ['Whole testing perforance in MSE = ' num2str(testPerformance)])
     % index_test = 1 : length(testInd);
     subplot(3, 1, 1)
@@ -319,3 +386,4 @@ zip('Result_needed.zip', {'Results_trained.mat','Figures', 'bpDNN4PyroProd.m'});
 close all; clc; 
 %clear all
 % exit % automatically quit MATLAB after running
+end

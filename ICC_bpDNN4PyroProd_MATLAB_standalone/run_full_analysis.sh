@@ -85,7 +85,7 @@ done
 
 # Check script files
 echo "Checking script files..."
-SCRIPT_FILES=("run_analysis.m" "calc_shap_values.m" "export_shap_to_excel.m")
+SCRIPT_FILES=("run_analysis.m" "calc_shap_values.m" "export_shap_to_excel.m" "optimize_hyperparameters.m" "train_best_model.m" "run_optimized_model.m")
 SCRIPT_MISSING=0
 
 for file in "${SCRIPT_FILES[@]}"; do
@@ -114,19 +114,9 @@ cp -f "data/processed/CopyrolysisFeedstock.mat" "src/model/"
 cp -f "data/raw/RawInputData.xlsx" "src/model/"
 echo "Data files copied to model directory"
 
-# Check for SHAP_Analysis metadata and copy if available
-echo "Checking for SHAP feature metadata..."
-if [ -d "SHAP_Analysis" ] && [ -f "SHAP_Analysis/Data/SHAP_metadata.xlsx" ]; then
-    echo "Found SHAP metadata file. Copying for feature name reference..."
-    mkdir -p "results/analysis/full/data"
-    cp -f "SHAP_Analysis/Data/SHAP_metadata.xlsx" "results/analysis/full/data/"
-    echo "SHAP metadata copied to results directory"
-elif [ -d "SHAP_Analysis_Full" ] && [ -f "SHAP_Analysis_Full/Data/SHAP_metadata.xlsx" ]; then
-    echo "Found SHAP_Analysis_Full metadata file. Copying for feature name reference..."
-    mkdir -p "results/analysis/full/data"
-    cp -f "SHAP_Analysis_Full/Data/SHAP_metadata.xlsx" "results/analysis/full/data/"
-    echo "SHAP full metadata copied to results directory"
-fi
+# Create complete directory structure for SHAP analysis
+mkdir -p "results/analysis/full/data"
+mkdir -p "results/analysis/full/figures"
 
 # Set up MATLAB temporary directory
 export MATLAB_TEMP_DIR="/scratch/${USER}/matlab_temp_${SLURM_JOB_ID}"
@@ -137,36 +127,193 @@ echo "MATLAB temp directory: $MATLAB_TEMP_DIR"
 echo "Loading MATLAB module..."
 module load matlab/24.1
 
-# Run MATLAB full analysis script
-echo "Running full SHAP analysis script..."
-echo "MATLAB will use following directories:"
-echo "- Working directory: $WORK_DIR"
-echo "- Scripts directory: $WORK_DIR/src/scripts"
-echo "- Model directory: $WORK_DIR/src/model"
-echo "- Visualization directory: $WORK_DIR/src/visualization"
-echo "- Results directory: $WORK_DIR/results/analysis/full"
-echo "- Training directory: $WORK_DIR/results/training"
+# ===========================================================================
+# Step 1: Run Hyperparameter Optimization
+# ===========================================================================
+echo "======================================"
+echo "STEP 1: RUNNING HYPERPARAMETER OPTIMIZATION"
+echo "======================================"
 
-# Use direct MATLAB command with explicit variable setting
-matlab -nodisplay -nosplash -nodesktop -r "try; disp('===== STARTING FULL ANALYSIS ====='); cd('$WORK_DIR'); rootDir='$WORK_DIR'; analysisMode='full'; disp(['Analysis mode explicitly set to: ' analysisMode]); addpath(fullfile(rootDir, 'src', 'scripts')); addpath(fullfile(rootDir, 'src', 'model')); addpath(fullfile(rootDir, 'src', 'visualization')); pc = parcluster('local'); pc.NumWorkers = str2num(getenv('SLURM_NTASKS_PER_NODE')); pc.JobStorageLocation = getenv('MATLAB_TEMP_DIR'); parpool(pc, pc.NumWorkers); shapDir = fullfile(rootDir, 'results', 'analysis', 'full'); trainingDir = fullfile(rootDir, 'results', 'training'); disp(['Root directory: ' rootDir]); disp(['SHAP directory: ' shapDir]); disp(['Training directory: ' trainingDir]); disp('Running run_analysis.m with full mode...'); run(fullfile(rootDir, 'src', 'scripts', 'run_analysis.m')); delete(gcp('nocreate')); exit; catch ME; disp('===== ERROR IN FULL ANALYSIS ====='); disp(getReport(ME)); exit(1); end;"
-
-# Check MATLAB execution status
-MATLAB_STATUS=$?
-if [ $MATLAB_STATUS -ne 0 ]; then
-    echo "ERROR: MATLAB execution failed with exit code: $MATLAB_STATUS"
-    echo "Trying export_shap_to_excel.m directly to ensure Excel files are created..."
+# Check if optimization results already exist
+if [ -f "$OPTIMIZATION_DIR/best_model.mat" ]; then
+    echo "Existing optimization results found at $OPTIMIZATION_DIR/best_model.mat"
+    echo "Checking if this is a complete result..."
     
-    # Try running the Excel export directly if the main script failed
-    matlab -nodisplay -nosplash -nodesktop -r "try; cd('$WORK_DIR'); addpath('$WORK_DIR/src/scripts'); addpath('$WORK_DIR/src/model'); addpath('$WORK_DIR/src/visualization'); shapDir = fullfile('$WORK_DIR', 'results', 'analysis', 'full'); export_shap_to_excel; exit; catch ME; disp(getReport(ME)); exit(1); end;"
+    # Run a simple MATLAB check to validate the file
+    matlab -nodisplay -nosplash -nodesktop -r "try; cd('$WORK_DIR'); disp('Checking optimization results...'); addpath(fullfile('$WORK_DIR', 'src', 'scripts')); load('$OPTIMIZATION_DIR/best_model.mat', 'best_config'); if exist('best_config', 'var'); disp('Valid optimization results found.'); exit(0); else disp('Incomplete optimization results, will run optimization again.'); exit(1); end; catch ME; disp(getReport(ME)); exit(1); end;" &> /tmp/optim_check_${SLURM_JOB_ID}.log
     
-    EXCEL_STATUS=$?
-    if [ $EXCEL_STATUS -ne 0 ]; then
-        echo "ERROR: Excel export also failed with exit code: $EXCEL_STATUS"
+    OPTIM_CHECK_STATUS=$?
+    if [ $OPTIM_CHECK_STATUS -eq 0 ]; then
+        echo "Valid optimization results found. Proceeding to model training step."
+        SKIP_OPTIMIZATION=1
     else
-        echo "Excel export completed successfully."
+        echo "Optimization results incomplete or invalid. Will run optimization again."
+        SKIP_OPTIMIZATION=0
     fi
 else
-    echo "SHAP analysis completed successfully with exit code: $MATLAB_STATUS"
+    echo "No existing optimization results found. Will run optimization."
+    SKIP_OPTIMIZATION=0
+fi
+
+if [ $SKIP_OPTIMIZATION -eq 0 ]; then
+    echo "Running hyperparameter optimization..."
+    echo "This may take several hours depending on search space."
+    
+    # Run optimization
+    matlab -nodisplay -nosplash -nodesktop -r "try; disp('===== STARTING HYPERPARAMETER OPTIMIZATION ====='); cd('$WORK_DIR'); addpath(fullfile('$WORK_DIR', 'src', 'scripts')); addpath(fullfile('$WORK_DIR', 'src', 'model')); addpath(fullfile('$WORK_DIR', 'src', 'visualization')); pc = parcluster('local'); pc.NumWorkers = str2num(getenv('SLURM_NTASKS_PER_NODE')); pc.JobStorageLocation = getenv('MATLAB_TEMP_DIR'); parpool(pc, pc.NumWorkers); disp('Running optimize_hyperparameters.m...'); useFullData = true; useAllSamples = true; useAllFeatures = true; fullOptimization = true; optimDir = '$OPTIMIZATION_DIR'; disp('Running FULL optimization with ALL parameter combinations...'); try; run(fullfile('$WORK_DIR', 'src', 'scripts', 'optimize_hyperparameters.m')); catch ME; disp('ERROR IN HYPERPARAMETER OPTIMIZATION:'); disp(getReport(ME)); exit(1); end; delete(gcp('nocreate')); exit(0); catch ME; disp('===== ERROR IN HYPERPARAMETER OPTIMIZATION ====='); disp(getReport(ME)); exit(1); end;"
+    
+    # Check optimization execution status
+    OPTIM_STATUS=$?
+    if [ $OPTIM_STATUS -ne 0 ]; then
+        echo "ERROR: Hyperparameter optimization failed with exit code: $OPTIM_STATUS"
+        echo "Checking for partial results and continuing with best available..."
+        
+        # Check if any optimization results were generated
+        if [ -f "$OPTIMIZATION_DIR/best_model.mat" ]; then
+            echo "Found partial optimization results at $OPTIMIZATION_DIR/best_model.mat"
+            echo "Will attempt to continue with these results."
+        else
+            echo "ERROR: No optimization results found. Cannot continue."
+            exit 1
+        fi
+    else
+        echo "Hyperparameter optimization completed successfully with exit code: $OPTIM_STATUS"
+    fi
+fi
+
+# Summarize optimization results
+echo "Summarizing optimization results..."
+
+matlab -nodisplay -nosplash -nodesktop -r "try; cd('$WORK_DIR'); addpath(fullfile('$WORK_DIR', 'src', 'scripts')); disp('Summarizing optimization results...'); if exist('$OPTIMIZATION_DIR/best_model.mat', 'file'); load('$OPTIMIZATION_DIR/best_model.mat'); disp('Best hyperparameters:'); disp(best_config); fid = fopen('$OPTIMIZATION_DIR/best_configuration.txt', 'w'); fprintf(fid, 'Best Hyperparameter Configuration:\n\n'); fields = fieldnames(best_config); for i = 1:length(fields), if isnumeric(best_config.(fields{i})), fprintf(fid, '%s: %g\n', fields{i}, best_config.(fields{i})); elseif ischar(best_config.(fields{i})), fprintf(fid, '%s: %s\n', fields{i}, best_config.(fields{i})); elseif iscell(best_config.(fields{i})), fprintf(fid, '%s: %s\n', fields{i}, mat2str(best_config.(fields{i}))); end; end; fclose(fid); disp('Saved summary to best_configuration.txt'); else disp('No optimization results file found!'); end; exit(0); catch ME; disp(getReport(ME)); exit(1); end;" &> /tmp/optim_summary_${SLURM_JOB_ID}.log
+
+# ===========================================================================
+# Step 2: Train Best Model Using the Optimized Script
+# ===========================================================================
+echo "======================================"
+echo "STEP 2: TRAINING BEST MODEL"
+echo "======================================"
+
+# Check if optimization results are available
+if [ ! -f "$OPTIMIZATION_DIR/best_model.mat" ]; then
+    echo "ERROR: Optimization results not found at $OPTIMIZATION_DIR/best_model.mat"
+    echo "Cannot proceed with best model training. Exiting."
+    exit 1
+fi
+
+# Run the optimized model training script (skip SHAP analysis)
+echo "Running the optimized model training script..."
+echo "This will handle both TVT and TT strategies."
+
+# Run the optimized script for training only
+matlab -nodisplay -nosplash -nodesktop -r "cd('$WORK_DIR'); addpath(fullfile('$WORK_DIR', 'src', 'scripts')); addpath(fullfile('$WORK_DIR', 'src', 'model')); addpath(fullfile('$WORK_DIR', 'src', 'visualization')); pc = parcluster('local'); pc.NumWorkers = str2num(getenv('SLURM_NTASKS_PER_NODE')); pc.JobStorageLocation = getenv('MATLAB_TEMP_DIR'); parpool(pc, pc.NumWorkers); disp('Running run_optimized_model.m for TRAINING only...'); optimDir = '$OPTIMIZATION_DIR'; optimizationDir = '$OPTIMIZATION_DIR'; bestModelDir = '$BEST_MODEL_DIR'; trainingDir = '$TRAINING_DIR'; analysisDir = '$ANALYSIS_DIR'; useFullData = true; useAllSamples = true; useAllFeatures = true; skipSHAP = true; try; run(fullfile('$WORK_DIR', 'src', 'scripts', 'run_optimized_model.m')); catch ME; disp('ERROR IN OPTIMIZATION MODEL:'); disp(getReport(ME)); exit(1); end; delete(gcp('nocreate')); exit(0);"
+
+# Check execution status of the training step
+TRAINING_STATUS=$?
+if [ $TRAINING_STATUS -ne 0 ]; then
+    echo "ERROR: Model training failed with exit code: $TRAINING_STATUS"
+    echo "Training script execution log saved to run_optimized_model_log.txt"
+    
+    # Create a summary of the error
+    SUMMARY_FILE="output/full_analysis/full_summary_${SLURM_JOB_ID}.txt"
+    echo "=== Full Analysis Summary ===" > $SUMMARY_FILE
+    echo "Job ID: $SLURM_JOB_ID" >> $SUMMARY_FILE
+    echo "Completion time: $(date)" >> $SUMMARY_FILE
+    echo -e "\nERROR: Model training failed with exit code: $TRAINING_STATUS" >> $SUMMARY_FILE
+    echo "The script was unable to complete model training." >> $SUMMARY_FILE
+    echo "Please check run_optimized_model_log.txt for detailed error information." >> $SUMMARY_FILE
+    
+    # Clean up temporary files
+    echo "Cleaning up temporary files..."
+    rm -rf ${MATLAB_TEMP_DIR}
+    rm -f /tmp/optim_check_${SLURM_JOB_ID}.log
+    rm -f /tmp/optim_summary_${SLURM_JOB_ID}.log
+    
+    echo "Workflow terminated due to training script failure."
+    echo "End time: $(date)"
+    exit 1
+else
+    echo "Model training completed successfully with exit code: $TRAINING_STATUS"
+    echo "Trained model is available at: $BEST_MODEL_DIR/best_model.mat and $TRAINING_DIR/trained_model.mat"
+fi
+
+# Check that the required model files exist before proceeding to SHAP analysis
+if [ ! -f "$BEST_MODEL_DIR/best_model.mat" ] || [ ! -f "$TRAINING_DIR/trained_model.mat" ]; then
+    echo "ERROR: Required model files not found after training step"
+    echo "Either $BEST_MODEL_DIR/best_model.mat or $TRAINING_DIR/trained_model.mat is missing"
+    echo "Cannot proceed with SHAP analysis. Exiting."
+    exit 1
+fi
+
+# ===========================================================================
+# Step 3: Run SHAP Analysis Using the Trained Model
+# ===========================================================================
+echo "======================================"
+echo "STEP 3: PERFORMING SHAP ANALYSIS"
+echo "======================================"
+
+# Run the SHAP analysis script (skip training)
+echo "Running the SHAP analysis script using the trained model..."
+
+# Run the optimized script for SHAP analysis only
+matlab -nodisplay -nosplash -nodesktop -r "cd('$WORK_DIR'); addpath(fullfile('$WORK_DIR', 'src', 'scripts')); addpath(fullfile('$WORK_DIR', 'src', 'model')); addpath(fullfile('$WORK_DIR', 'src', 'visualization')); pc = parcluster('local'); pc.NumWorkers = str2num(getenv('SLURM_NTASKS_PER_NODE')); pc.JobStorageLocation = getenv('MATLAB_TEMP_DIR'); parpool(pc, pc.NumWorkers); disp('Running run_optimized_model.m for SHAP ANALYSIS only...'); optimDir = '$OPTIMIZATION_DIR'; optimizationDir = '$OPTIMIZATION_DIR'; bestModelDir = '$BEST_MODEL_DIR'; trainingDir = '$TRAINING_DIR'; analysisDir = '$ANALYSIS_DIR'; useFullData = true; useAllSamples = true; useAllFeatures = true; skipTraining = true; try; run(fullfile('$WORK_DIR', 'src', 'scripts', 'run_optimized_model.m')); catch ME; disp('ERROR IN SHAP ANALYSIS:'); disp(getReport(ME)); exit(1); end; delete(gcp('nocreate')); exit(0);"
+
+# Check execution status of the SHAP analysis step
+SHAP_STATUS=$?
+if [ $SHAP_STATUS -ne 0 ]; then
+    echo "ERROR: SHAP analysis failed with exit code: $SHAP_STATUS"
+    echo "SHAP analysis script execution log saved to run_optimized_model_log.txt"
+    
+    # Create a summary of the error
+    SUMMARY_FILE="output/full_analysis/full_summary_${SLURM_JOB_ID}.txt"
+    echo "=== Full Analysis Summary ===" > $SUMMARY_FILE
+    echo "Job ID: $SLURM_JOB_ID" >> $SUMMARY_FILE
+    echo "Completion time: $(date)" >> $SUMMARY_FILE
+    echo -e "\nWARNING: Model training completed successfully" >> $SUMMARY_FILE
+    echo -e "ERROR: But SHAP analysis failed with exit code: $SHAP_STATUS" >> $SUMMARY_FILE
+    echo "The script completed model training but was unable to complete SHAP analysis." >> $SUMMARY_FILE
+    echo "Please check run_optimized_model_log.txt for detailed error information." >> $SUMMARY_FILE
+    
+    # Clean up temporary files
+    echo "Cleaning up temporary files..."
+    rm -rf ${MATLAB_TEMP_DIR}
+    rm -f /tmp/optim_check_${SLURM_JOB_ID}.log
+    rm -f /tmp/optim_summary_${SLURM_JOB_ID}.log
+    
+    echo "Workflow terminated due to SHAP analysis script failure."
+    echo "End time: $(date)"
+    exit 1
+else
+    echo "SHAP analysis completed successfully with exit code: $SHAP_STATUS"
+    echo "The script has completed both model training and SHAP analysis."
+    echo "Results are available in the respective directories:"
+    echo "- Best model: $BEST_MODEL_DIR/best_model.mat"
+    echo "- Training model: $TRAINING_DIR/trained_model.mat" 
+    echo "- SHAP results: $ANALYSIS_DIR/data/shap_results.mat"
+    echo "- SHAP Excel file: $ANALYSIS_DIR/shap_analysis_results.xlsx (if generated)"
+    echo "- SHAP figures: $ANALYSIS_DIR/figures/"
+fi
+
+# Check for required output files and create them if missing
+echo "Checking for required output files..."
+if [ ! -f "$ANALYSIS_DIR/data/shap_results.mat" ]; then
+    echo "WARNING: SHAP results MAT file not found!"
+else
+    echo "SHAP results MAT file found: $ANALYSIS_DIR/data/shap_results.mat"
+    # Look for Excel outputs
+    EXCEL_FILES=$(ls -la $ANALYSIS_DIR/*.xlsx 2>/dev/null | wc -l)
+    if [ $EXCEL_FILES -eq 0 ]; then
+        echo "WARNING: No Excel output files found in $ANALYSIS_DIR"
+    else
+        echo "Found $EXCEL_FILES Excel output files in $ANALYSIS_DIR"
+    fi
+    
+    # Look for figure outputs
+    FIG_FILES=$(ls -la $ANALYSIS_DIR/figures/*.png $ANALYSIS_DIR/figures/*.fig 2>/dev/null | wc -l)
+    if [ $FIG_FILES -eq 0 ]; then
+        echo "WARNING: No figure output files found in $ANALYSIS_DIR/figures"
+    else
+        echo "Found $FIG_FILES figure output files in $ANALYSIS_DIR/figures"
+    fi
 fi
 
 # Clean up any incorrect SHAP outputs in src/shap directory
@@ -191,8 +338,8 @@ SUMMARY_FILE="output/full_analysis/full_summary_${SLURM_JOB_ID}.txt"
 echo "=== Full Analysis Summary ===" > $SUMMARY_FILE
 echo "Job ID: $SLURM_JOB_ID" >> $SUMMARY_FILE
 echo "Completion time: $(date)" >> $SUMMARY_FILE
-echo -e "\nMATLAB log file:" >> $SUMMARY_FILE
-ls -lh run_analysis_log.txt >> $SUMMARY_FILE 2>/dev/null
+echo -e "\nOptimized script log file:" >> $SUMMARY_FILE
+ls -lh run_optimized_model_log.txt >> $SUMMARY_FILE 2>/dev/null
 echo -e "\nResults directory structure:" >> $SUMMARY_FILE
 ls -la results/ >> $SUMMARY_FILE 2>/dev/null
 echo -e "\nOptimization results:" >> $SUMMARY_FILE
@@ -205,6 +352,8 @@ echo -e "\nSHAP Full Analysis directory:" >> $SUMMARY_FILE
 ls -la results/analysis/full >> $SUMMARY_FILE 2>/dev/null
 echo -e "\nSHAP Excel outputs:" >> $SUMMARY_FILE
 ls -la results/analysis/full/*.xlsx >> $SUMMARY_FILE 2>/dev/null
+echo -e "\nSHAP Figure outputs:" >> $SUMMARY_FILE
+ls -la results/analysis/full/figures/ >> $SUMMARY_FILE 2>/dev/null
 
 # Check if there are any incorrect outputs in src/shap
 echo -e "\nVerifying correct output locations:" >> $SUMMARY_FILE
@@ -227,8 +376,12 @@ fi
 # Clean up temporary files
 echo "Cleaning up temporary files..."
 rm -rf ${MATLAB_TEMP_DIR}
+rm -f /tmp/optim_check_${SLURM_JOB_ID}.log
+rm -f /tmp/optim_summary_${SLURM_JOB_ID}.log
+rm -f /tmp/model_check_${SLURM_JOB_ID}.log
+rm -f /tmp/default_model_${SLURM_JOB_ID}.log
 
-echo "Full analysis completed. Check the results/ directory for output."
+echo "Full analysis workflow completed. Check the results/ directory for output."
 echo "End time: $(date)"
 
 # End of script

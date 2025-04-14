@@ -1,0 +1,349 @@
+Starting run_optimized_model.m
+======================================
+
+Root directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone
+
+Loading best hyperparameters from optimization...
+Best configuration loaded successfully
+lr: 0.2
+mc: 0.7
+hiddenLayer: 20
+transferFcn: poslin
+trainMSE: 4.6213e-05
+valMSE: 4.82852e-05
+testMSE: 5.22518e-05
+strategy: TT
+trainRatio: 0.7
+valRatio: 0
+hiddenTF: poslin
+outputTF: purelin
+lr_inc: 1.05
+lr_dec: 0.7
+
+Determining training strategy and parameters...
+Using training strategy: TT
+
+Loading and preparing data for model training...
+Loading data from /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/model/RawInputData.xlsx...
+Sample count determined: 859 samples
+Detected 3 target variable columns
+FeedType_size determined: 98
+Total feature count calculated: 209
+Getting prepared data from bpDNN4PyroProd...
+Data preparation complete - got 209 input features and 3 targets
+Starting model training step...
+
+Configuring neural network with best parameters...
+Converting scalar hiddenLayer to array: 20
+Creating neural network with structure: 20
+
+===== ERROR IN MAIN SCRIPT =====
+Error message: Error training neural network: Too many output arguments.
+Error in: run_optimized_model (Line 409)
+
+Detailed Error Report:
+Error using run_optimized_model (line 409)
+Error training neural network: Too many output arguments.
+
+Error in run (line 112)
+evalin('caller', strcat(scriptStem, ';'));
+
+run_optimized_model.m completed with errors
+{Error using run_optimized_model (line 409)
+Error training neural network: Too many output arguments.
+
+Error in run (line 112)
+evalin('caller', strcat(scriptStem, ';'));
+} 
+Starting run_optimized_model.m
+======================================
+
+Root directory: D:\Users\TANG\Documents\GitHub\AGI_PyrolysisModel\ICC_bpDNN4PyroProd_MATLAB_standalone
+
+Loading best hyperparameters from optimization...
+Best configuration loaded successfully
+lr: 0.2
+mc: 0.7
+hiddenLayer: 20
+transferFcn: poslin
+trainMSE: 4.6213e-05
+valMSE: 4.82852e-05
+testMSE: 5.22518e-05
+strategy: TT
+trainRatio: 0.7
+valRatio: 0
+hiddenTF: poslin
+outputTF: purelin
+lr_inc: 1.05
+lr_dec: 0.7
+
+Determining training strategy and parameters...
+Using training strategy: TT
+
+Loading and preparing data for model training...
+Loading data from D:\Users\TANG\Documents\GitHub\AGI_PyrolysisModel\ICC_bpDNN4PyroProd_MATLAB_standalone\src\model\RawInputData.xlsx...
+Sample count determined: 859 samples
+Detected 3 target variable columns
+FeedType_size determined: 98
+Total feature count calculated: 209
+Getting prepared data from bpDNN4PyroProd...
+Data preparation complete - got 209 input features and 3 targets
+Starting model training step...
+
+Configuring neural network with best parameters...
+Converting scalar hiddenLayer to array: 20
+Creating neural network with structure: 20
+
+===== ERROR IN MAIN SCRIPT =====
+Error message: Error training neural network: Too many output arguments.
+Error in: run_optimized_model (Line 409)
+
+Detailed Error Report:
+Error using run_optimized_model (line 409)
+Error training neural network: Too many output arguments.
+
+Error in run (line 112)
+evalin('caller', strcat(scriptStem, ';'));
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+run_optimized_model.m completed with errors
+Error using run_optimized_model (line 409)
+Error training neural network: Too many output arguments.
+
+Error in run (line 112)
+evalin('caller', strcat(scriptStem, ';'));
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Starting run_optimized_model.m
+======================================
+
+Root directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone
+
+Loading best hyperparameters from optimization...
+Best configuration loaded successfully
+lr: 0.2
+mc: 0.7
+hiddenLayer: 20
+transferFcn: poslin
+trainMSE: 4.6213e-05
+valMSE: 4.82852e-05
+testMSE: 5.22518e-05
+strategy: TT
+trainRatio: 0.7
+valRatio: 0
+hiddenTF: poslin
+outputTF: purelin
+lr_inc: 1.05
+lr_dec: 0.7
+
+Determining training strategy and parameters...
+Using training strategy: TT
+
+Loading and preparing data for model training...
+Loading data from /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/model/RawInputData.xlsx...
+Sample count determined: 859 samples
+Detected 3 target variable columns
+FeedType_size determined: 98
+Total feature count calculated: 209
+Getting prepared data from bpDNN4PyroProd...
+Data preparation complete - got 209 input features and 3 targets
+Starting model training step...
+
+Configuring neural network with best parameters...
+Converting scalar hiddenLayer to array: 20
+Creating neural network with structure: 20
+
+===== ERROR IN MAIN SCRIPT =====
+Error message: Error training neural network: Too many output arguments.
+Error in: run_optimized_model (Line 409)
+
+Detailed Error Report:
+Error using run_optimized_model (line 409)
+Error training neural network: Too many output arguments.
+
+Error in run (line 112)
+evalin('caller', strcat(scriptStem, ';'));
+
+run_optimized_model.m completed with errors
+ERROR IN OPTIMIZATION MODEL:
+Error using run_optimized_model (line 409)
+Error training neural network: Too many output arguments.
+
+Error in run (line 112)
+evalin('caller', strcat(scriptStem, ';'));
+Starting run_optimized_model.m
+======================================
+
+Root directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone
+
+Loading best hyperparameters from optimization...
+Best configuration loaded successfully
+lr: 0.2
+mc: 0.7
+hiddenLayer: 20
+transferFcn: poslin
+trainMSE: 4.6213e-05
+valMSE: 4.82852e-05
+testMSE: 5.22518e-05
+strategy: TT
+trainRatio: 0.7
+valRatio: 0
+hiddenTF: poslin
+outputTF: purelin
+lr_inc: 1.05
+lr_dec: 0.7
+
+Determining training strategy and parameters...
+Using training strategy: TT
+
+Loading and preparing data for model training...
+Loading data from /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/model/RawInputData.xlsx...
+Sample count determined: 859 samples
+Detected 3 target variable columns
+FeedType_size determined: 98
+Total feature count calculated: 209
+Getting prepared data from bpDNN4PyroProd...
+Data preparation complete - got 209 input features and 3 targets
+Starting model training step...
+
+Configuring neural network with best parameters...
+Converting scalar hiddenLayer to array: 20
+Creating neural network with structure: 20
+
+===== ERROR IN MAIN SCRIPT =====
+Error message: Error training neural network: Too many output arguments.
+Error in: run_optimized_model (Line 409)
+
+Detailed Error Report:
+Error using run_optimized_model (line 409)
+Error training neural network: Too many output arguments.
+
+Error in run (line 112)
+evalin('caller', strcat(scriptStem, ';'));
+
+run_optimized_model.m completed with errors
+ERROR IN OPTIMIZATION MODEL:
+Error using run_optimized_model (line 409)
+Error training neural network: Too many output arguments.
+
+Error in run (line 112)
+evalin('caller', strcat(scriptStem, ';'));
+Starting run_optimized_model.m
+======================================
+
+Root directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone
+
+Loading best hyperparameters from optimization...
+Best configuration loaded successfully
+lr: 0.2
+mc: 0.7
+hiddenLayer: 20
+transferFcn: poslin
+trainMSE: 4.6213e-05
+valMSE: 4.82852e-05
+testMSE: 5.22518e-05
+strategy: TT
+trainRatio: 0.7
+valRatio: 0
+hiddenTF: poslin
+outputTF: purelin
+lr_inc: 1.05
+lr_dec: 0.7
+
+Determining training strategy and parameters...
+Using training strategy: TT
+
+Loading and preparing data for model training...
+Loading data from /projects/illinois/eng/cee/siqi/MATLAB_Jobs/ICC_bpDNN4PyroProd_MATLAB_standalone/src/model/RawInputData.xlsx...
+Sample count determined: 859 samples
+Detected 3 target variable columns
+FeedType_size determined: 98
+Total feature count calculated: 209
+Getting prepared data from bpDNN4PyroProd...
+Data preparation complete - got 209 input features and 3 targets
+Starting model training step...
+
+Configuring neural network with best parameters...
+Converting scalar hiddenLayer to array: 20
+Creating neural network with structure: 20
+
+===== ERROR IN MAIN SCRIPT =====
+Error message: Error training neural network: Too many output arguments.
+Error in: run_optimized_model (Line 409)
+
+Detailed Error Report:
+Error using run_optimized_model (line 409)
+Error training neural network: Too many output arguments.
+
+Error in run (line 112)
+evalin('caller', strcat(scriptStem, ';'));
+
+run_optimized_model.m completed with errors
+ERROR IN OPTIMIZATION MODEL:
+Error using run_optimized_model (line 409)
+Error training neural network: Too many output arguments.
+
+Error in run (line 112)
+evalin('caller', strcat(scriptStem, ';'));
+Starting run_optimized_model.m
+======================================
+
+Root directory: D:\Users\TANG\Documents\GitHub\AGI_PyrolysisModel\ICC_bpDNN4PyroProd_MATLAB_standalone
+
+Loading best hyperparameters from optimization...
+Best configuration loaded successfully
+lr: 0.2
+mc: 0.7
+hiddenLayer: 20
+transferFcn: poslin
+trainMSE: 4.6213e-05
+valMSE: 4.8
+Loading best hyperparameters from optimization...
+Best configuration loaded successfully
+lr: 0.2
+mc: 0.7
+hiddenLayer: 20
+transferFcn: poslin
+trainMSE: 4.6213e-05
+valMSE: 4.82852e-05
+testMSE: 5.22518e-05
+strategy: TT
+trainRatio: 0.7
+valRatio: 0
+hiddenTF: poslin
+outputTF: purelin
+lr_inc: 1.05
+lr_dec: 0.7
+
+Determining training strategy and parameters...
+Using training strategy: TT
+
+Loading andSample count determined: 859 samples
+Detected 3 target variable columns
+FeedType_size determined: 98
+Total feature count calculated: 209
+Getting prepared data from bpDNN4PyroSample cData preparation complete - got 209 input features and 3 targets
+Starting model training step...
+
+Configuring neural network with best parameters...
+Converting scalar hiddenLayer to array: 20
+Creating neural network with structure: 20
+
+===== ERROR IN MAIN SCRIPT =====
+Error message: Error training neural network: Too many output arguments.
+Error in: run_optimized_model (Line 409)
+
+Detailed Error Report:
+Error using run_optimized_model (line 409)
+Error training neural network: Too many output arguments.
+
+Error in run (line 112)
+evalin('caller', strcat(scriptStem, ';'));
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+run_optimized_model.m completed with errors
+Error using run_optimized_model (line 409)
+Error training neural network: Too many output arguments.
+
+Error in run (line 112)
+evalin('caller', strcat(scriptStem, ';'));
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

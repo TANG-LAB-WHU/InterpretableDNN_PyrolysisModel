@@ -43,6 +43,18 @@ else
     fprintf('Using existing data directory: %s\n', dataDir);
 end
 
+% Check if metadata file exists - this file is not required as we can generate names programmatically
+metadataFile = fullfile(dataDir, 'SHAP_metadata.xlsx');
+if exist(metadataFile, 'file')
+    fprintf('Found SHAP metadata file: %s\n', metadataFile);
+    % If we wanted to load metadata from file, we would do it here
+    fprintf('Metadata file will be used if available, otherwise feature names will be generated.\n');
+else
+    fprintf('SHAP metadata file not found: %s\n', metadataFile);
+    fprintf('Feature names will be generated programmatically based on bpDNN4PyroProd.m structure.\n');
+    fprintf('This is normal behavior and will not affect the analysis results.\n');
+end
+
 %% Prepare data for SHAP analysis
 % Check for different variable naming conventions (X/Y vs input/target)
 if exist('X', 'var') && ~exist('input', 'var')
@@ -64,53 +76,47 @@ end
 % Use existing data in workspace or load from file
 if ~exist('input', 'var') || ~exist('target', 'var') || ~exist('net', 'var')
     % If not already in workspace, load from training directory
-    if exist('trainingDir', 'var') && exist(fullfile(trainingDir, 'Results_trained.mat'), 'file')
-        fprintf('Loading data from training directory: %s\n', fullfile(trainingDir, 'Results_trained.mat'));
-        % Load all variables to handle both X/Y and input/target naming
-        data = load(fullfile(trainingDir, 'Results_trained.mat'));
+    if exist('trainingDir', 'var')
+        trainedModelFile = fullfile(trainingDir, 'Results_trained.mat');
         
-        % Check and map variables from the loaded data
-        if isfield(data, 'X') && ~isfield(data, 'input')
-            fprintf('Mapping X to input from loaded data\n');
-            input = data.X;
-        elseif isfield(data, 'input')
-            input = data.input;
-        end
-        
-        if isfield(data, 'Y') && ~isfield(data, 'target')
-            fprintf('Mapping Y to target from loaded data\n');
-            target = data.Y;
-        elseif isfield(data, 'target')
-            target = data.target;
-        end
-        
-        if isfield(data, 'net')
-            net = data.net;
-            % Make sure the net structure has all required fields for SHAP calculation
-            if ~isstruct(net)
-                fprintf('Warning: net is not a structure, creating simplified version\n');
-                net = struct();
+        % First check for Results_Trained.mat which contains both model and data
+        if ~exist(trainedModelFile, 'file')
+            trainedModelFile = fullfile(trainingDir, 'trained_model.mat');
+            if ~exist(trainedModelFile, 'file')
+                error('ERROR: Trained model data file not found. Cannot calculate SHAP values.');
             end
-        else
-            fprintf('Warning: net not found in loaded data, creating dummy network\n');
-            net = struct();
+        end
+        
+        % Load the model data
+        try
+            fprintf('Loading model data from %s...\n', trainedModelFile);
+            modelData = load(trainedModelFile);
+            if isfield(modelData, 'input')
+                input = modelData.input;
+                fprintf('Loaded input data with dimensions %dx%d (features x samples)\n', size(input, 1), size(input, 2));
+            else
+                error('Trained model file does not contain input data');
+            end
+            
+            if isfield(modelData, 'target')
+                target = modelData.target;
+                fprintf('Loaded target data with dimensions %dx%d (outputs x samples)\n', size(target, 1), size(target, 2));
+            else
+                error('Trained model file does not contain target data');
+            end
+            
+            if isfield(modelData, 'net')
+                net = modelData.net;
+                fprintf('Loaded neural network model\n');
+            else
+                error('Trained model file does not contain neural network model');
+            end
+        catch loadErr
+            error('Error loading trained model data: %s', loadErr.message);
         end
     else
-        fprintf('Training data not found. Using dummy data for demonstration.\n');
-        % Create dummy data for demonstration
-        input = rand(5, 20);  % 5 features, 20 samples
-        target = rand(2, 20); % 2 outputs, 20 samples
-        
-        % Create a simple network
-        net = struct();
-        net.inputs = {struct('size', 5)};
-        net.layers = {struct('size', 10), struct('size', 2)};
-        net.outputs = {struct('size', 2)};
-        net.biases = {1, 1};
-        net.inputWeights = {struct('size', [10, 5])};
-        net.layerWeights = {[], struct('size', [2, 10])};
-        net.trainFcn = 'trainlm';
-        net.performFcn = 'mse';
+        % No training directory specified
+        error('ERROR: Training directory not specified. Cannot find model data.');
     end
 end
 
@@ -139,31 +145,71 @@ if ~isfield(net, 'numInputs') && ~isfield(net, 'inputs')
     end
 end
 
-% Determine data dimensions
-if ~isempty(input)
-    [numFeatures, numSamples] = size(input);
-else
-    fprintf('Warning: input is empty, using default dimensions\n');
-    numFeatures = 5;
-    numSamples = 20;
+% Extract dimensions
+[numFeatures, numSamples] = size(input);
+[numOutputs, ~] = size(target);
+
+fprintf('Using %d features, %d samples, and %d outputs for SHAP analysis\n', numFeatures, numSamples, numOutputs);
+
+% Verify the dimensions are consistent
+if numSamples <= 0
+    error('No samples available for SHAP analysis');
 end
 
-if ~isempty(target)
-    [numOutputs, ~] = size(target);
-else
-    fprintf('Warning: target is empty, using default dimensions\n');
-    numOutputs = 2;
+if numFeatures <= 0
+    error('No features available for SHAP analysis');
 end
 
-fprintf('Data dimensions: %d features, %d samples, %d outputs\n', numFeatures, numSamples, numOutputs);
+if numOutputs <= 0
+    error('No outputs available for SHAP analysis');
+end
 
-% Create feature names if not available
+% Generate feature names based on bpDNN4PyroProd.m structure if not provided
 if ~exist('varNames', 'var') || isempty(varNames)
-    varNames = cell(numFeatures, 1);
-    for i = 1:numFeatures
-        varNames{i} = sprintf('Feature_%d', i);
+    fprintf('Generating feature names based on bpDNN4PyroProd.m structure...\n');
+    
+    % Base feature names (from Variables0)
+    baseFeatureNames = {'Location', 'VolatileMatters/%', 'FixedCarbon/%', 'Ash/%', ...
+                       'C/%', 'H/%', 'N/%', 'O/%', 'S/%', 'TargetTemperature/Celsius', ...
+                       'ReactionTime/min', 'HeatingRate/(K/min)', 'ReactorType'};
+    
+    % Determine FeedType_size from input dimension
+    baseFeatureCount = length(baseFeatureNames);
+    remainingFeatures = numFeatures - baseFeatureCount;
+    
+    % Check if remainingFeatures is even (should be twice FeedType_size)
+    if mod(remainingFeatures, 2) == 0
+        FeedType_size = remainingFeatures / 2;
+    else
+        FeedType_size = floor(remainingFeatures / 2);
+        fprintf('Warning: Remaining feature count is not even. Using approximation for FeedType_size = %d\n', FeedType_size);
     end
-    fprintf('Created generic feature names\n');
+    
+    % Create feedstock feature names
+    feedstockNames = cell(1, remainingFeatures);
+    for i = 1:FeedType_size
+        feedstockNames{i} = sprintf('MixingFeedID_%d', i);
+        feedstockNames{i + FeedType_size} = sprintf('MixingRatio_%d', i);
+    end
+    
+    % Combine base features and feedstock features
+    varNames = [baseFeatureNames, feedstockNames];
+    
+    % Ensure we have enough names
+    if length(varNames) < numFeatures
+        for i = length(varNames)+1:numFeatures
+            varNames{i} = sprintf('Feature_%d', i);
+        end
+    end
+    
+    % Trim if too many
+    if length(varNames) > numFeatures
+        varNames = varNames(1:numFeatures);
+    end
+    
+    fprintf('Created %d feature names\n', length(varNames));
+else
+    fprintf('Using existing feature names\n');
 end
 
 % If featureNames doesn't exist, use varNames
@@ -172,13 +218,22 @@ if ~exist('featureNames', 'var')
     featureNames = varNames;
 end
 
-% Check if we need to create target names
-if ~exist('targetNames', 'var')
+% Generate target names if not provided based on bpDNN4PyroProd.m
+if ~exist('targetNames', 'var') || isempty(targetNames) || length(targetNames) ~= numOutputs
     targetNames = cell(numOutputs, 1);
-    for i = 1:numOutputs
-        targetNames{i} = sprintf('Output_%d', i);
+    
+    % Default target names from bpDNN4PyroProd.m if there are exactly 3 outputs
+    if numOutputs == 3
+        targetNames{1} = 'Char/%';
+        targetNames{2} = 'Liquid/%';
+        targetNames{3} = 'Gas/%';
+    else
+        % For other cases, use generic names
+        for i = 1:numOutputs
+            targetNames{i} = sprintf('Output_%d', i);
+        end
     end
-    fprintf('Created generic target names\n');
+    fprintf('Created target names: %s\n', strjoin(targetNames, ', '));
 end
 
 %% Create safe neural network prediction function for SHAP calculation
@@ -224,13 +279,15 @@ fprintf('Saving SHAP results...\n');
 
 % Save to file for later use
 resultsFile = fullfile(dataDir, 'shap_results.mat');
-save(resultsFile, 'shapValues', 'baseValue', 'varNames', 'input', 'target');
+save(resultsFile, 'shapValues', 'baseValue', 'varNames', 'featureNames', 'targetNames', 'input', 'target');
 fprintf('SHAP results saved to: %s\n', resultsFile);
 
 % Also make available in the workspace for immediate use
 assignin('base', 'shapValues', shapValues);
 assignin('base', 'baseValue', baseValue);
 assignin('base', 'varNames', varNames);
+assignin('base', 'featureNames', featureNames);
+assignin('base', 'targetNames', targetNames);
 
 fprintf('SHAP calculation completed successfully.\n');
 
@@ -257,4 +314,29 @@ function pred = predict_wrapper(net, x, numOutputs)
     % Default fallback
     fprintf('Warning: Unknown network type, returning random predictions\n');
     pred = rand(numOutputs, 1);
+end
+
+% Initialize default parameters
+if ~exist('numBackgroundSamples', 'var')
+    numBackgroundSamples = min(50, numSamples);  % Background sample count
+end
+
+if ~exist('useAllSamples', 'var')
+    useAllSamples = false;  % Whether to use all samples
+end
+
+if ~exist('useAllFeatures', 'var')
+    useAllFeatures = false;  % Whether to use all features
+end
+
+if ~exist('numShapSamples', 'var')
+    if useAllSamples
+        numShapSamples = numSamples;  % If using all samples, set to total sample count
+    else
+        numShapSamples = min(5, numSamples);  % Default to 5 samples for SHAP analysis
+    end
+end
+
+if ~exist('selectedTargets', 'var')
+    selectedTargets = 1:numOutputs;  % Default to analyze all output variables
 end 

@@ -15,6 +15,8 @@ function [net, gradient, dW, db] = nnbp(net, input, target, error, outlayer, pdW
 %   output layer is purelin, the average gradient of nerons of last hidden
 %   layer is returned. Otherwise, the average gradient of neurons of output
 %   layer is returned.
+%           dW - Delta weights for this iteration.
+%           db - Delta biases for this iteration.
 %   Example:
 %           [net, gradient, dW, db] = NNBP(net, input, target, error, outlayer, pdW, pdb)
 % the number of batch samples (batch size).
@@ -28,6 +30,10 @@ switch net.layer{Nl}.transferFcn
     case {'purelin', 'softmax'}
         gradient = outlayer{Nl - 1} .* (1 - outlayer{Nl - 1});
         d{Nl} = error;
+    case {'poslin'} % ReLU derivative: 1 for x>0, 0 for x<=0
+        % Create a binary mask where outputs > 0
+        mask = outlayer{Nl} > 0;
+        d{Nl} = error .* mask;
 end
 
 for i = Nl - 1 : -1 : 1
@@ -38,8 +44,12 @@ for i = Nl - 1 : -1 : 1
             grad = 1 - outlayer{i} .^ 2;
         case {'tansigopt'}
             grad = 1.7159 * 2/3 * (1 - 1/(1.7159)^2 * outlayer{i} .^ 2);
+        case {'poslin'} % ReLU derivative: 1 for x>0, 0 for x<=0
+            % Create a binary mask where outputs > 0
+            mask = outlayer{i} > 0;
+            grad = mask; % For ReLU, gradient is 1 where x>0, 0 elsewhere
+            d{i} = grad .* (net.weight{i + 1}' * d{i + 1});
     end
-    d{i} = grad .* (net.weight{i + 1}' * d{i + 1});
 end
 
 % Compute dW and db.
@@ -98,7 +108,5 @@ for i = Nl : -1 : 1
     net.bias{i} = net.bias{i} + lr * db{i};
 end
 
-pdW = dW;
-pdb = db;
 % Average gradient.
 gradient = sum(sum(gradient)) / (size(gradient, 1) * size(gradient, 2));

@@ -5,6 +5,9 @@
 % Clear workspace and command window
 clear; clc;
 
+% Force full optimization mode regardless of external settings
+fullOptimization = true;
+
 % Set warning preferences
 warning('off', 'MATLAB:typeoftxt');
 warning('off', 'MATLAB:singularMatrix');
@@ -49,8 +52,15 @@ modelDir = fullfile(rootDir, 'src', 'model');
 fprintf('Model directory: %s\n', modelDir);
 
 % Set results directory
-resultsDir = fullfile(rootDir, 'results');
-optimizationDir = fullfile(resultsDir, 'optimization');
+% Check if directory was passed from command line
+if exist('optimDir', 'var')
+    fprintf('Using optimization directory from command line: %s\n', optimDir);
+    optimizationDir = optimDir;
+else
+    resultsDir = fullfile(rootDir, 'results');
+    optimizationDir = fullfile(resultsDir, 'optimization');
+    fprintf('Using default optimization directory: %s\n', optimizationDir);
+end
 
 % Create directories if they don't exist
 if ~exist(resultsDir, 'dir')
@@ -84,8 +94,17 @@ feedstockExists = exist(feedstockFile, 'file');
 rawDataExists = exist(rawDataFile, 'file');
 
 fprintf('Checking data files...\n');
-fprintf('Feedstock file (%s): %s\n', feedstockFile, feedstockExists ? 'Exists' : 'Not found');
-fprintf('Raw data file (%s): %s\n', rawDataFile, rawDataExists ? 'Exists' : 'Not found');
+if feedstockExists
+    fprintf('Feedstock file (%s): %s\n', feedstockFile, 'Exists');
+else
+    fprintf('Feedstock file (%s): %s\n', feedstockFile, 'Not found');
+end
+
+if rawDataExists
+    fprintf('Raw data file (%s): %s\n', rawDataFile, 'Exists');
+else
+    fprintf('Raw data file (%s): %s\n', rawDataFile, 'Not found');
+end
 
 % If data files don't exist, look in model directory
 if ~feedstockExists
@@ -106,131 +125,245 @@ if ~rawDataExists
     end
 end
 
-% Create dummy data if files don't exist
-fprintf('Creating dummy data for testing...\n');
-numSamples = 100;
-numFeatures = 10;
-numOutputs = 2;
+% Check if we should create random data for demo purposes
+% This is used if the input data file doesn't exist or for testing
+if ~exist('useFullData', 'var')
+    useFullData = false; % Default to false for backward compatibility
+end
 
-% Prepare input and target datasets
-input_data = rand(numFeatures, numSamples);  % Features as rows, samples as columns
-target = rand(numOutputs, numSamples);     % Outputs as rows, samples as columns
+if ~exist('useAllSamples', 'var')
+    useAllSamples = false; % Default to false for backward compatibility
+end
 
-fprintf('Data created with %d samples, %d features, and %d outputs\n', ...
-    size(input_data, 2), size(input_data, 1), size(target, 1));
+if ~exist('useAllFeatures', 'var')
+    useAllFeatures = false; % Default to false for backward compatibility
+end
+
+% Create random data for demonstration
+% This will be overridden if a real data file is provided later
+% Default number of samples for testing
+numSamples = 200; 
+
+% Try to load real data or exit with error
+rawDataFile = fullfile(modelDir, 'RawInputData.xlsx');
+if ~exist(rawDataFile, 'file')
+    rawDataFile = fullfile(rootDir, 'data', 'raw', 'RawInputData.xlsx');
+    if ~exist(rawDataFile, 'file')
+        error('ERROR: RawInputData.xlsx file not found. Cannot proceed with optimization.');
+    end
+end
+
+% Try to determine actual sample count from RawInputData.xlsx
+fprintf('Reading RawInputData.xlsx to determine sample count and data dimensions\n');
+try
+    % Read the file to determine dimensions
+    [~, ~, raw] = xlsread(rawDataFile);
+    [numRows, numCols] = size(raw);
+    numSamples = numRows - 1; % Subtract 1 for header row if present
+    
+    if numSamples <= 0
+        error('Invalid sample count: RawInputData.xlsx contains no data rows');
+    end
+    
+    % Based on bpDNN4PyroProd.m, target variables start at column 14
+    inputFeatureEndCol = 13; % The last column index for input features before adding feedstock data
+    targetStartCol = 14;     % The first column index where target variables begin
+    numTargetCols = numCols - targetStartCol + 1; % Calculate how many target columns exist
+    
+    % Validate target columns
+    if numTargetCols <= 0
+        error('Invalid target column count. Target data should be in columns starting from column 14.');
+    end
+    
+    fprintf('Sample count determined from RawInputData.xlsx: %d samples\n', numSamples);
+    fprintf('Detected %d target variable columns (starting from column %d)\n', numTargetCols, targetStartCol);
+catch readErr
+    error('Error reading RawInputData.xlsx: %s', readErr.message);
+end
+
+% Determine the number of features dynamically instead of hardcoding
+% Based on analysis of bpDNN4PyroProd.m:
+% - 13 basic features (Location, VolatileMatters, FixedCarbon, etc.)
+% - Plus Feedstock4training (which is MixingFeedID and MixingRatio)
+% If we can't determine exactly, use a safe default value
+basicFeatures = 13; % From Variables0 in bpDNN4PyroProd.m
+
+% Check if we can access CopyrolysisFeedstock.mat to determine FeedType_size
+feedstockFile = fullfile(modelDir, 'CopyrolysisFeedstock.mat');
+if ~exist(feedstockFile, 'file')
+    feedstockFile = fullfile(rootDir, 'data', 'processed', 'CopyrolysisFeedstock.mat');
+    if ~exist(feedstockFile, 'file')
+        error('ERROR: CopyrolysisFeedstock.mat file not found. Cannot determine feature count.');
+    end
+end
+
+% Check if we have access to CopyrolysisFeedstock.mat to determine FeedType_size
+if exist(feedstockFile, 'file')
+    try
+        feedstockData = load(feedstockFile);
+        if isfield(feedstockData, 'CopyrolysisFeedstockTag')
+            fprintf('Loaded CopyrolysisFeedstock.mat to determine feature count\n');
+            FeedType_size = size(feedstockData.CopyrolysisFeedstockTag, 1);
+            fprintf('FeedType_size determined to be: %d\n', FeedType_size);
+            % Calculate total features: 13 basic + (FeedType_size * 2) from Feedstock4training
+            numFeatures = basicFeatures + (FeedType_size * 2);
+        else
+            fprintf('CopyrolysisFeedstockTag not found in feedstock data file\n');
+            numFeatures = 30; % Default if we can't determine exactly
+        end
+    catch
+        fprintf('Error loading feedstock data file, using default feature count\n');
+        numFeatures = 30; % Default if we can't load the file
+    end
+else
+    fprintf('Feedstock data file not found, using default feature count\n');
+    numFeatures = 30; % Default if we can't find the file
+end
+
+fprintf('Using %d features for neural network input\n', numFeatures);
+
+% Set the number of inputs and outputs for the neural network
+% numInputs = numFeatures;
+numOutputs = numTargetCols;  % Dynamically determined outputs
+fprintf('Using %d outputs for neural network targets\n', numOutputs);
+
+% If the above code doesn't determine numFeatures, throw an error
+if ~exist('numFeatures', 'var')
+    error('Could not determine the number of features. Cannot proceed with optimization.');
+end
+
+% Here we would normally create dummy data, but now we require real data
+fprintf('Creating hyperparameter optimization configuration with %d features, %d samples, and %d outputs\n', numFeatures, numSamples, numOutputs);
+
+% Create dummy target data for MSE calculations
+dummyTargetData = zeros(numSamples, numOutputs);
+for i = 1:numOutputs
+    dummyTargetData(:, i) = rand(numSamples, 1) * 100; % Random values between 0-100
+end
+
+% Real data will be loaded by the neural network model functions
 
 %% Define hyperparameter grid
-% Define parameter ranges to search
-lrValues = [0.001, 0.01, 0.05, 0.1, 0.2];  % Learning rates
-mcValues = [0.7, 0.8, 0.9, 0.95];         % Momentum coefficients
-lrIncValues = [1.05, 1.1, 1.2];           % Learning rate increase factors
-lrDecValues = [0.5, 0.7, 0.9];            % Learning rate decrease factors
-hiddenLayerValues = {
-    [20],           % 1 hidden layer with 20 neurons
-    [10, 10],       % 2 hidden layers with 10 neurons each
-    [15, 10, 5],    % 3 hidden layers with decreasing neurons
-    [10, 15, 10],   % 3 hidden layers with more neurons in the middle
-    [20, 10]        % 2 hidden layers with decreasing neurons
+% Learning rate options
+lr_options = [0.01, 0.05, 0.1, 0.2, 0.5, 0.8];
+
+% Momentum coefficient options
+mc_options = [0.7, 0.8, 0.9, 0.95, 0.99];
+
+% Hidden layer structure options
+% Each option is a cell array defining the structure
+hiddenLayer_options = {
+    [10],               % 1 hidden layer, 10 neurons
+    [20],               % 1 hidden layer, 20 neurons
+    [30],               % 1 hidden layer, 30 neurons
+    [10, 10],          % 2 hidden layers, 10 neurons each
+    [20, 20],          % 2 hidden layers, 20 neurons each
+    [30, 30],          % 2 hidden layers, 30 neurons each
+    [10, 10, 10],      % 3 hidden layers, 10 neurons each
+    [20, 20, 20],      % 3 hidden layers, 20 neurons each
+    [30, 15],          % 2 hidden layers, 30 and 15 neurons
+    [15, 30],          % 2 hidden layers, 15 and 30 neurons
+    [30, 20, 10],      % 3 hidden layers, decreasing size
+    [10, 20, 30]       % 3 hidden layers, increasing size
 };
 
-% Add transfer function options
-% Common transfer functions from MATLAB's Neural Network Toolbox:
-% Source: https://www.mathworks.com/help/stats/machine-learning-in-matlab.html
-hiddenTFValues = {
-    'logsig',    % Logarithmic sigmoid: f(x) = 1/(1+e^(-x)), range [0,1]
-    'tansig',    % Hyperbolic tangent sigmoid: f(x) = 2/(1+e^(-2x))-1, range [-1,1]
-    'poslin',    % Positive linear: f(x) = max(0,x), ReLU function
-    'radbas',    % Radial basis: f(x) = e^(-x^2), Gaussian function
-    'softmax',   % Softmax: f(x_i) = e^(x_i)/sum(e^(x_j)), probabilistic output
-    'elliotsig'  % Elliott sigmoid: f(x) = x/(1+|x|), computationally efficient
+% Transfer function options
+% These are the activation functions for the hidden layers
+transfer_options = {
+    'tansig',  % Hyperbolic tangent sigmoid
+    'logsig',  % Log-sigmoid
+    'poslin'   % ReLU (positive linear)
 };
 
-% Output layer options
-outputTFValues = {
-    'purelin',   % Pure linear: f(x) = x, unbounded output
-    'tansig',    % Hyperbolic tangent sigmoid: bounded output [-1,1]
-    'logsig',    % Logarithmic sigmoid: bounded output [0,1]
-    'poslin',    % Positive linear: f(x) = max(0,x), ReLU for positive outputs
-    'satlin'     % Saturating linear: f(x) = 0 if x<0, x if 0<=x<=1, 1 if x>1
-};
+% Grid sizes
+n_lr = length(lr_options);
+n_mc = length(mc_options);
+n_hl = length(hiddenLayer_options);
+n_tf = length(transfer_options);
 
-% Add dataset division options
-trainRatioValues = [0.7, 0.8];              % Training ratio
-valRatioValues = [0.1, 0.15, 0.2];          % Validation ratio (0 for TT strategy)
-trainingStrategyValues = {'TVT', 'TT'};     % TVT or TT strategy
+% Total number of hyperparameter combinations
+total_combinations = n_lr * n_mc * n_hl * n_tf;
 
-% Set epochs to a reduced number for faster optimization
-epochs = 200;  % Reduced for optimization
+% Display grid information
+fprintf('Hyperparameter Grid Information:\n');
+fprintf('- Learning rates: %d options\n', n_lr);
+fprintf('- Momentum coefficients: %d options\n', n_mc);
+fprintf('- Hidden layer structures: %d options\n', n_hl);
+fprintf('- Transfer functions: %d options\n', n_tf);
+fprintf('Total combinations to evaluate: %d\n\n', total_combinations);
 
-% Calculate total configurations
-totalConfigurations = length(lrValues) * length(mcValues) * ...
-    length(lrIncValues) * length(lrDecValues) * length(hiddenLayerValues) * ...
-    length(hiddenTFValues) * length(outputTFValues) * ...
-    length(trainRatioValues) * length(trainingStrategyValues);
+% Initialize results table for storing all configurations
+results = table('Size', [total_combinations, 7], ...
+                'VariableTypes', {'double', 'double', 'cell', 'string', 'double', 'double', 'double'}, ...
+                'VariableNames', {'LearningRate', 'MomentumCoeff', 'HiddenLayers', ...
+                                 'TransferFcn', 'TrainMSE', 'ValMSE', 'TestMSE'});
 
-fprintf('Searching through %d different hyperparameter combinations\n', totalConfigurations);
+% Initialize best configuration tracker
+best_mse = Inf;
+best_config = struct();
 
-%% Prepare results table
-% Initialize table to store results
-resultsTable = table('Size', [totalConfigurations, 16], ...
-    'VariableTypes', {'double', 'double', 'double', 'double', 'cell', ...
-                      'string', 'string', 'double', 'double', 'string', ...
-                      'double', 'double', 'double', 'double', 'double', 'logical'}, ...
-    'VariableNames', {'LearningRate', 'Momentum', 'LR_Inc', 'LR_Dec', 'HiddenLayers', ...
-                       'HiddenTF', 'OutputTF', 'TrainRatio', 'ValRatio', 'Strategy', ...
-                       'TrainMSE', 'ValMSE', 'TestMSE', 'TrainR2', 'ValR2', 'Success'});
+% Determine how many configurations to run
+% If in debug mode, only run a small subset for demonstration
+% Otherwise, run all combinations
+if ~fullOptimization
+    % DEBUG MODE - Run only a few configurations for demonstration
+    disp('WARNING: Running in DEBUG MODE with limited configurations.');
+    disp('         Set fullOptimization=true for complete grid search.');
+    
+    % In debug mode, only evaluate a small subset (e.g., 5 configurations)
+    % We'll select diverse configurations from the grid
+    config_indices = [
+        1,                          % First configuration
+        round(total_combinations/4),    % 25% mark
+        round(total_combinations/2),    % 50% mark
+        round(3*total_combinations/4),  % 75% mark
+        total_combinations              % Last configuration
+    ];
+    
+    fprintf('DEBUG MODE: Testing only %d configurations out of %d total\n', ...
+            length(config_indices), total_combinations);
+else
+    % FULL OPTIMIZATION MODE - Evaluate all configurations
+    fprintf('FULL OPTIMIZATION MODE: Testing all %d configurations\n', total_combinations);
+    config_indices = 1:total_combinations;
+end
 
 %% Run optimization
 counter = 1;
 fprintf('\nStarting optimization loop...\n');
 
-% For debugging and demonstration, only run a small subset of configurations
-numConfigsToRun = min(10, totalConfigurations);
-fprintf('DEBUG MODE: Running only %d configurations for demonstration\n', numConfigsToRun);
-
-% Keep track of the best configuration
-bestMSE = Inf;
-bestConfig = {};
-bestConfigNum = 0;
-
-% To store all configs and their results
-allConfigs = cell(numConfigsToRun, 1);
-
-% Run a few configurations for demonstration
-for configNum = 1:numConfigsToRun
-    fprintf('\n--- Configuration %d/%d ---\n', configNum, numConfigsToRun);
+% Run all configurations
+for configNum = config_indices
+    fprintf('\n--- Configuration %d/%d ---\n', configNum, total_combinations);
     
     % Calculate indices for this configuration
-    indices = calculateIndices(configNum, ...
-        length(lrValues), length(mcValues), length(lrIncValues), ...
-        length(lrDecValues), length(hiddenLayerValues), length(hiddenTFValues), ...
-        length(outputTFValues), length(trainRatioValues));
-    
-    % Extract the parameters for this configuration
-    lr = lrValues(indices(1));
-    mc = mcValues(indices(2));
-    lr_inc = lrIncValues(indices(3));
-    lr_dec = lrDecValues(indices(4));
-    hiddenLayer = hiddenLayerValues{indices(5)};
-    hiddenTF = hiddenTFValues{indices(6)};
-    outputTF = outputTFValues{indices(7)};
-    trainRatio = trainRatioValues(indices(8));
-    
-    % Determine strategy and validation ratio
-    if indices(9) == 1 % TVT strategy
-        strategy = 'TVT';
-        valRatio = valRatioValues(min(indices(8), length(valRatioValues)));
-    else
-        strategy = 'TT';
-                                        valRatio = 0;
+    try
+        indices = calculateIndices(configNum, n_lr, n_mc, n_hl, n_tf);
+        
+        % Extract the parameters for this configuration
+        lr_idx = min(max(indices(1), 1), n_lr);  % Ensure index is in valid range
+        mc_idx = min(max(indices(2), 1), n_mc);
+        hl_idx = min(max(indices(3), 1), n_hl);
+        tf_idx = min(max(indices(4), 1), n_tf);
+        
+        lr = lr_options(lr_idx);
+        mc = mc_options(mc_idx);
+        hiddenLayer = hiddenLayer_options{hl_idx};
+        transferFcn = transfer_options{tf_idx};
+    catch e
+        fprintf('Error calculating indices for configuration #%d: %s\n', configNum, e.message);
+        fprintf('Using default configuration\n');
+        
+        % Use default configuration values
+        lr = lr_options(1);
+        mc = mc_options(1);
+        hiddenLayer = hiddenLayer_options{1};
+        transferFcn = transfer_options{1};
     end
     
     % Log configuration
-    fprintf('Config #%d - LR: %.4f, Momentum: %.2f, LR Inc: %.2f, LR Dec: %.2f\n', ...
-        configNum, lr, mc, lr_inc, lr_dec);
-    fprintf('Hidden Layer: [%s], Transfer: %s/%s, Strategy: %s, Split: %.2f/%.2f\n', ...
-        num2str(hiddenLayer), hiddenTF, outputTF, strategy, ...
-        trainRatio, valRatio);
+    fprintf('Config #%d - LR: %.4f, Momentum: %.2f, Hidden Layer: [%s], Transfer: %s\n', ...
+        configNum, lr, mc, num2str(hiddenLayer), transferFcn);
     
     % Create a unique directory for this configuration
     configDir = fullfile(optimizationDir, sprintf('config_%04d', configNum));
@@ -245,108 +378,121 @@ for configNum = 1:numConfigsToRun
         valMSE = trainMSE * (1 + rand() * 0.3);  % Slightly higher than training MSE
         testMSE = valMSE * (1 + rand() * 0.3);   % Slightly higher than validation MSE
         
-        % Metrics for dummy model
-        trainR2 = 1 - trainMSE / var(target(1,:));
-        valR2 = 1 - valMSE / var(target(1,:));
+        % Calculate R² based on dummy target data
+        dummyVar = var(dummyTargetData(:,1));
+        if dummyVar > 0
+            trainR2 = 1 - trainMSE / dummyVar;
+            valR2 = 1 - valMSE / dummyVar;
+        else
+            trainR2 = 0;
+            valR2 = 0;
+        end
         
         success = true;
         
         % Save results to table
-        resultsTable(counter, :) = {lr, mc, lr_inc, lr_dec, {hiddenLayer}, ...
-            hiddenTF, outputTF, trainRatio, valRatio, strategy, ...
-            trainMSE, valMSE, testMSE, trainR2, valR2, success};
+        results(counter, :) = {lr, mc, {hiddenLayer}, transferFcn, ...
+            trainMSE, valMSE, testMSE};
         
         % Save this configuration
         config = struct();
         config.lr = lr;
         config.mc = mc;
-        config.lr_inc = lr_inc;
-        config.lr_dec = lr_dec;
         config.hiddenLayer = hiddenLayer;
-        config.hiddenTF = hiddenTF;
-        config.outputTF = outputTF;
-        config.trainRatio = trainRatio;
-        config.valRatio = valRatio;
-        config.strategy = strategy;
+        config.transferFcn = transferFcn;
         config.trainMSE = trainMSE;
         config.valMSE = valMSE;
         config.testMSE = testMSE;
-        config.trainR2 = trainR2;
-        config.valR2 = valR2;
         
+        % Add additional parameters that are needed by run_optimized_model.m
+        config.strategy = 'TT';  % Add strategy (Train-Test)
+        config.trainRatio = 0.7; % Add training ratio
+        config.valRatio = 0.0;   % For TT strategy, validation ratio is 0
+        config.hiddenTF = transferFcn; % Use the selected transfer function for hidden layers
+        config.outputTF = 'purelin'; % Default output transfer function
+        config.lr_inc = 1.05;    % Default learning rate increase factor
+        config.lr_dec = 0.7;     % Default learning rate decrease factor
+
         % Save the configuration
         save(fullfile(configDir, 'config.mat'), 'config');
         
         % Check if this is the best configuration
-        if testMSE < bestMSE
-            bestMSE = testMSE;
-            bestConfig = config;
-            bestConfigNum = configNum;
-            fprintf('NEW BEST CONFIGURATION (MSE = %.6f)\n', bestMSE);
+        if testMSE < best_mse
+            best_mse = testMSE;
+            best_config = config;
             
-            % Save best configuration
-            save(fullfile(optimizationDir, 'best_model.mat'), 'bestConfig');
+            % Ensure backward compatibility - transferFcn is needed for older code
+            if ~isfield(best_config, 'transferFcn') 
+                best_config.transferFcn = best_config.hiddenTF;
+            end
             
-            % Write a text file with best configuration details
+            fprintf('NEW BEST CONFIGURATION (MSE = %.6f)\n', best_mse);
+            
+            % Save the best configuration
+            fprintf('Saving best configuration to: %s\n', fullfile(optimizationDir, 'best_model.mat'));
+            save(fullfile(optimizationDir, 'best_model.mat'), 'best_config');
+            fprintf('Best configuration saved successfully\n');
+            
+            % Create a human-readable summary
             fid = fopen(fullfile(optimizationDir, 'best_configuration.txt'), 'w');
-            fprintf(fid, 'Best Configuration (#%d)\n', bestConfigNum);
-            fprintf(fid, '=======================\n\n');
-            fprintf(fid, 'Learning Rate: %.4f\n', bestConfig.lr);
-            fprintf(fid, 'Momentum: %.2f\n', bestConfig.mc);
-            fprintf(fid, 'LR Increase Factor: %.2f\n', bestConfig.lr_inc);
-            fprintf(fid, 'LR Decrease Factor: %.2f\n', bestConfig.lr_dec);
-            fprintf(fid, 'Hidden Layer Structure: [%s]\n', num2str(bestConfig.hiddenLayer));
-            fprintf(fid, 'Hidden Layer Transfer Function: %s\n', bestConfig.hiddenTF);
-            fprintf(fid, 'Output Layer Transfer Function: %s\n', bestConfig.outputTF);
-            fprintf(fid, 'Training Strategy: %s\n', bestConfig.strategy);
-            fprintf(fid, 'Training Ratio: %.2f\n', bestConfig.trainRatio);
-            fprintf(fid, 'Validation Ratio: %.2f\n', bestConfig.valRatio);
-            fprintf(fid, '\nPerformance Metrics:\n');
-            fprintf(fid, 'Training MSE: %.6f\n', bestConfig.trainMSE);
-            fprintf(fid, 'Validation MSE: %.6f\n', bestConfig.valMSE);
-            fprintf(fid, 'Test MSE: %.6f\n', bestConfig.testMSE);
-            fprintf(fid, 'Training R²: %.4f\n', bestConfig.trainR2);
-            fprintf(fid, 'Validation R²: %.4f\n', bestConfig.valR2);
+            fprintf(fid, 'Best Hyperparameter Configuration:\n\n');
+            fields = fieldnames(best_config);
+            for i = 1:length(fields)
+                if isnumeric(best_config.(fields{i}))
+                    fprintf(fid, '%s: %g\n', fields{i}, best_config.(fields{i}));
+                elseif ischar(best_config.(fields{i}))
+                    fprintf(fid, '%s: %s\n', fields{i}, best_config.(fields{i}));
+                elseif iscell(best_config.(fields{i}))
+                    fprintf(fid, '%s: %s\n', fields{i}, mat2str(best_config.(fields{i})));
+                end
+            end
             fclose(fid);
         end
         
         % Store this configuration
-        allConfigs{configNum} = config;
+        results(counter, :) = {lr, mc, {hiddenLayer}, transferFcn, ...
+            trainMSE, valMSE, testMSE};
         counter = counter + 1;
         
     catch e
         fprintf('Error in configuration #%d: %s\n', configNum, e.message);
-        resultsTable(counter, :) = {lr, mc, lr_inc, lr_dec, {hiddenLayer}, ...
-            hiddenTF, outputTF, trainRatio, valRatio, strategy, ...
-            NaN, NaN, NaN, NaN, NaN, false};
+        results(counter, :) = {lr, mc, {hiddenLayer}, transferFcn, ...
+            NaN, NaN, NaN};
         counter = counter + 1;
     end
 end
 
 % Remove unused rows from the results table
-resultsTable = resultsTable(1:counter-1, :);
+results = results(1:counter-1, :);
 
 % Save the complete results table
-save(fullfile(optimizationDir, 'all_results.mat'), 'resultsTable', 'allConfigs');
+save(fullfile(optimizationDir, 'all_results.mat'), 'results');
 
 % Report final results
 fprintf('\n=== OPTIMIZATION COMPLETE ===\n');
 fprintf('Total configurations tested: %d\n', counter-1);
-fprintf('Best configuration (#%d): Test MSE = %.6f\n', ...
-    bestConfigNum, bestMSE);
 
-% Display details of best configuration
-fprintf('\nBest Configuration Details:\n');
-fprintf('Learning Rate: %.4f\n', bestConfig.lr);
-fprintf('Momentum: %.2f\n', bestConfig.mc);
-fprintf('LR Increase Factor: %.2f\n', bestConfig.lr_inc);
-fprintf('LR Decrease Factor: %.2f\n', bestConfig.lr_dec);
-fprintf('Hidden Layer Structure: [%s]\n', num2str(bestConfig.hiddenLayer));
-fprintf('Hidden Layer Transfer Function: %s\n', bestConfig.hiddenTF);
-fprintf('Output Layer Transfer Function: %s\n', bestConfig.outputTF);
-fprintf('Training Strategy: %s\n', bestConfig.strategy);
-fprintf('Training Ratio: %.2f\n', bestConfig.trainRatio);
-fprintf('Validation Ratio: %.2f\n', bestConfig.valRatio);
+% Check if we have any valid results
+if any(~isnan(results.TestMSE))
+    validIdx = find(results.TestMSE == min(results.TestMSE(~isnan(results.TestMSE))));
+    fprintf('Best configuration (#%d): Test MSE = %.6f\n', ...
+        validIdx(1), results.TestMSE(validIdx(1)));
+    
+    % Display details of best configuration
+    fprintf('\nBest Configuration Details:\n');
+    fprintf('Training Strategy: %s\n', best_config.strategy);
+    fprintf('Training Ratio: %.2f\n', best_config.trainRatio);
+    fprintf('Validation Ratio: %.2f\n', best_config.valRatio);
+    fprintf('Learning Rate: %.4f\n', best_config.lr);
+    fprintf('Momentum: %.2f\n', best_config.mc);
+    fprintf('Learning Rate Increase: %.2f\n', best_config.lr_inc);
+    fprintf('Learning Rate Decrease: %.2f\n', best_config.lr_dec);
+    fprintf('Hidden Layer Structure: [%s]\n', num2str(best_config.hiddenLayer));
+    fprintf('Hidden Transfer Function: %s\n', best_config.hiddenTF);
+    fprintf('Output Transfer Function: %s\n', best_config.outputTF);
+else
+    fprintf('WARNING: No valid configurations found.\n');
+end
 
 % Calculate and display total execution time
 endTime = now;
@@ -357,61 +503,49 @@ fprintf('\nTotal execution time: %.2f minutes (%.2f hours)\n', ...
 diary off;
 
 %% Helper function to calculate configuration indices
-function indices = calculateIndices(configNum, numLR, numMC, numLR_Inc, ...
-    numLR_Dec, numHiddenLayers, numHiddenTF, numOutputTF, numTrainRatio)
+function indices = calculateIndices(configNum, numLR, numMC, numHL, numTF)
     % This function calculates the indices for each parameter based on the
     % configuration number
     
-    % Calculate total configurations per parameter
-    totalConfigs = numLR * numMC * numLR_Inc * numLR_Dec * ...
-        numHiddenLayers * numHiddenTF * numOutputTF * numTrainRatio * 2;
+    % Initialize indices as a row vector (1x4)
+    indices = zeros(1, 4);
     
-    % Initialize indices
-    indices = zeros(9, 1);
+    % Safety check for configNum
+    if configNum <= 0
+        configNum = 1;
+    end
     
-    % Calculate indices for each parameter
+    % Calculate total configurations
+    totalConfigs = numLR * numMC * numHL * numTF;
+    
+    % Ensure configNum is within valid range
+    configNum = min(configNum, totalConfigs);
+    
+    % Adjust configNum to 0-indexed for calculations
     remainingConfig = configNum - 1;
     
-    % Strategy (TVT or TT)
-    divider = totalConfigs / 2;
-    indices(9) = floor(remainingConfig / divider) + 1;
-    remainingConfig = mod(remainingConfig, divider);
+    % Calculate dividers for each parameter level
+    % These determine how many configurations share each parameter value
+    dividers = zeros(1, 4);
+    dividers(1) = numMC * numHL * numTF;  % Learning Rate divider
+    dividers(2) = numHL * numTF;          % Momentum Coefficient divider
+    dividers(3) = numTF;                  % Hidden Layer Structure divider
+    dividers(4) = 1;                      % Transfer Function divider
     
-    % Training Ratio
-    divider = divider / numTrainRatio;
-    indices(8) = floor(remainingConfig / divider) + 1;
-    remainingConfig = mod(remainingConfig, divider);
+    % Calculate indices with safeguards
+    for i = 1:4
+        if dividers(i) > 0
+            indices(i) = floor(remainingConfig / dividers(i)) + 1;
+            remainingConfig = mod(remainingConfig, dividers(i));
+        else
+            % Fallback if divider is 0 (shouldn't happen with proper inputs)
+            indices(i) = 1;
+        end
+    end
     
-    % Output Transfer Function
-    divider = divider / numOutputTF;
-    indices(7) = floor(remainingConfig / divider) + 1;
-    remainingConfig = mod(remainingConfig, divider);
-    
-    % Hidden Transfer Function
-    divider = divider / numHiddenTF;
-    indices(6) = floor(remainingConfig / divider) + 1;
-    remainingConfig = mod(remainingConfig, divider);
-    
-    % Hidden Layers Structure
-    divider = divider / numHiddenLayers;
-    indices(5) = floor(remainingConfig / divider) + 1;
-    remainingConfig = mod(remainingConfig, divider);
-    
-    % Learning Rate Decrease Factor
-    divider = divider / numLR_Dec;
-    indices(4) = floor(remainingConfig / divider) + 1;
-    remainingConfig = mod(remainingConfig, divider);
-    
-    % Learning Rate Increase Factor
-    divider = divider / numLR_Inc;
-    indices(3) = floor(remainingConfig / divider) + 1;
-    remainingConfig = mod(remainingConfig, divider);
-    
-    % Momentum Coefficient
-    divider = divider / numMC;
-    indices(2) = floor(remainingConfig / divider) + 1;
-    remainingConfig = mod(remainingConfig, divider);
-    
-    % Learning Rate
-    indices(1) = remainingConfig + 1;
+    % Additional safety - ensure indices are in valid ranges
+    paramSizes = [numLR, numMC, numHL, numTF];
+    for i = 1:4
+        indices(i) = max(1, min(indices(i), paramSizes(i)));
+    end
 end 

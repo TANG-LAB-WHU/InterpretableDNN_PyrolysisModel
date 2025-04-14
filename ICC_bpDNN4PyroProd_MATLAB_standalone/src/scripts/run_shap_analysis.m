@@ -19,7 +19,7 @@ if ~exist('parentScript', 'var')
     resultsDir = fullfile(rootDir, 'results');
     
     % Ask user if they want to run in debug mode (smaller dataset) or full analysis
-    prompt = 'Run in debug mode? (y/n - debug uses fewer samples for faster execution): ';
+    prompt = 'Run in debug mode (y/n - debug uses fewer samples for faster execution): ';
     userInput = input(prompt, 's');
     if strcmpi(userInput, 'y') || strcmpi(userInput, 'yes')
         analysisMode = 'debug';

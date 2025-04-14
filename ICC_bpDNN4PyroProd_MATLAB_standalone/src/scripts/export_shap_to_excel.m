@@ -20,6 +20,19 @@ if ~exist('shapDir', 'var')
     resultsDir = fullfile(rootDir, 'results');
     shapDir = fullfile(resultsDir, 'analysis', 'debug');
     
+    % Try to determine which analysis mode we're in based on environment
+    dbstack_info = dbstack;
+    if length(dbstack_info) > 1
+        caller_name = dbstack_info(2).name;
+        if contains(lower(caller_name), 'debug')
+            shapDir = fullfile(rootDir, 'results', 'analysis', 'debug');
+            fprintf('Detected debug mode. Using shapDir: %s\n', shapDir);
+        else
+            shapDir = fullfile(rootDir, 'results', 'analysis', 'full');
+            fprintf('Detected full analysis mode. Using shapDir: %s\n', shapDir);
+        end
+    end
+    
     warning('shapDir not found in workspace, using default path: %s', shapDir);
 end
 fprintf('Using SHAP directory: %s\n', shapDir);
@@ -81,33 +94,48 @@ if ~exist('shapValues', 'var') || ~exist('baseValue', 'var')
         hasInputData = false;
     end
     
-    % Setup variable names
-    if isfield(results, 'varNames')
-        varNames = results.varNames;
-        featureNames = varNames;
+    % Setup feature names
+    if isfield(results, 'featureNames')
+        % First try to use featureNames if available (preferred)
+        featureNames = results.featureNames;
+        fprintf('Using featureNames from SHAP results file (%d names)\n', length(featureNames));
+    elseif isfield(results, 'varNames')
+        % Fall back to varNames if featureNames not available
+        featureNames = results.varNames;
+        fprintf('Using varNames from SHAP results file as featureNames (%d names)\n', length(featureNames));
     else
         % Create default feature names if not provided
         featureNames = cell(1, size(shapValues, 2));
         for i = 1:size(shapValues, 2)
             featureNames{i} = sprintf('Feature %d', i);
         end
-        disp('Using default feature names (no varNames found in SHAP results)');
+        disp('Using default feature names (no featureNames or varNames found in SHAP results)');
     end
     
     % Setup target names
     if isfield(results, 'targetNames')
         targetNames = results.targetNames;
+        fprintf('Using targetNames from SHAP results file (%d names)\n', length(targetNames));
     else
         % Create default target names if not provided
         if ndims(shapValues) == 3
             targetNames = cell(1, size(shapValues, 3));
-            for i = 1:size(shapValues, 3)
-                targetNames{i} = sprintf('Target %d', i);
+            % First try the standard pyrolysis product names
+            if size(shapValues, 3) == 3
+                targetNames{1} = 'Char/%';
+                targetNames{2} = 'Liquid/%';
+                targetNames{3} = 'Gas/%';
+                fprintf('Using standard pyrolysis product names for targets\n');
+            else
+                for i = 1:size(shapValues, 3)
+                    targetNames{i} = sprintf('Target %d', i);
+                end
+                fprintf('Using default target names (no targetNames found)\n');
             end
         else
             targetNames = {'Target 1'};
+            fprintf('Using default target name for single output\n');
         end
-        disp('Using default target names (no targetNames found in SHAP results)');
     end
 else
     fprintf('Using SHAP variables from current workspace\n');
@@ -116,34 +144,48 @@ else
     if ~exist('featureNames', 'var')
         if exist('varNames', 'var')
             featureNames = varNames;
+            fprintf('Using varNames from workspace as featureNames\n');
         else
             % Create default feature names if not provided
             featureNames = cell(1, size(shapValues, 2));
             for i = 1:size(shapValues, 2)
                 featureNames{i} = sprintf('Feature %d', i);
             end
-            disp('Using default feature names (no featureNames or varNames found)');
+            disp('Using default feature names (no featureNames or varNames found in workspace)');
         end
+    else
+        fprintf('Using featureNames from workspace\n');
+    end
+    
+    % Make sure we have target names
+    if ~exist('targetNames', 'var')
+        % Create default target names if not provided
+        if ndims(shapValues) == 3
+            targetNames = cell(1, size(shapValues, 3));
+            % First try the standard pyrolysis product names
+            if size(shapValues, 3) == 3
+                targetNames{1} = 'Char/%';
+                targetNames{2} = 'Liquid/%';
+                targetNames{3} = 'Gas/%';
+                fprintf('Using standard pyrolysis product names for targets\n');
+            else
+                for i = 1:size(shapValues, 3)
+                    targetNames{i} = sprintf('Target %d', i);
+                end
+                fprintf('Using default target names (no targetNames found)\n');
+            end
+        else
+            targetNames = {'Target 1'};
+            fprintf('Using default target name for single output\n');
+        end
+    else
+        fprintf('Using targetNames from workspace\n');
     end
     
     % Check if we have input data
     hasInputData = exist('input', 'var');
     if ~hasInputData
         warning('Input data not found in workspace. Some exports will be limited.');
-    end
-    
-    % Setup target names if not available
-    if ~exist('targetNames', 'var')
-        % Create default target names if not provided
-        if ndims(shapValues) == 3
-            targetNames = cell(1, size(shapValues, 3));
-            for i = 1:size(shapValues, 3)
-                targetNames{i} = sprintf('Target %d', i);
-            end
-        else
-            targetNames = {'Target 1'};
-        end
-        disp('Using default target names (no targetNames found in workspace)');
     end
 end
 
@@ -224,6 +266,33 @@ metadataTable.DescriptionCol = cell(numFeatures, 1);
 metadataTable.DataType = cell(numFeatures, 1);
 metadataTable.Units = cell(numFeatures, 1);
 
+% Try to extract units from feature names
+for i = 1:numFeatures
+    featureName = featureNames{i};
+    % Look for /%
+    if contains(featureName, '/%')
+        metadataTable.Units{i} = '%';
+    elseif contains(featureName, '/Celsius')
+        metadataTable.Units{i} = 'Celsius';
+    elseif contains(featureName, '/min')
+        metadataTable.Units{i} = 'min';
+    elseif contains(featureName, '/(K/min)')
+        metadataTable.Units{i} = 'K/min';
+    else
+        metadataTable.Units{i} = '';
+    end
+    
+    % Generate descriptions based on feature names
+    metadataTable.DescriptionCol{i} = ['Feature: ' featureNames{i}];
+    
+    % Try to guess data type
+    if contains(featureName, 'ID') || contains(featureName, 'Type') || contains(featureName, 'Location')
+        metadataTable.DataType{i} = 'categorical';
+    else
+        metadataTable.DataType{i} = 'numeric';
+    end
+end
+
 % Ensure all columns have the correct data type
 for i = 1:size(metadataTable, 1)
     % Ensure DescriptionCol is initialized as cell
@@ -238,267 +307,92 @@ for i = 1:size(metadataTable, 1)
     end
 end
 
-% Fill the table data
-fprintf('Filling metadata table with %d feature rows...\n', numFeatures);
-for i = 1:numFeatures
-    metadataTable.DescriptionCol{i} = ['Feature: ' featureNames{i}];
-    
-    % Determine data type
-    if hasInputData && size(input, 1) >= i
-        value = input(i, 1);
-        
-        % Determine data type
-        if isinteger(value)
-            metadataTable.DataType{i} = 'Integer';
-        elseif isfloat(value)
-            metadataTable.DataType{i} = 'Float';
-        elseif islogical(value)
-            metadataTable.DataType{i} = 'Boolean';
-        else
-            metadataTable.DataType{i} = 'Unknown';
-        end
-    else
-        metadataTable.DataType{i} = 'Unknown';
-    end
-    
-    % Default units
-    metadataTable.Units{i} = '-';
-end
-
-% Check if all columns have the correct number of rows
-fprintf('Metadata table created with %d rows and %d columns.\n', ...
-    height(metadataTable), width(metadataTable));
-
-if height(metadataTable) ~= numFeatures
-    warning('Metadata table has %d rows but should have %d rows (numFeatures). Adjusting...', ...
-        height(metadataTable), numFeatures);
-    
-    % If row count is insufficient, expand the table
-    if height(metadataTable) < numFeatures
-        extraRows = numFeatures - height(metadataTable);
-        extraTable = table();
-        extraTable.FeatureNames = string(cell(extraRows, 1));
-        extraTable.DescriptionCol = cell(extraRows, 1);
-        extraTable.DataType = cell(extraRows, 1);
-        extraTable.Units = cell(extraRows, 1);
-        
-        % Fill additional rows
-        for i = 1:extraRows
-            idx = height(metadataTable) + i;
-            if idx <= length(featureNames)
-                extraTable.FeatureNames(i) = string(featureNames{idx});
-                extraTable.DescriptionCol{i} = ['Feature: ' featureNames{idx}];
-            else
-                extraTable.FeatureNames(i) = string(sprintf('Unknown_Feature_%d', idx));
-                extraTable.DescriptionCol{i} = ['Unknown Feature ' num2str(idx)];
-            end
-            extraTable.DataType{i} = 'Unknown';
-            extraTable.Units{i} = '-';
-        end
-        
-        % Combine tables
-        metadataTable = [metadataTable; extraTable];
-    end
-    
-    % If too many rows, truncate the table
-    if height(metadataTable) > numFeatures
-        metadataTable = metadataTable(1:numFeatures, :);
-    end
-end
-
-% Add model metadata at the end
-summaryRows = {
-    'ModelType', 'Neural Network Model', 'String', '-';
-    'NumSamples', num2str(numInstances), 'Integer', 'count';
-    'NumFeatures', num2str(numFeatures), 'Integer', 'count';
-    'NumTargets', num2str(numTargets), 'Integer', 'count';
-    'AnalysisDate', datestr(now), 'Date', '-'
-};
-additionalRows = cell2table(summaryRows, 'VariableNames', {'FeatureNames', 'DescriptionCol', 'DataType', 'Units'});
-
-% Ensure additionalRows' FeatureNames column is compatible with metadataTable
-if isa(metadataTable.FeatureNames, 'string')
-    additionalRows.FeatureNames = string(additionalRows.FeatureNames);
-end
-
-% Join the two tables
-metadataTable = [metadataTable; additionalRows];
-
 % Write to Excel
-writetable(metadataTable, metadataFile, 'Sheet', 'Metadata');
+writetable(metadataTable, metadataFile, 'Sheet', 'FeatureMetadata');
 fprintf('SHAP metadata exported to: %s\n', metadataFile);
 
-%% 2. Create SHAP_summary_all_targets.xlsx
-fprintf('Creating SHAP_summary_all_targets.xlsx...\n');
+%% 2. Export SHAP values for each target to separate Excel files
+fprintf('Exporting SHAP values for each target...\n');
+
+% Create a summary file for all targets
 summaryFile = fullfile(dataDir, 'SHAP_summary_all_targets.xlsx');
 
-% Calculate feature importance (mean absolute SHAP value) for each target
-featureImportance = zeros(numFeatures, numTargets);
-for t = 1:numTargets
-    featureImportance(:, t) = mean(abs(shapValues(:,:,t)), 1)';
-end
-
-% Create variable names for targets
-targetColNames = cell(1, numTargets);
-for t = 1:numTargets
-    targetColNames{t} = ['Target_' num2str(t)];
-end
-
-% Create importance table for all targets
-importanceTable = array2table(featureImportance, 'VariableNames', targetColNames);
-importanceTable.FeatureName = featureNames';
-
-% Calculate mean importance across all targets
-meanImportance = mean(featureImportance, 2);
-importanceTable.MeanImportance = meanImportance;
-
-% Calculate relative importance (as percentage of max)
-maxMeanImportance = max(meanImportance);
-if maxMeanImportance > 0
-    importanceTable.RelativeImportance = meanImportance / maxMeanImportance * 100;
-else
-    importanceTable.RelativeImportance = zeros(size(meanImportance));
-end
-
-% Sort by mean importance
-[~, sortIdx] = sort(meanImportance, 'descend');
-sortedImportanceTable = importanceTable(sortIdx, :);
-
-% Add rank column
-sortedImportanceTable.Rank = (1:numFeatures)';
-
-% Reorder columns to put Rank first, then FeatureName
-sortedImportanceTable = sortedImportanceTable(:, ...
-    ['Rank', 'FeatureName', targetColNames, ...
-     'MeanImportance', 'RelativeImportance']);
-
-% Write to Excel
-writetable(sortedImportanceTable, summaryFile, 'Sheet', 'ImportanceSummary');
-
-% Add additional sheets with rankings for each target
-for t = 1:numTargets
-    % Sort features by importance for this target
-    [sortedValues, sortIdx] = sort(featureImportance(:, t), 'descend');
-    
-    % Create a table for this target
-    targetTable = table();
-    targetTable.Rank = (1:numFeatures)';
-    targetTable.FeatureName = featureNames(sortIdx)';
-    targetTable.Importance = sortedValues;
-    
-    % Add relative importance (as percentage of max)
-    maxImportance = max(sortedValues);
-    if maxImportance > 0
-        targetTable.RelativeImportance = sortedValues / maxImportance * 100;
-    else
-        targetTable.RelativeImportance = zeros(size(sortedValues));
-    end
-    
-    % Add cumulative importance
-    targetTable.CumulativeImportance = cumsum(targetTable.RelativeImportance);
-    
-    % Add significance flags (features above mean importance)
-    meanTargetImportance = mean(sortedValues);
-    targetTable.SignificantFeature = sortedValues > meanTargetImportance;
-    
-    % Write to Excel
-    sheetName = sprintf('Target_%d', t);
-    writetable(targetTable, summaryFile, 'Sheet', sheetName);
-    fprintf('Exported ranking for Target %d\n', t);
-end
-
-% Add how-to-use sheet
-howToUseTable = table();
-howToUseTable.Section = {'Overview'; 'ImportanceSummary Sheet'; 'Target_X Sheets'; 'Interpreting Importance'};
-howToUseTable.Description = {
-    'This Excel workbook contains feature importance summaries from SHAP analysis across all targets.';
-    'Shows overall feature importance ranking across all targets, with mean and relative importance metrics.';
-    'Each target has its own sheet with detailed rankings, relative importance, and cumulative importance.';
-    'Higher importance values indicate features that have greater impact on model predictions.'
-};
-writetable(howToUseTable, summaryFile, 'Sheet', 'HowToUse');
-
-fprintf('SHAP summary exported to: %s\n', summaryFile);
-
-%% 3. Export SHAP values for each target
-disp('Exporting SHAP values to Excel files...');
-
-for t = 1:numTargets
-    % Create filename for this target
-    filename = fullfile(dataDir, ['SHAP_values_Target ' num2str(t) '.xlsx']);
+% For each target, create a separate Excel file with SHAP values
+for targetIdx = 1:numTargets
+    % Create filename with target name
+    targetLabel = targetNames{targetIdx};
+    outputFile = fullfile(dataDir, ['SHAP_values_' targetLabel '.xlsx']);
+    fprintf('Creating Excel file for target: %s\n', targetLabel);
     
     % Extract SHAP values for this target
-    targetShapValues = shapValues(:,:,t);
+    targetSHAP = shapValues(:, :, targetIdx);
     
-    % Create SHAP value column names
-    shapColNames = cell(1, numFeatures);
-    for i = 1:numFeatures
-        shapColNames{i} = ['SHAP_' strrep(featureNames{i}, ' ', '_')];
-    end
+    % Calculate mean absolute SHAP values (feature importance)
+    featureImportance = mean(abs(targetSHAP), 1)';
+    [sortedImportance, sortedIdx] = sort(featureImportance, 'descend');
+    sortedFeatureNames = featureNames(sortedIdx);
     
-    % Create sample IDs
-    sampleIDs = (1:numInstances)';
-    
-    % Create table with SHAP values
-    shapTable = array2table(targetShapValues, 'VariableNames', shapColNames);
-    shapTable.SampleID = sampleIDs;
-    
-    % Add input feature values if available
-    if hasInputData
-        % Create feature value column names
-        valueColNames = cell(1, numFeatures);
-        for i = 1:numFeatures
-            valueColNames{i} = ['Value_' strrep(featureNames{i}, ' ', '_')];
-            
-            % Add feature values to table
-            if size(input, 2) >= i
-                shapTable.(valueColNames{i}) = input(:, i);
-            else
-                % Handle missing input dimensions
-                shapTable.(valueColNames{i}) = NaN(numInstances, 1);
-            end
-        end
-        
-        % Reorder columns: SampleID, then alternating SHAP values and feature values
-        allCols = {'SampleID'};
-        for i = 1:numFeatures
-            allCols{end+1} = shapColNames{i};
-            allCols{end+1} = valueColNames{i};
-        end
-        
-        % Check if columns exist and keep only valid ones
-        existingCols = intersect(allCols, shapTable.Properties.VariableNames);
-        shapTable = shapTable(:, existingCols);
-    else
-        % Just reorder to put SampleID first
-        shapTable = shapTable(:, ['SampleID', shapColNames]);
-    end
-    
-    % Write to Excel
-    writetable(shapTable, filename, 'Sheet', 'SHAP_Values');
-    
-    % Add feature importance sheet
-    [sortedValues, sortIdx] = sort(featureImportance(:, t), 'descend');
+    % Create a table with importance values
     importanceTable = table();
-    importanceTable.Rank = (1:numFeatures)';
-    importanceTable.FeatureName = featureNames(sortIdx)';
-    importanceTable.Importance = sortedValues;
-    importanceTable.RelativeImportance = sortedValues / max(sortedValues) * 100;
+    importanceTable.FeatureName = string(sortedFeatureNames');
+    importanceTable.Importance = sortedImportance;
+    importanceTable.RelativeImportance = sortedImportance / max(sortedImportance) * 100;
     
-    writetable(importanceTable, filename, 'Sheet', 'FeatureImportance');
+    % Write importance table to Excel
+    fprintf('Writing feature importance sheet for target: %s\n', targetLabel);
+    writetable(importanceTable, outputFile, 'Sheet', 'FeatureImportance');
     
-    % Add how-to-use sheet
-    howToUseTable = table();
-    howToUseTable.Section = {'Overview'; 'SHAP_Values Sheet'; 'FeatureImportance Sheet'; 'Interpreting SHAP Values'};
-    howToUseTable.Description = {
-        sprintf('This Excel workbook contains SHAP values for Target %d.', t);
-        'Contains raw SHAP values for each sample and feature, along with the original feature values.';
-        'Provides a ranking of features by importance for this specific target.';
-        'Positive SHAP values indicate the feature pushed the prediction higher, negative values pushed it lower.'
-    };
-    writetable(howToUseTable, filename, 'Sheet', 'HowToUse');
+    % Also add to summary file
+    writetable(importanceTable, summaryFile, 'Sheet', ['Importance_' targetLabel]);
     
-    fprintf('SHAP values for Target %d exported to: %s\n', t, filename);
+    % Create a table with SHAP values for each sample
+    fprintf('Writing SHAP values sheet for target: %s\n', targetLabel);
+    shapTable = array2table(targetSHAP, 'VariableNames', featureNames);
+    
+    % Add sample ID column if available
+    if hasInputData && size(input, 2) == size(targetSHAP, 1)
+        sampleIds = (1:size(targetSHAP, 1))';
+        shapTable = addvars(shapTable, sampleIds, 'Before', 1, 'NewVariableNames', {'SampleID'});
+    end
+    
+    % Write SHAP values table to Excel
+    writetable(shapTable, outputFile, 'Sheet', 'SHAPValues');
+    
+    % Create a summary sheet with base value and metadata
+    fprintf('Writing summary sheet for target: %s\n', targetLabel);
+    infoTable = table();
+    infoTable.Property = {'TargetName'; 'BaseValue'; 'NumSamples'; 'NumFeatures'};
+    infoTable.Value = {targetLabel; baseValue(targetIdx); numInstances; numFeatures};
+    
+    % Write summary table to Excel
+    writetable(infoTable, outputFile, 'Sheet', 'Summary');
+    
+    fprintf('SHAP values for target %s exported to: %s\n', targetLabel, outputFile);
 end
 
-fprintf('All SHAP results successfully exported to Excel files in %s\n', dataDir); 
+%% 3. Create a combined summary file
+fprintf('Creating combined SHAP summary file...\n');
+
+% Add overall information sheet
+infoTable = table();
+infoTable.Property = {'NumSamples'; 'NumFeatures'; 'NumTargets'};
+infoTable.Value = {numInstances; numFeatures; numTargets};
+
+writetable(infoTable, summaryFile, 'Sheet', 'SummaryInfo');
+
+% Add target names sheet
+targetTable = table();
+targetTable.TargetIndex = (1:numTargets)';
+targetTable.TargetName = string(targetNames');
+targetTable.BaseValue = baseValue';
+
+writetable(targetTable, summaryFile, 'Sheet', 'Targets');
+
+fprintf('Combined SHAP summary exported to: %s\n', summaryFile);
+
+% Also create a file with the standard name shap_analysis_results.xlsx
+analysisResultsFile = fullfile(shapDir, 'shap_analysis_results.xlsx');
+copyfile(summaryFile, analysisResultsFile);
+fprintf('Copied summary to standard name: %s\n', analysisResultsFile);
+
+fprintf('===== SHAP Excel Export Completed Successfully =====\n\n'); 

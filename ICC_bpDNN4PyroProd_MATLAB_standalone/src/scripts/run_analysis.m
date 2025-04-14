@@ -103,98 +103,18 @@ try
             modelData = load(trainedModelFile);
             modelFileUsed = trainedModelFile;
         else
-            fprintf('WARNING: No existing model found. Creating test model...\n');
-            % Create a simple test model data file
-            testModelFile = fullfile(tempTrainingDir, 'Results_trained.mat');
-            
-            % Create simple test data
-            input = rand(5, 20);  % 5 features, 20 samples
-            target = rand(2, 20); % 2 outputs, 20 samples
-            
-            % Create a simple network
-            net = struct();
-            net.inputs = {struct('size', 5)};
-            net.layers = {struct('size', 10), struct('size', 2)};
-            net.outputs = {struct('size', 2)};
-            net.biases = {1, 1};
-            net.inputWeights = {struct('size', [10, 5])};
-            net.layerWeights = {[], struct('size', [2, 10])};
-            net.trainFcn = 'trainlm';
-            net.performFcn = 'mse';
-            
-            % Create preprocessing structures
-            PS = struct();
-            PS.name = 'mapminmax';
-            PS.xoffset = min(input, [], 2);
-            PS.gain = 2./(max(input, [], 2) - min(input, [], 2));
-            PS.ymin = -1;
-            
-            TS = struct();
-            TS.name = 'mapminmax';
-            TS.xoffset = min(target, [], 2);
-            TS.gain = 2./(max(target, [], 2) - min(target, [], 2));
-            TS.ymin = -1;
-            
-            % Create global versions
-            PS_global = PS;
-            TS_global = TS;
-            
-            % Save the data
-            save(testModelFile, 'input', 'target', 'net', 'PS', 'TS', 'PS_global', 'TS_global');
-            fprintf('Saved test model to: %s\n', testModelFile);
-            
-            % Load the just-created test model
-            modelData = load(testModelFile);
-            modelFileUsed = testModelFile;
+            error('ERROR: No trained model found. Cannot proceed with analysis.');
         end
     else
-        % In debug mode, create or use a simplified test model
-        testModelFile = fullfile(tempTrainingDir, 'Results_trained.mat');
-        if ~exist(testModelFile, 'file')
-            fprintf('Creating test model file: %s\n', testModelFile);
-            
-            % Create simple test data
-            input = rand(5, 20);  % 5 features, 20 samples
-            target = rand(2, 20); % 2 outputs, 20 samples
-            
-            % Create a simple network
-            net = struct();
-            net.inputs = {struct('size', 5)};
-            net.layers = {struct('size', 10), struct('size', 2)};
-            net.outputs = {struct('size', 2)};
-            net.biases = {1, 1};
-            net.inputWeights = {struct('size', [10, 5])};
-            net.layerWeights = {[], struct('size', [2, 10])};
-            net.trainFcn = 'trainlm';
-            net.performFcn = 'mse';
-            
-            % Create preprocessing structures
-            PS = struct();
-            PS.name = 'mapminmax';
-            PS.xoffset = min(input, [], 2);
-            PS.gain = 2./(max(input, [], 2) - min(input, [], 2));
-            PS.ymin = -1;
-            
-            TS = struct();
-            TS.name = 'mapminmax';
-            TS.xoffset = min(target, [], 2);
-            TS.gain = 2./(max(target, [], 2) - min(target, [], 2));
-            TS.ymin = -1;
-            
-            % Create global versions
-            PS_global = PS;
-            TS_global = TS;
-            
-            % Save the data
-            save(testModelFile, 'input', 'target', 'net', 'PS', 'TS', 'PS_global', 'TS_global');
-            fprintf('Saved test model to: %s\n', testModelFile);
+        % Even in debug mode, we still need a trained model
+        trainedModelFile = fullfile(tempTrainingDir, 'Results_trained.mat');
+        if exist(trainedModelFile, 'file')
+            fprintf('Loading trained model from: %s\n', trainedModelFile);
+            modelData = load(trainedModelFile);
+            modelFileUsed = trainedModelFile;
         else
-            fprintf('Test model file already exists: %s\n', testModelFile);
+            error('ERROR: No trained model found. Cannot proceed with analysis.');
         end
-        
-        % Load the test model data
-        modelData = load(testModelFile);
-        modelFileUsed = testModelFile;
     end
     
     % Extract data components from loaded model
@@ -261,51 +181,41 @@ try
             error('calc_shap_values.m not found at %s', calc_shap_script);
         end
     else
-        fprintf('\n===== RUNNING SIMPLIFIED SHAP ANALYSIS (DEBUG MODE) =====\n');
+        fprintf('\n===== RUNNING DEBUG MODE SHAP ANALYSIS =====\n');
         
-        % Use simplified approach for debug mode
-        fprintf('Generating simplified SHAP values for debugging...\n');
+        % In debug mode, we still use the calc_shap_values.m script, just with smaller sample sizes
+        fprintf('Calculating SHAP values using calc_shap_values.m (debug mode)...\n');
         
-        % Create simplified SHAP values
-        [numFeatures, numSamples] = size(input);
-        [numOutputs, ~] = size(target);
-        
-        % Initialize SHAP values
-        shapValues = zeros(numSamples, numFeatures, numOutputs);
-        baseValue = mean(target, 2)'; % Use mean of target as base value
-        
-        % Create feature names
-        varNames = cell(numFeatures, 1);
-        for i = 1:numFeatures
-            varNames{i} = sprintf('Feature_%d', i);
+        % Make sure required variables are defined for calc_shap_values.m
+        if ~exist('shapDir', 'var')
+            shapDir = analysisDir;
         end
         
-        % Generate random SHAP values
-        for i = 1:numSamples
-            for j = 1:numOutputs
-                % Get a dummy prediction for this sample
-                sample_pred = rand(); % Dummy prediction
-                
-                % Calculate the difference from base value
-                diff_from_base = sample_pred - baseValue(j);
-                
-                % Distribute this difference among features as SHAP values
-                feature_importances = rand(1, numFeatures);
-                feature_importances = feature_importances / sum(feature_importances);
-                shapValues(i, :, j) = diff_from_base * feature_importances;
-            end
+        % Set debug parameters
+        useAllSamples = false;
+        numShapSamples = min(5, size(input, 2)); % Limit to 5 samples for debug
+        fprintf('Debug mode: Using limited sample count (%d) for faster execution\n', numShapSamples);
+        
+        % Check if calc_shap_values.m exists and call it
+        calc_shap_script = fullfile(scriptDir, 'calc_shap_values.m');
+        if exist(calc_shap_script, 'file')
+            % Set up any additional variables needed by calc_shap_values.m
+            featureNames = {}; % Will be created by calc_shap_values.m if not available
             
-            % Report progress
-            if mod(i, 5) == 0 || i == numSamples
-                fprintf('Processed %d/%d samples\n', i, numSamples);
+            % Run the SHAP calculation script
+            run(calc_shap_script);
+            
+            % Check if SHAP values were generated
+            resultFile = fullfile(analysisDataDir, 'shap_results.mat');
+            if ~exist(resultFile, 'file')
+                error('calc_shap_values.m did not generate shap_results.mat');
+            else
+                fprintf('SHAP calculation completed successfully in debug mode.\n');
+                fprintf('SHAP results saved to: %s\n', resultFile);
             end
+        else
+            error('calc_shap_values.m not found at %s', calc_shap_script);
         end
-        
-        % Save SHAP results
-        fprintf('Saving SHAP results...\n');
-        resultFile = fullfile(analysisDataDir, 'shap_results.mat');
-        save(resultFile, 'shapValues', 'baseValue', 'varNames', 'input', 'target');
-        fprintf('SHAP results saved to: %s\n', resultFile);
     end
     
     % Create visualizations if the visualization scripts exist

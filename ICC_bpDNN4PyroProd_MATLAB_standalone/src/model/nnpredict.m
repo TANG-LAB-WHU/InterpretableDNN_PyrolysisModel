@@ -19,6 +19,9 @@ Q = size(input, 2);
 % number of layers (numHiddenLayers + numOutputs).
 Nl = net.numLayer;
 
+% Initialize outLayer
+outLayer = cell(Nl, 1);
+
 % the output of input layer of the network is same as the input of input layer.
 out = input;
 
@@ -33,13 +36,15 @@ for i = 1 : Nl - 1
             out = tansig(Wb*X);
         case {'tansigopt'}
             out = tansigopt(Wb*X);
+        case {'poslin'}
+            out = max(0, Wb*X);
     end
-    outLayer{i} = [out; ones(1, Q)];
+    outLayer{i} = out;
 end
 
 % calculate output of output layer of the network.
 Wb = [net.weight{Nl}, net.bias{Nl}];
-X = [outLayer{Nl -1}];
+X = [outLayer{Nl -1}; ones(1, Q)];
 switch net.layer{Nl}.transferFcn
     case {'logsig'}
         outLayer{Nl} = logsig(Wb*X);
@@ -47,6 +52,8 @@ switch net.layer{Nl}.transferFcn
         outLayer{Nl} = purelin(Wb*X);
     case {'softmax'}
         outLayer{Nl} = softmax(Wb*X);
+    case {'poslin'}
+        outLayer{Nl} = max(0, Wb*X);
 end
 
 output = outLayer{Nl};
