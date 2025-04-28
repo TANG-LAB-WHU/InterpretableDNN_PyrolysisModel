@@ -38,6 +38,15 @@ outLayer = cell(Nl, 1);
 for i = 1 : Nl - 1
     Wb = [net.weight{i}, net.bias{i}];
     X = [out; ones(1, Q)];
+
+    % --- START INSERTION 2 (Inside nnff.m, in the loop) ---
+    fprintf('DEBUG nnff (Layer %d): Size Wb = [%d, %d], Size X = [%d, %d]\n', i, size(Wb,1), size(Wb,2), size(X,1), size(X,2));
+    if size(Wb,2) ~= size(X,1)
+        fprintf('ERROR nnff (Layer %d): Dimension mismatch detected BEFORE multiplication!\n', i);
+        % Consider returning immediately or handling error appropriately
+        % return; % Example: uncomment to stop execution here
+    end
+    % --- END INSERTION 2 ---
     
     % Check matrix dimensions before multiplication
     [wb_rows, wb_cols] = size(Wb);
@@ -69,6 +78,15 @@ end
 % calculate output of output layer of the network.
 Wb = [net.weight{Nl}, net.bias{Nl}];
 X = [outLayer{Nl -1}; ones(1, Q)];
+
+% --- START INSERTION 3 (Inside nnff.m, after the loop) ---
+fprintf('DEBUG nnff (Output Layer %d): Size Wb = [%d, %d], Size X = [%d, %d]\n', Nl, size(Wb,1), size(Wb,2), size(X,1), size(X,2));
+if size(Wb,2) ~= size(X,1)
+    fprintf('ERROR nnff (Output Layer %d): Dimension mismatch detected BEFORE multiplication!\n', Nl);
+    % Consider returning immediately or handling error appropriately
+    % return; % Example: uncomment to stop execution here
+end
+% --- END INSERTION 3 ---
 
 % Check matrix dimensions before final layer multiplication
 [wb_rows, wb_cols] = size(Wb);
@@ -118,4 +136,13 @@ else
     % If no target, return empty error and NaN loss
     error = [];
     loss = NaN;
+
+    % --- Verify nnff output before returning ---
+    if exist('outLayer', 'var') && iscell(outLayer) && length(outLayer) >= Nl && ~isempty(outLayer{Nl})
+        fprintf('DEBUG nnff: Returning outLayer{Nl} size = [%d, %d]\n', size(outLayer{Nl},1), size(outLayer{Nl},2));
+    else
+        fprintf('DEBUG nnff: PROBLEM - outLayer{Nl} is empty or invalid before return!\n');
+    end
+    % --- End verification ---
+
 end

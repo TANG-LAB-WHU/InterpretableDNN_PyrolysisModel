@@ -1,0 +1,48 @@
+===== COMPLETE WORKFLOW SUMMARY =====
+Job ID: 1929547
+Node: ccc0290
+Start time: Wed Apr 23 01:18:58 CDT 2025
+Script version: 3.0.0
+
+Workflow steps:
+1. Hyperparameter Optimization
+2. Best Model Training
+3. SHAP Analysis
+
+Checking for required files and directories...
+Created MATLAB temporary directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/tmp_matlab_1929547
+Loading MATLAB module...
+MATLAB command found at: /sw/apps/matlab/R2024a/bin/matlab
+
+===== WORKFLOW STEP DETERMINATION =====
+! No optimization results found. Will run complete workflow.
+
+Workflow plan:
+- Will run hyperparameter optimization
+- Will run best model training
+- Will run SHAP analysis
+
+===== STARTING COMPLETE WORKFLOW =====
+Running MATLAB script...
+ERROR: MATLAB workflow failed with exit code 1
+
+===== WORKFLOW OUTPUT VERIFICATION =====
+✓ Step 1: Optimization results created
+✓ Step 2: Best model created
+✗ Step 3: SHAP results missing
+✗ No data exports (Excel/CSV) found
+✓ Figure files created: 0 .fig files, 0 .png files
+
+Cleaning up temporary files...
+Removed temporary directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/tmp_matlab_1929547
+
+===== COMPLETE WORKFLOW JOB FINISHED =====
+End time: Wed Apr 23 01:19:25 CDT 2025
+Status: FAILED (MATLAB exit code: 1)
+
+Results locations:
+  - Optimization results: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/optimization/
+  - Best model: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/best_model/
+  - SHAP analysis: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/analysis/full/
+  - Log files: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/output/full_analysis/
+

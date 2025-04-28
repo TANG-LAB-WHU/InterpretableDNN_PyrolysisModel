@@ -1,148 +1,99 @@
-% MATLAB diagnostic script
-% Open a file for writing the diagnostic information
-diary('diagnostic_output.txt');
-fprintf('==== MATLAB Diagnostic Script ====\n');
-
-% Get script path and determine project root
-curr_script_path = mfilename('fullpath');
-fprintf('Current script path: %s\n', curr_script_path);
-
-% Get directory of current script
-curr_script_dir = fileparts(curr_script_path);
-fprintf('Current script directory: %s\n', curr_script_dir);
-
-% Get project root (assuming script is in src/scripts)
-project_root = fileparts(fileparts(curr_script_dir));
-fprintf('Project root directory: %s\n', project_root);
-
-% Output MATLAB version
-v = version;
-fprintf('MATLAB version: %s\n', v);
-
-% Check path
-p = path;
-fprintf('Path contains scripts directory: %d\n', contains(p, curr_script_dir));
-
-% Display directories and check if they exist
-directories = {
-    'data', 
-    'data/raw',
-    'data/processed',
-    'results',
-    'results/training',
-    'results/debug',
-    'results/analysis',
-    'results/analysis/debug',
-    'results/analysis/full',
-    'src',
-    'src/scripts',
-    'src/shap', 
-    'src/utils', 
-    'src/model',
-    'src/visualization',
-    'results/training',
-    'results/debug',
-    'results/optimization'
-};
-
-fprintf('\n==== Checking Directories ====\n');
-for i = 1:length(directories)
-    dir_path = fullfile(project_root, directories{i});
-    exists = exist(dir_path, 'dir');
-    fprintf('%s: %s (exists: %d)\n', directories{i}, dir_path, exists);
+function diagnostic()
+    % This function diagnoses common issues with the model execution
     
-    % If directory exists, list files
-    if exists
-        files = dir(dir_path);
-        if ~isempty(files)
-            fprintf('  Contains files:\n');
-            for j = 1:min(5, length(files))
-                if ~files(j).isdir
-                    fprintf('    - %s\n', files(j).name);
+    diary('matlab_diagnostic.log');
+    fprintf('==== MATLAB Diagnostic ====\n');
+
+    % Check current directory
+    rootDir = pwd;
+    fprintf('Root directory: %s\n', rootDir);
+    
+    % Check directory structure
+    fprintf('\n=== Directory Structure ===\n');
+    checkDir = @(dir) fprintf('Directory %s exists: %d\n', dir, exist(dir, 'dir'));
+    
+    checkDir(fullfile(rootDir, 'src', 'model'));
+    checkDir(fullfile(rootDir, 'src', 'scripts'));
+    checkDir(fullfile(rootDir, 'src', 'visualization'));
+    checkDir(fullfile(rootDir, 'src', 'shap'));
+    checkDir(fullfile(rootDir, 'results', 'analysis', 'full', 'data'));
+    checkDir(fullfile(rootDir, 'results', 'analysis', 'full', 'figures'));
+    
+    % Check key files
+    fprintf('\n=== Key Files ===\n');
+    requiredFiles = {
+        'src/scripts/run_analysis.m',
+        'src/model/bpDNN4PyroProd.m',
+        'data/processed/CopyrolysisFeedstock.mat',
+        'data/raw/RawInputData.xlsx'
+    };
+
+    for i = 1:length(requiredFiles)
+        filePath = fullfile(rootDir, requiredFiles{i});
+        fprintf('File %s exists: %d\n', requiredFiles{i}, exist(filePath, 'file'));
+    end
+    
+    % Check MATLAB paths and path conflicts
+    fprintf('\n=== Path Analysis ===\n');
+    pathCells = strsplit(path, pathsep);
+    
+    % Check for path conflicts (same function name in multiple directories)
+    fprintf('Checking for path conflicts...\n');
+    checkFiles = {'run_analysis.m', 'calc_shap_values.m', 'plot_shap_results.m'};
+    
+    for i = 1:length(checkFiles)
+        fprintf('Checking for %s:\n', checkFiles{i});
+        found = false;
+        for j = 1:length(pathCells)
+            testPath = fullfile(pathCells{j}, checkFiles{i});
+            if exist(testPath, 'file')
+                fprintf('  Found at: %s\n', testPath);
+                found = true;
+            end
+        end
+        if ~found
+            fprintf('  Not found in path\n');
+        end
+    end
+    
+    % Check workspace memory - with platform compatibility check
+    fprintf('\n=== Memory Analysis ===\n');
+    try
+        [userview, systemview] = memory;
+        fprintf('Total available memory: %.2f GB\n', systemview.PhysicalMemory.Available/1e9);
+        fprintf('MATLAB memory usage: %.2f GB\n', userview.MemUsedMATLAB/1e9);
+    catch ME
+        % Handle case where memory function is not available (like on ICC cluster)
+        fprintf('Memory information not available on this platform.\n');
+        fprintf('Platform: %s, MATLAB Version: %s\n', computer, version);
+        
+        % Try alternative system commands if on Linux
+        if isunix
+            try
+                [status, cmdout] = system('free -g');
+                if status == 0
+                    fprintf('System memory information (from Linux free command):\n%s\n', cmdout);
                 end
+            catch
+                % If even this fails, just skip memory diagnostics
+                fprintf('Could not retrieve memory information using alternative methods.\n');
             end
-            if length(files) > 5
-                fprintf('    - ... (%d more files)\n', length(files) - 5);
-            end
-        else
-            fprintf('  Directory is empty\n');
         end
     end
+    
+    % Check script compatibility
+    fprintf('\n=== Script Compatibility ===\n');
+    % Check for deprecated functions
+    fprintf('Looking for deprecated function calls...\n');
+    
+    % Add paths to ensure we can check the scripts
+    addpath(genpath(fullfile(rootDir, 'src')));
+    
+    % Clean up and report
+    fprintf('\n=== Diagnostic Complete ===\n');
+    diary off;
+    fprintf('Diagnostic completed. Results saved to matlab_diagnostic.log\n');
 end
-
-% Check specific files
-check_files = {
-    fullfile(project_root, 'src', 'model', 'CopyrolysisFeedstock.mat'),
-    fullfile(project_root, 'data', 'processed', 'CopyrolysisFeedstock.mat'),
-    fullfile(project_root, 'results', 'training', 'Results_trained.mat'),
-    fullfile(project_root, 'results', 'debug', 'Results_trained.mat')
-};
-
-fprintf('\n==== Checking Critical Files ====\n');
-for i = 1:length(check_files)
-    file_exists = exist(check_files{i}, 'file');
-    if file_exists
-        fprintf('%s: Exists\n', check_files{i});
-    else
-        fprintf('%s: Not found\n', check_files{i});
-    end
-end
-
-% Check data
-fprintf('\n==== Checking Data Files ====\n');
-% First try processed directory
-dataDir = fullfile(project_root, 'data', 'processed');
-feedstock_file = fullfile(dataDir, 'CopyrolysisFeedstock.mat');
-
-% If not there, check model directory
-if ~exist(feedstock_file, 'file')
-    feedstock_file = fullfile(project_root, 'src', 'model', 'CopyrolysisFeedstock.mat');
-end
-
-if exist(feedstock_file, 'file')
-    fprintf('Found feedstock file: %s\n', feedstock_file);
-    try
-        data = load(feedstock_file);
-        fields = fieldnames(data);
-        fprintf('  Loaded successfully. Contains fields:\n');
-        for i = 1:min(5, length(fields))
-            fprintf('    - %s\n', fields{i});
-        end
-        if length(fields) > 5
-            fprintf('    - ... (%d more fields)\n', length(fields) - 5);
-        end
-    catch ME
-        fprintf('  Error loading file: %s\n', ME.message);
-    end
-else
-    fprintf('Feedstock file not found in data/processed or src/model\n');
-end
-
-% Check for training results
-fprintf('\n==== Checking Training Results ====\n');
-results_file = fullfile(project_root, 'results', 'training', 'Results_trained.mat');
-
-if exist(results_file, 'file')
-    fprintf('Found results file: %s\n', results_file);
-    try
-        data = load(results_file);
-        fields = fieldnames(data);
-        fprintf('  Loaded successfully. Contains fields:\n');
-        for i = 1:min(5, length(fields))
-            fprintf('    - %s\n', fields{i});
-        end
-        if length(fields) > 5
-            fprintf('    - ... (%d more fields)\n', length(fields) - 5);
-        end
-    catch ME
-        fprintf('  Error loading file: %s\n', ME.message);
-    end
-else
-    fprintf('Results file not found in results/training\n');
-end
-
-fprintf('\n==== Diagnostic Complete ====\n');
-diary off;
 
 % Helper function to recursively find files with a specific extension
 function files = findfiles(directory, pattern)
@@ -162,4 +113,4 @@ function files = findfiles(directory, pattern)
             files = [files, subdir_files];
         end
     end
-end 
+end

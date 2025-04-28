@@ -1,433 +1,377 @@
-%% Debug run analysis script - simplified version
-fprintf('Starting debug_run_analysis.m\n');
+%% Debug Run Analysis - Ultra-fast debugging for HPC environments
+% This script runs a debug version of the analysis with enhanced diagnostics
+% specifically designed for HPC environments like the ICC cluster.
+%
+% It performs a series of checks and diagnostics to help identify common issues
+% that can occur on HPC clusters.
 
-% Setup output log file
-diary('debug_run_analysis_log.txt');
-fprintf('Logging to debug_run_analysis_log.txt\n');
+% Start timing execution
+debugStartTime = tic;
+
+% Enable verbose output - useful for debugging
+verbose = true;
+
+% Setup logging to file
+logFile = fullfile(pwd, 'debug_run_analysis_log.txt');
+diary(logFile);
+fprintf('DEBUG ANALYSIS LOG - Started at %s\n\n', datestr(now));
+fprintf('%-30s: %s\n', 'Working directory', pwd);
+fprintf('%-30s: %s\n', 'MATLAB version', version);
+fprintf('%-30s: %s\n', 'Computer architecture', computer);
 
 try
     % Get the root directory of the project
     rootDir = fileparts(fileparts(fileparts(mfilename('fullpath'))));
-    fprintf('Root directory: %s\n', rootDir);
+    fprintf('%-30s: %s\n\n', 'Root directory', rootDir);
     
-    % Set up paths - only add directories that exist
-    directories_to_add = {
-        fullfile(rootDir, 'src', 'shap'),
-        fullfile(rootDir, 'src', 'dnn'),
-        fullfile(rootDir, 'src', 'utils'),
-        fullfile(rootDir, 'src', 'scripts'),
-        fullfile(rootDir, 'src', 'visualization')
-    };
+    % Print environment information
+    fprintf('===== ENVIRONMENT INFORMATION =====\n');
     
-    for i = 1:length(directories_to_add)
-        if exist(directories_to_add{i}, 'dir')
-            addpath(directories_to_add{i});
-            fprintf('Added to path: %s\n', directories_to_add{i});
-        else
-            fprintf('Directory does not exist (skipping): %s\n', directories_to_add{i});
-        end
-    end
-    fprintf('Paths setup complete.\n');
+    % Get username
+    [~, username] = system('whoami');
+    fprintf('%-30s: %s', 'Username', username);
     
-    % Define directory paths relative to root directory
-    scriptDir = fullfile(rootDir, 'src', 'scripts');
-    shapDir = fullfile(rootDir, 'src', 'shap');
-    trainingDir = fullfile(rootDir, 'results', 'debug'); % Use results/debug directory
-    modelDir = fullfile(rootDir, 'src', 'model'); % Use src/model instead of model_data
-    bestModelDir = fullfile(rootDir, 'results', 'best_model'); % Best model directory
-    optimizationDir = fullfile(rootDir, 'results', 'optimization'); % Optimization directory
-    analysisDir = fullfile(rootDir, 'results', 'analysis', 'debug');
-    
-    % Create the data directories
-    analysisDataDir = fullfile(analysisDir, 'data');
-    analysisFigDir = fullfile(analysisDir, 'figures');
-    
-    % Check if directories exist, create if they don't
-    dirs_to_check = {};
-    dirs_to_check{1} = trainingDir;
-    dirs_to_check{2} = bestModelDir;
-    dirs_to_check{3} = optimizationDir;
-    dirs_to_check{4} = analysisDir;
-    dirs_to_check{5} = analysisDataDir;
-    dirs_to_check{6} = analysisFigDir;
-    
-    for i = 1:length(dirs_to_check)
-        if ~exist(dirs_to_check{i}, 'dir')
-            fprintf('Creating directory: %s\n', dirs_to_check{i});
-            mkdir(dirs_to_check{i});
-        else
-            fprintf('Directory exists: %s\n', dirs_to_check{i});
-        end
-    end
-    
-    % Add model directory to path if it's not already
-    if ~contains(path, modelDir)
-        addpath(modelDir);
-        fprintf('Added model directory to path: %s\n', modelDir);
-    end
-    
-    % Create a simple test model data file
-    testModelFile = fullfile(trainingDir, 'Results_trained.mat');
-    if ~exist(testModelFile, 'file')
-        fprintf('Creating test model file: %s\n', testModelFile);
-        
-        % Create simple test data
-        input = rand(5, 20);  % 5 features, 20 samples
-        target = rand(2, 20); % 2 outputs, 20 samples
-        
-        % Create a simple network
-        net = struct();
-        net.inputs = {struct('size', 5)};
-        net.layers = {struct('size', 10), struct('size', 2)};
-        net.outputs = {struct('size', 2)};
-        net.biases = {1, 1};
-        net.inputWeights = {struct('size', [10, 5])};
-        net.layerWeights = {[], struct('size', [2, 10])};
-        net.trainFcn = 'trainlm';
-        net.performFcn = 'mse';
-        
-        % Create preprocessing structures
-        PS = struct();
-        PS.name = 'mapminmax';
-        PS.xoffset = min(input, [], 2);
-        PS.gain = 2./(max(input, [], 2) - min(input, [], 2));
-        PS.ymin = -1;
-        
-        TS = struct();
-        TS.name = 'mapminmax';
-        TS.xoffset = min(target, [], 2);
-        TS.gain = 2./(max(target, [], 2) - min(target, [], 2));
-        TS.ymin = -1;
-        
-        % Create global versions
-        PS_global = PS;
-        TS_global = TS;
-        
-        % Save the data
-        save(testModelFile, 'input', 'target', 'net', 'PS', 'TS', 'PS_global', 'TS_global');
-        fprintf('Saved test model to: %s\n', testModelFile);
+    % Check for SLURM environment variables
+    slurmJobId = getenv('SLURM_JOB_ID');
+    if ~isempty(slurmJobId)
+        fprintf('%-30s: %s\n', 'SLURM Job ID', slurmJobId);
+        fprintf('%-30s: %s\n', 'SLURM Job Name', getenv('SLURM_JOB_NAME'));
+        fprintf('%-30s: %s\n', 'SLURM Nodelist', getenv('SLURM_JOB_NODELIST'));
+        fprintf('%-30s: %s\n', 'SLURM Allocated CPUs', getenv('SLURM_JOB_CPUS_PER_NODE'));
     else
-        fprintf('Test model file already exists: %s\n', testModelFile);
-        % Load the test model data to use for optimization
-        data = load(testModelFile);
-        input = data.input;
-        target = data.target;
+        fprintf('Not running in a SLURM environment\n');
     end
     
-    % Run a simplified hyperparameter optimization for debug mode
-    fprintf('\n===== RUNNING SIMPLIFIED HYPERPARAMETER OPTIMIZATION (DEBUG MODE) =====\n');
-    
-    % Create optimization log file
-    optLogFile = fullfile(optimizationDir, 'debug_optimization_log.txt');
-    if exist(optLogFile, 'file')
-        delete(optLogFile);
+    % Check available disk space
+    if isunix
+        [~, diskInfo] = system('df -h .');
+        fprintf('\nDisk Space Information:\n%s\n', diskInfo);
     end
-    optLogFid = fopen(optLogFile, 'w');
-    fprintf(optLogFid, 'Debug Hyperparameter Optimization Log\n');
-    fprintf(optLogFid, 'Date: %s\n\n', datestr(now));
     
-    % Define a small set of hyperparameters to test (simplified for debug)
-    lrValues = [0.01, 0.1];         % Learning rates
-    mcValues = [0.8, 0.9];          % Momentum coefficients
-    hiddenLayerValues = {
-        [10],                      % 1 hidden layer with 10 neurons
-        [8, 5]                     % 2 hidden layers
+    % Manual path setup with verification
+    fprintf('\n===== PATH VERIFICATION =====\n');
+    
+    % Define important directories
+    src_dirs = {'model', 'scripts', 'visualization', 'shap'};
+    all_dirs_exist = true;
+    
+    % Check source directories
+    for i = 1:length(src_dirs)
+        dir_path = fullfile(rootDir, 'src', src_dirs{i});
+        if exist(dir_path, 'dir')
+            fprintf('%-30s: EXISTS\n', ['src/' src_dirs{i}]);
+            if ~contains(path, dir_path)
+                addpath(dir_path);
+                fprintf('%-30s: ADDED TO PATH\n', ['src/' src_dirs{i}]);
+            else
+                fprintf('%-30s: ALREADY IN PATH\n', ['src/' src_dirs{i}]);
+            end
+        else
+            fprintf('%-30s: MISSING!\n', ['src/' src_dirs{i}]);
+            all_dirs_exist = false;
+        end
+    end
+    
+    if ~all_dirs_exist
+        fprintf('\nWARNING: Some source directories are missing. This may cause issues.\n');
+    end
+    
+    % Set up a flag to indicate we're in debug mode
+    analysisMode = 'debug';
+    fprintf('\nRunning in DEBUG mode with ultra-fast settings\n');
+    
+    % Create all required directories
+    fprintf('\n===== CREATING DIRECTORIES =====\n');
+    required_dirs = {
+        fullfile(rootDir, 'results', 'debug'),
+        fullfile(rootDir, 'results', 'debug', 'Figures'),
+        fullfile(rootDir, 'results', 'analysis', 'debug', 'data'),
+        fullfile(rootDir, 'results', 'analysis', 'debug', 'figures')
     };
-    hiddenTFValues = {'tansig', 'logsig'};  % Transfer functions
     
-    % Calculate total configurations
-    totalConfigs = length(lrValues) * length(mcValues) * length(hiddenLayerValues) * length(hiddenTFValues);
-    fprintf('Testing %d hyperparameter configurations in debug mode\n', totalConfigs);
-    fprintf(optLogFid, 'Testing %d hyperparameter configurations\n', totalConfigs);
+    for i = 1:length(required_dirs)
+        if ~exist(required_dirs{i}, 'dir')
+            mkdir(required_dirs{i});
+            fprintf('Created: %s\n', required_dirs{i});
+        else
+            fprintf('Already exists: %s\n', required_dirs{i});
+        end
+    end
     
-    % Initialize best model parameters
-    bestMSE = Inf;
-    bestConfig = struct();
-    bestNetFile = fullfile(optimizationDir, 'debug_best_model.mat');
+    % Check for model conflicts - this is crucial
+    fprintf('\n===== CHECKING FOR FILE CONFLICTS =====\n');
+    conflict_found = false;
     
-    % Run all configurations
-    configCounter = 0;
-    for lr_idx = 1:length(lrValues)
-        for mc_idx = 1:length(mcValues)
-            for hl_idx = 1:length(hiddenLayerValues)
-                for tf_idx = 1:length(hiddenTFValues)
-                    % Current configuration
-                    configCounter = configCounter + 1;
-                    fprintf('Configuration %d/%d:\n', configCounter, totalConfigs);
-                    
-                    % Extract parameters
-                    lr = lrValues(lr_idx);
-                    mc = mcValues(mc_idx);
-                    hiddenLayers = hiddenLayerValues{hl_idx};
-                    hiddenTF = hiddenTFValues{tf_idx};
-                    
-                    % Log configuration
-                    fprintf('  LR: %.3f, MC: %.2f, Layers: [%s], TF: %s\n', ...
-                        lr, mc, num2str(hiddenLayers), hiddenTF);
-                    fprintf(optLogFid, '\nConfig %d - LR: %.3f, MC: %.2f, Layers: [%s], TF: %s\n', ...
-                        configCounter, lr, mc, num2str(hiddenLayers), hiddenTF);
-                    
-                    % Create network settings (simplified)
-                    nnSettings = struct();
-                    nnSettings.hiddenLayers = hiddenLayers;
-                    nnSettings.transferFunctions = repmat({hiddenTF}, 1, length(hiddenLayers));
-                    nnSettings.transferFunctions{end+1} = 'purelin'; % Output layer
-                    nnSettings.trainingFunction = 'trainlm';
-                    nnSettings.learningRate = lr;
-                    nnSettings.momentum = mc;
-                    nnSettings.maxEpochs = 50; % Low number of epochs for debug mode
-                    
-                    % Split data - simple 80/20 split for debug
-                    rng(42); % For reproducibility
-                    trainIdx = randperm(size(input, 2), round(0.8 * size(input, 2)));
-                    testIdx = setdiff(1:size(input, 2), trainIdx);
-                    
-                    trainInput = input(:, trainIdx);
-                    trainTarget = target(:, trainIdx);
-                    testInput = input(:, testIdx);
-                    testTarget = target(:, testIdx);
-                    
-                    try
-                        % In debug mode, just simulate training with random performance
-                        fprintf('  Simulating training (debug mode)...\n');
-                        
-                        % Simulate network creation
-                        net = struct();
-                        net.layers = cell(1, length(hiddenLayers) + 1);
-                        for i = 1:length(hiddenLayers)
-                            net.layers{i} = struct('size', hiddenLayers(i));
-                        end
-                        net.layers{end} = struct('size', size(target, 1));
-                        
-                        % Simulate training metrics
-                        trainMSE = 0.1 + rand()*0.1 - lr/10 - mc/10; % Better performance with higher lr/mc
-                        valMSE = trainMSE * (1.1 + rand()*0.2);
-                        testMSE = valMSE * (1.0 + rand()*0.15);
-                        
-                        fprintf('  Results - Train MSE: %.4f, Val MSE: %.4f, Test MSE: %.4f\n', ...
-                            trainMSE, valMSE, testMSE);
-                        fprintf(optLogFid, '  Train MSE: %.4f, Val MSE: %.4f, Test MSE: %.4f\n', ...
-                            trainMSE, valMSE, testMSE);
-                        
-                        % Check if this is the best model so far
-                        if valMSE < bestMSE
-                            bestMSE = valMSE;
-                            bestConfig = nnSettings;
-                            bestConfig.trainMSE = trainMSE;
-                            bestConfig.valMSE = valMSE;
-                            bestConfig.testMSE = testMSE;
-                            
-                            % Save the "best" model
-                            fprintf('  New best model found! Saving...\n');
-                            fprintf(optLogFid, '  NEW BEST MODEL!\n');
-                            save(bestNetFile, 'net', 'bestConfig', 'nnSettings', 'PS', 'TS');
-                        end
-                    catch me
-                        fprintf('  Error in configuration %d: %s\n', configCounter, me.message);
-                        fprintf(optLogFid, '  ERROR: %s\n', me.message);
-                    end
+    % Check calc_shap_values.m - known to have multiple versions
+    fprintf('Checking for calc_shap_values.m conflicts...\n');
+    scripts_shap = fullfile(rootDir, 'src', 'scripts', 'calc_shap_values.m');
+    dedicated_shap = fullfile(rootDir, 'src', 'shap', 'calc_shap_values.m');
+    
+    if exist(scripts_shap, 'file') && exist(dedicated_shap, 'file')
+        fprintf('CONFLICT DETECTED: calc_shap_values.m exists in both:\n');
+        fprintf('  1. %s\n', scripts_shap);
+        fprintf('  2. %s\n', dedicated_shap);
+        
+        % Compare file dates to determine which is newer
+        scripts_info = dir(scripts_shap);
+        dedicated_info = dir(dedicated_shap);
+        
+        if scripts_info.datenum > dedicated_info.datenum
+            fprintf('The version in src/scripts is newer (modified: %s)\n', datestr(scripts_info.datenum));
+            fprintf('Will use this version during analysis.\n');
+        else
+            fprintf('The version in src/shap is newer (modified: %s)\n', datestr(dedicated_info.datenum));
+            fprintf('Will use this version during analysis.\n');
+        end
+        conflict_found = true;
+    elseif exist(scripts_shap, 'file')
+        fprintf('Found calc_shap_values.m in src/scripts only.\n');
+    elseif exist(dedicated_shap, 'file')
+        fprintf('Found calc_shap_values.m in src/shap only.\n');
+    else
+        fprintf('WARNING: calc_shap_values.m not found in expected locations!\n');
+    end
+    
+    fprintf('\n===== STARTING DEBUG ANALYSIS =====\n');
+    fprintf('Debug mode will run with minimal epochs and simplified settings\n');
+    fprintf('This is designed for ultra-fast execution to diagnose issues\n');
+    
+    % Call run_analysis with debug mode
+    try
+        % First check if we have a copy of run_analysis in path
+        if exist('run_analysis', 'file')
+            fprintf('Found run_analysis.m in path, proceeding with debug analysis...\n');
+            % Run the analysis with debug mode set
+            run_analysis;
+        else
+            fprintf('ERROR: run_analysis.m not found in path!\n');
+            fprintf('Checking for file in src/scripts...\n');
+            
+            run_analysis_path = fullfile(rootDir, 'src', 'scripts', 'run_analysis.m');
+            if exist(run_analysis_path, 'file')
+                fprintf('Found at %s, adding to path...\n', run_analysis_path);
+                addpath(fileparts(run_analysis_path));
+                run_analysis;
+            else
+                error('Cannot find run_analysis.m file. Analysis cannot proceed.');
+            end
+        end
+    catch run_err
+        fprintf('\nERROR running analysis: %s\n', run_err.message);
+        
+        % Check for common error patterns and provide helpful messages
+        if contains(run_err.message, 'No trained model found')
+            fprintf('\nThis error occurs because no trained model was found.\n');
+            fprintf('Checking for expected model locations...\n');
+            
+            model_locations = {
+                fullfile(rootDir, 'results', 'best_model', 'best_model.mat'),
+                fullfile(rootDir, 'results', 'training', 'Results_trained.mat'),
+                fullfile(rootDir, 'results', 'optimization', 'best_model.mat')
+            };
+            
+            for i = 1:length(model_locations)
+                if exist(model_locations{i}, 'file')
+                    fprintf('Model found at: %s\n', model_locations{i});
+                else
+                    fprintf('No model at: %s\n', model_locations{i});
                 end
             end
+            
+            fprintf('\nPossible solutions:\n');
+            fprintf('1. Run train_best_model.m first to generate a model file\n');
+            fprintf('2. Run optimize_hyperparameters.m to generate an optimization model\n');
+            fprintf('3. Ensure run_analysis.m contains code to create a synthetic model\n');
+            
+        elseif contains(run_err.message, 'Index exceeds')
+            fprintf('\nThis appears to be a matrix dimension mismatch error.\n');
+            fprintf('Common causes:\n');
+            fprintf('1. Inconsistent feature dimensions between training and analysis\n');
+            fprintf('2. Incorrect handling of TT vs TVT training strategies\n');
+            fprintf('3. Data preprocessing differences between training and analysis\n');
         end
+        
+        % Always provide stack trace for detailed debugging
+        fprintf('\n===== STACK TRACE =====\n');
+        for k = 1:length(run_err.stack)
+            fprintf('File: %s\nLine: %d\nFunction: %s\n\n', ...
+                run_err.stack(k).file, run_err.stack(k).line, run_err.stack(k).name);
+        end
+        
+        % Create a debug error file with detailed information
+        debug_error_file = fullfile(rootDir, 'output', 'debug_analysis', 'debug_error_detailed.txt');
+        
+        % Ensure output directory exists
+        output_dir = fullfile(rootDir, 'output', 'debug_analysis');
+        if ~exist(output_dir, 'dir')
+            mkdir(output_dir);
+        end
+        
+        fid = fopen(debug_error_file, 'w');
+        if fid ~= -1
+            fprintf(fid, 'Debug Analysis Error Report\n');
+            fprintf(fid, 'Generated: %s\n\n', datestr(now));
+            fprintf(fid, 'Error Message: %s\n\n', run_err.message);
+            fprintf(fid, 'Stack Trace:\n');
+            for k = 1:length(run_err.stack)
+                fprintf(fid, 'File: %s\nLine: %d\nFunction: %s\n\n', ...
+                    run_err.stack(k).file, run_err.stack(k).line, run_err.stack(k).name);
+            end
+            
+            fprintf(fid, '\nEnvironment Information:\n');
+            fprintf(fid, 'MATLAB Version: %s\n', version);
+            fprintf(fid, 'Computer: %s\n', computer);
+            fprintf(fid, 'User: %s\n', username);
+            if ~isempty(slurmJobId)
+                fprintf(fid, 'SLURM Job ID: %s\n', slurmJobId);
+                fprintf(fid, 'SLURM Node: %s\n', getenv('SLURM_JOB_NODELIST'));
+            end
+            
+            fclose(fid);
+            fprintf('Detailed error report written to: %s\n', debug_error_file);
+        end
+        
+        % Rethrow error
+        rethrow(run_err);
     end
     
-    % Report best configuration
-    fprintf('\nBest configuration found:\n');
-    fprintf('  LR: %.3f, MC: %.2f, Layers: [%s], TF: %s\n', ...
-        bestConfig.learningRate, bestConfig.momentum, ...
-        num2str(bestConfig.hiddenLayers), bestConfig.transferFunctions{1});
-    fprintf('  MSE - Train: %.4f, Val: %.4f, Test: %.4f\n', ...
-        bestConfig.trainMSE, bestConfig.valMSE, bestConfig.testMSE);
+    % If we got here, analysis completed successfully
+    executionTime = toc(debugStartTime);
     
-    % Close log file
-    fclose(optLogFid);
-    fprintf('Optimization log saved to: %s\n', optLogFile);
-    fprintf('Best model saved to: %s\n', bestNetFile);
+    fprintf('\n===== DEBUG ANALYSIS COMPLETED SUCCESSFULLY =====\n');
+    fprintf('Execution time: %.2f seconds (%.2f minutes)\n', executionTime, executionTime/60);
     
-    % Execute SHAP Analysis
-    fprintf('\n===== RUNNING SIMPLIFIED SHAP ANALYSIS (DEBUG MODE) =====\n');
-    fprintf('Generating simplified SHAP values...\n');
-
-    % Load results if they exist, otherwise generate them
-    results_file = fullfile(trainingDir, 'Results_trained.mat');
-    if exist(results_file, 'file')
-        fprintf('Loading test model data from: %s\n', results_file);
-        load(results_file);
-    else
-        fprintf('No existing model file found. Creating simplified test model...\n');
-        % Create simplified test model
-        X = rand(20, 5); % 20 samples, 5 features
-        Y = rand(20, 2); % 20 samples, 2 targets
-        
-        % Create more model-like structure
-        net = struct();
-        net.layers = [10, 2];
-        net.transferFcn = 'tansig';
-        net.performFcn = 'mse';
-        net.trainFcn = 'trainbr'; % Bayesian regularization
-        net.lr = 0.1;
-        net.mc = 0.9;
-        
-        % Create simple predictions
-        predictions = [0.324524756328847 0.621467592389274;
-                      0.485384043745262 0.785028275287541]; % Two target values for demo
-                      
-        % Save to mat file for later use
-        save(results_file, 'X', 'Y', 'net', 'predictions');
-        fprintf('Created test model data and saved to: %s\n', results_file);
-    end
-
-    % Try to read feature names from an Excel file
-    try
-        raw_data_file = fullfile(rootDir, 'data', 'raw', 'RawInputData.xlsx');
-        if exist(raw_data_file, 'file')
-            fprintf('Trying to read real feature names from %s...\n', raw_data_file);
-            [~, ~, raw] = xlsread(raw_data_file, 1);
-            if size(raw, 2) >= 5
-                % Grab column headers as feature names
-                varNames = raw(1, 1:5);
-                fprintf('Successfully read %d real feature names\n', length(varNames));
-            else
-                varNames = {'Feature1', 'Feature2', 'Feature3', 'Feature4', 'Feature5'};
-                fprintf('Excel file does not have enough columns. Using default feature names.\n');
+    % Verify output files were created
+    fprintf('\n===== VERIFYING OUTPUT FILES =====\n');
+    
+    % Define key output files that should exist after successful run
+    debug_output_files = {
+        fullfile(rootDir, 'results', 'debug', 'Results_trained.mat'),
+        fullfile(rootDir, 'results', 'analysis', 'debug', 'data', 'shap_results.mat')
+    };
+    
+    all_outputs_exist = true;
+    for i = 1:length(debug_output_files)
+        if exist(debug_output_files{i}, 'file')
+            fprintf('%-50s: EXISTS\n', debug_output_files{i});
+            
+            % Get file size
+            file_info = dir(debug_output_files{i});
+            fprintf('  Size: %.2f MB, Date: %s\n', file_info.bytes/1e6, datestr(file_info.datenum));
+            
+            % For MAT files, check key variables
+            if endsWith(debug_output_files{i}, '.mat')
+                try
+                    matObj = matfile(debug_output_files{i});
+                    var_info = whos(matObj);
+                    fprintf('  Contains %d variables:\n', length(var_info));
+                    for v = 1:min(5, length(var_info))  % Show first 5 variables
+                        fprintf('    %s (%s): %.2f KB\n', var_info(v).name, var_info(v).class, var_info(v).bytes/1024);
+                    end
+                    if length(var_info) > 5
+                        fprintf('    ... and %d more variables\n', length(var_info) - 5);
+                    end
+                catch mat_err
+                    fprintf('  WARNING: Could not inspect MAT file contents: %s\n', mat_err.message);
+                end
             end
         else
-            varNames = {'Feature1', 'Feature2', 'Feature3', 'Feature4', 'Feature5'};
-            fprintf('Raw data file not found. Using default feature names.\n');
-        end
-    catch
-        varNames = {'Feature1', 'Feature2', 'Feature3', 'Feature4', 'Feature5'};
-        fprintf('Error reading feature names. Using default feature names.\n');
-    end
-
-    % Define target names
-    targetNames = {'Target 1', 'Target 2'};
-
-    % Generate simple SHAP values
-    if ~exist('X', 'var')
-        % If we loaded a file that doesn't have X defined
-        X = rand(20, 5); % 20 samples, 5 features
-        Y = rand(20, 2); % 20 samples, 2 targets
-    end
-
-    % Generate simplified SHAP values
-    numSamples = size(X, 1);
-    numFeatures = size(X, 2);
-    numTargets = 2; % For demo
-
-    % Generate simple SHAP values (random for demonstration)
-    shapValues = zeros(numSamples, numFeatures, numTargets);
-    for i = 1:numTargets
-        for j = 1:numSamples
-            % Make sure there's some pattern - higher feature values generally 
-            % have higher SHAP contribution
-            shapValues(j, :, i) = X(j, :) .* randn(1, numFeatures) * 0.1;
+            fprintf('%-50s: MISSING!\n', debug_output_files{i});
+            all_outputs_exist = false;
         end
     end
-
-    % Processing loop for demo purposes
-    for i = 1:4
-        fprintf('Processed %d/%d samples\n', i*5, numSamples);
-    end
-
-    % Create base value (mean prediction)
-    baseValue = [0.324524756328847 0.621467592389274];
-
-    % Prepare for visualization
-    input = X;
-    featureNames = varNames;
-
-    % Set up the shapDir for proper output
-    shapDir = fullfile(rootDir, 'results', 'analysis', 'debug');
-
-    % Create directories if they don't exist
-    if ~exist(fullfile(shapDir, 'data'), 'dir')
-        mkdir(fullfile(shapDir, 'data'));
-    end
-    if ~exist(fullfile(shapDir, 'figures'), 'dir')
-        mkdir(fullfile(shapDir, 'figures'));
-    end
-
-    % Save SHAP results to data directory
-    shap_results_file = fullfile(shapDir, 'data', 'shap_results.mat');
-    fprintf('Saving SHAP results to: %s\n', shap_results_file);
     
-    % Create a comprehensive structure with all necessary variables
-    shap_data = struct();
-    shap_data.shapValues = shapValues;
-    shap_data.baseValue = baseValue;
-    shap_data.input = input;
-    shap_data.varNames = varNames;
-    shap_data.featureNames = featureNames;
-    shap_data.targetNames = targetNames;
-    shap_data.analysisMode = 'debug';
-    shap_data.creationDate = datestr(now);
-    
-    % Save the structure to make loading easier later
-    save(shap_results_file, '-struct', 'shap_data');
-    
-    % Also save individual variables for backward compatibility
-    save(shap_results_file, 'shapValues', 'baseValue', 'input', 'varNames', 'targetNames', 'featureNames', '-append');
-    fprintf('SHAP results saved to: %s\n', shap_results_file);
-
-    % Use the improved SHAP analysis master script to handle all visualizations and exports
-    fprintf('\n===== Running Full SHAP Analysis Pipeline =====\n');
-    try
-        % Run the full SHAP analysis pipeline
-        analysisMode = 'debug';
-        parentScript = 'debug_run_analysis';  % Flag to indicate this is called from another script
-        run_shap_analysis;
-        fprintf('\n===== Full SHAP Analysis Pipeline Completed Successfully =====\n');
-    catch ME
-        fprintf('\n===== Error in Full SHAP Analysis Pipeline =====\n');
-        fprintf('Error: %s\n', ME.message);
-        fprintf('Stack trace:\n%s\n', getReport(ME));
-        
-        % Try running individual visualization scripts
-        fprintf('\n===== Attempting Individual Steps =====\n');
-        
-        % Try visualization scripts one by one
-        try
-            fprintf('Creating visualizations...\n');
-            plot_shap_beeswarm;
-            fprintf('Beeswarm plots created successfully.\n');
-        catch ME
-            fprintf('Error creating beeswarm plots: %s\n', ME.message);
-        end
-        
-        try
-            plot_shap_original_summary;
-            fprintf('Original summary plots created successfully.\n');
-        catch ME
-            fprintf('Error creating original summary plots: %s\n', ME.message);
-        end
-        
-        try
-            plot_shap_results;
-            fprintf('Enhanced result plots created successfully.\n');
-        catch ME
-            fprintf('Error creating enhanced result plots: %s\n', ME.message);
-        end
-        
-        % Try Excel export separately
-        try
-            fprintf('Exporting to Excel...\n');
-            export_shap_to_excel;
-            fprintf('Excel export completed successfully.\n');
-        catch ME
-            fprintf('Error exporting to Excel: %s\n', ME.message);
-        end
+    if ~all_outputs_exist
+        fprintf('\nWARNING: Some expected output files are missing!\n');
+    else
+        fprintf('\nAll expected output files were created successfully.\n');
     end
-
-    fprintf('\n===== DEBUG RUN ANALYSIS COMPLETE =====\n');
-    fprintf('Saved SHAP results to %s\n', shap_results_file);
-catch e
-    % Handle errors
-    fprintf('\n===== ERROR OCCURRED =====\n');
-    fprintf('Error: %s\n', e.message);
-    fprintf('Stack trace:\n');
-    disp(e.stack);
+    
+    % Check figure files
+    figure_dir = fullfile(rootDir, 'results', 'analysis', 'debug', 'figures');
+    if exist(figure_dir, 'dir')
+        figure_files = dir(fullfile(figure_dir, '*.png'));
+        fprintf('\nFound %d PNG figures in %s\n', length(figure_files), figure_dir);
+        if length(figure_files) > 0
+            fprintf('First few figures:\n');
+            for i = 1:min(5, length(figure_files))
+                fprintf('  %s (%.2f KB)\n', figure_files(i).name, figure_files(i).bytes/1024);
+            end
+        else
+            fprintf('WARNING: No PNG figures were generated!\n');
+        end
+    else
+        fprintf('WARNING: Figure directory does not exist!\n');
+    end
+    
+    % Create debug summary file
+    summary_file = fullfile(rootDir, 'output', 'debug_analysis', sprintf('debug_summary_%s.txt', slurmJobId));
+    fid = fopen(summary_file, 'w');
+    if fid ~= -1
+        fprintf(fid, 'DEBUG ANALYSIS SUMMARY\n');
+        fprintf(fid, '=====================\n\n');
+        fprintf(fid, 'Job completed at: %s\n', datestr(now));
+        fprintf(fid, 'Execution time: %.2f seconds (%.2f minutes)\n', executionTime, executionTime/60);
+        fprintf(fid, 'Status: SUCCESS\n\n');
+        
+        fprintf(fid, 'Output directories:\n');
+        fprintf(fid, '  Model: %s\n', fullfile(rootDir, 'results', 'debug'));
+        fprintf(fid, '  Analysis data: %s\n', fullfile(rootDir, 'results', 'analysis', 'debug', 'data'));
+        fprintf(fid, '  Analysis figures: %s\n', fullfile(rootDir, 'results', 'analysis', 'debug', 'figures'));
+        
+        fprintf(fid, '\nNext steps:\n');
+        fprintf(fid, '1. Review debug results in %s\n', fullfile(rootDir, 'results', 'analysis', 'debug'));
+        fprintf(fid, '2. If debug results look good, run full analysis\n');
+        fprintf(fid, '3. If issues persist, check %s for detailed logs\n', logFile);
+        
+        fclose(fid);
+        fprintf('\nDebug summary written to: %s\n', summary_file);
+    end
+    
+    fprintf('\n===== DEBUG ANALYSIS WORKFLOW COMPLETE =====\n');
+    fprintf('All diagnostics completed successfully.\n');
+    fprintf('To run the full analysis, execute run_analysis.m with analysisMode = ''full''\n');
+    
+catch main_err
+    % Handle any unexpected errors in the debug script itself
+    fprintf('\n===== CRITICAL ERROR IN DEBUG SCRIPT =====\n');
+    fprintf('Error message: %s\n', main_err.message);
+    
+    % Print stack trace
+    for k = 1:length(main_err.stack)
+        fprintf('File: %s\nLine: %d\nFunction: %s\n\n', ...
+            main_err.stack(k).file, main_err.stack(k).line, main_err.stack(k).name);
+    end
+    
+    % Calculate execution time even on error
+    executionTime = toc(debugStartTime);
+    fprintf('Script execution failed after %.2f seconds (%.2f minutes)\n', executionTime, executionTime/60);
+    
+    % Write error to output file
+    output_dir = fullfile(rootDir, 'output', 'debug_analysis');
+    if ~exist(output_dir, 'dir')
+        mkdir(output_dir);
+    end
+    
+    error_file = fullfile(output_dir, 'debug_critical_error.txt');
+    fid = fopen(error_file, 'w');
+    if fid ~= -1
+        fprintf(fid, 'CRITICAL DEBUG SCRIPT ERROR\n');
+        fprintf(fid, 'Generated: %s\n\n', datestr(now));
+        fprintf(fid, 'Error Message: %s\n\n', main_err.message);
+        fprintf(fid, 'Stack Trace:\n');
+        for k = 1:length(main_err.stack)
+            fprintf(fid, 'File: %s\nLine: %d\nFunction: %s\n\n', ...
+                main_err.stack(k).file, main_err.stack(k).line, main_err.stack(k).name);
+        end
+        fclose(fid);
+        fprintf('Critical error report written to: %s\n', error_file);
+    end
+    
+    % Don't rethrow - this is the end of the script anyway
 end
 
-% Close diary
-diary off; 
+% Always close the diary
+diary off;
+
+fprintf('\nDebug log written to: %s\n', logFile);

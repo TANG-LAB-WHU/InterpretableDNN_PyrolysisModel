@@ -6,8 +6,9 @@
 % 3. Base values and metadata
 %
 % All files are saved in the Data directory of the SHAP results folder
+% Enhanced with ICC cluster compatibility - CSV export for environments without Excel support
 
-fprintf('\n===== Starting SHAP Excel Export =====\n');
+fprintf('\n===== Starting SHAP Export =====\n');
 
 % Check if shapDir exists in the workspace
 if ~exist('shapDir', 'var')
@@ -47,7 +48,7 @@ else
 end
 
 % Load SHAP results for export
-fprintf('Processing SHAP values for Excel export...\n');
+fprintf('Processing SHAP values for export...\n');
 
 % Load SHAP data
 shap_file = fullfile(dataDir, 'shap_results.mat');
@@ -73,7 +74,7 @@ if ~exist(shap_file, 'file')
 end
 
 % Check if required variables already exist in workspace
-if ~exist('shapValues', 'var') || ~exist('baseValue', 'var')
+if ~exist('shapValues', 'var') || !exist('baseValue', 'var')
     fprintf('Required SHAP variables not found in workspace. Loading from %s\n', shap_file);
     % Load with specific variable names to ensure they're all available
     results = load(shap_file);
@@ -255,9 +256,45 @@ elseif length(targetNames) > numTargets
     disp('Truncated target names to match target count');
 end
 
-%% 1. Create SHAP_metadata.xlsx
-fprintf('Creating SHAP_metadata.xlsx...\n');
-metadataFile = fullfile(dataDir, 'SHAP_metadata.xlsx');
+%% Detect if we're running on a headless environment like the ICC cluster
+% Check if we're on a Linux system and try to determine if Excel operations might fail
+isICC = false;
+isHeadless = false;
+
+try
+    % Check if we're on Linux
+    if isunix
+        % Additional check for ICC cluster (looking at hostname or path)
+        [~, hostname] = system('hostname');
+        if contains(lower(hostname), 'icc') || contains(lower(hostname), 'iccompute') || ...
+           contains(pwd, '/projects/illinois') || contains(computer('arch'), 'glnxa64')
+            isICC = true;
+            fprintf('Detected ICC cluster environment.\n');
+        end
+        
+        % Check for display - might indicate headless environment
+        [status, ~] = system('echo $DISPLAY');
+        if status ~= 0 || isempty(getenv('DISPLAY'))
+            isHeadless = true;
+            fprintf('Detected headless environment. Excel operations may fail.\n');
+        end
+    end
+catch
+    % If any error occurs during detection, assume we might be on a restricted environment
+    fprintf('Error during environment detection. Using cautious export approach.\n');
+    isHeadless = true;
+end
+
+% Select export strategy based on environment
+useCSVFallback = isICC || isHeadless;
+
+if useCSVFallback
+    fprintf('Using CSV export as fallback for compatibility with headless environment.\n');
+end
+
+%% Export SHAP metadata
+fprintf('Creating SHAP metadata file...\n');
+metadataFile = fullfile(dataDir, 'SHAP_metadata');
 
 % Create an empty table with the correct number of rows
 metadataTable = table();
@@ -307,22 +344,43 @@ for i = 1:size(metadataTable, 1)
     end
 end
 
-% Write to Excel
-writetable(metadataTable, metadataFile, 'Sheet', 'FeatureMetadata');
-fprintf('SHAP metadata exported to: %s\n', metadataFile);
+% Write to file
+try
+    if ~useCSVFallback
+        % Use Excel if not in headless/ICC environment
+        writetable(metadataTable, [metadataFile '.xlsx'], 'Sheet', 'FeatureMetadata');
+        fprintf('SHAP metadata exported to: %s.xlsx\n', metadataFile);
+    catch excelErr
+        % If Excel export fails, fall back to CSV
+        fprintf('Excel export failed: %s\n', excelErr.message);
+        useCSVFallback = true;
+        fprintf('Falling back to CSV export...\n');
+    end
+catch
+    % Generic error handler
+    useCSVFallback = true;
+    fprintf('Error during Excel export, falling back to CSV...\n');
+end
 
-%% 2. Export SHAP values for each target to separate Excel files
-fprintf('Exporting SHAP values for each target...\n');
+% Always export CSV version for compatibility
+if useCSVFallback
+    writetable(metadataTable, [metadataFile '.csv']);
+    fprintf('SHAP metadata exported to: %s.csv\n', metadataFile);
+end
 
-% Create a summary file for all targets
-summaryFile = fullfile(dataDir, 'SHAP_summary_all_targets.xlsx');
+%% Create a summary file for all targets
+fprintf('Creating SHAP summary for all targets...\n');
+summaryFile = fullfile(dataDir, 'SHAP_summary_all_targets');
+summaryTables = {};
+summarySheetNames = {};
 
-% For each target, create a separate Excel file with SHAP values
+% For each target, export SHAP values
 for targetIdx = 1:numTargets
     % Create filename with target name
-    targetLabel = targetNames{targetIdx};
-    outputFile = fullfile(dataDir, ['SHAP_values_' targetLabel '.xlsx']);
-    fprintf('Creating Excel file for target: %s\n', targetLabel);
+    targetLabel = strrep(targetNames{targetIdx}, '%', 'pct'); % Replace % with pct for filenames
+    targetLabel = strrep(targetLabel, '/', '_');  % Replace / with _ for filenames
+    outputFile = fullfile(dataDir, ['SHAP_values_' targetLabel]);
+    fprintf('Processing data for target: %s\n', targetNames{targetIdx});
     
     % Extract SHAP values for this target
     targetSHAP = shapValues(:, :, targetIdx);
@@ -338,15 +396,11 @@ for targetIdx = 1:numTargets
     importanceTable.Importance = sortedImportance;
     importanceTable.RelativeImportance = sortedImportance / max(sortedImportance) * 100;
     
-    % Write importance table to Excel
-    fprintf('Writing feature importance sheet for target: %s\n', targetLabel);
-    writetable(importanceTable, outputFile, 'Sheet', 'FeatureImportance');
-    
-    % Also add to summary file
-    writetable(importanceTable, summaryFile, 'Sheet', ['Importance_' targetLabel]);
+    % Add to summary tables collection
+    summaryTables{end+1} = importanceTable;
+    summarySheetNames{end+1} = ['Importance_' strrep(targetLabel, ' ', '_')];
     
     % Create a table with SHAP values for each sample
-    fprintf('Writing SHAP values sheet for target: %s\n', targetLabel);
     shapTable = array2table(targetSHAP, 'VariableNames', featureNames);
     
     % Add sample ID column if available
@@ -355,44 +409,102 @@ for targetIdx = 1:numTargets
         shapTable = addvars(shapTable, sampleIds, 'Before', 1, 'NewVariableNames', {'SampleID'});
     end
     
-    % Write SHAP values table to Excel
-    writetable(shapTable, outputFile, 'Sheet', 'SHAPValues');
-    
-    % Create a summary sheet with base value and metadata
-    fprintf('Writing summary sheet for target: %s\n', targetLabel);
+    % Create a summary information table
     infoTable = table();
     infoTable.Property = {'TargetName'; 'BaseValue'; 'NumSamples'; 'NumFeatures'};
-    infoTable.Value = {targetLabel; baseValue(targetIdx); numInstances; numFeatures};
+    infoTable.Value = {targetNames{targetIdx}; baseValue(targetIdx); numInstances; numFeatures};
     
-    % Write summary table to Excel
-    writetable(infoTable, outputFile, 'Sheet', 'Summary');
+    % Write target data to files
+    try
+        if ~useCSVFallback
+            % Try Excel export
+            writetable(importanceTable, [outputFile '.xlsx'], 'Sheet', 'FeatureImportance');
+            writetable(shapTable, [outputFile '.xlsx'], 'Sheet', 'SHAPValues', 'WriteMode', 'append');
+            writetable(infoTable, [outputFile '.xlsx'], 'Sheet', 'Summary', 'WriteMode', 'append');
+            fprintf('SHAP values for target %s exported to: %s.xlsx\n', targetNames{targetIdx}, outputFile);
+        catch excelErr
+            fprintf('Excel export failed for target %s: %s\n', targetNames{targetIdx}, excelErr.message);
+            useCSVFallback = true;
+        end
+    catch
+        useCSVFallback = true;
+        fprintf('Error during Excel export, falling back to CSV...\n');
+    end
     
-    fprintf('SHAP values for target %s exported to: %s\n', targetLabel, outputFile);
+    % Export CSV versions for compatibility or as fallback
+    if useCSVFallback
+        writetable(importanceTable, [outputFile '_importance.csv']);
+        writetable(shapTable, [outputFile '_values.csv']);
+        writetable(infoTable, [outputFile '_summary.csv']);
+        fprintf('SHAP data for target %s exported as CSV files\n', targetNames{targetIdx});
+    end
 end
 
-%% 3. Create a combined summary file
-fprintf('Creating combined SHAP summary file...\n');
-
-% Add overall information sheet
+% Create overall information table
 infoTable = table();
 infoTable.Property = {'NumSamples'; 'NumFeatures'; 'NumTargets'};
 infoTable.Value = {numInstances; numFeatures; numTargets};
 
-writetable(infoTable, summaryFile, 'Sheet', 'SummaryInfo');
-
-% Add target names sheet
+% Add target names table
 targetTable = table();
 targetTable.TargetIndex = (1:numTargets)';
 targetTable.TargetName = string(targetNames');
 targetTable.BaseValue = baseValue';
 
-writetable(targetTable, summaryFile, 'Sheet', 'Targets');
+% Export summary data
+try
+    if ~useCSVFallback
+        % Try exporting summary to Excel
+        writetable(infoTable, [summaryFile '.xlsx'], 'Sheet', 'SummaryInfo');
+        writetable(targetTable, [summaryFile '.xlsx'], 'Sheet', 'Targets', 'WriteMode', 'append');
+        
+        % Write each importance table to a separate sheet
+        for i = 1:length(summaryTables)
+            writetable(summaryTables{i}, [summaryFile '.xlsx'], 'Sheet', summarySheetNames{i}, 'WriteMode', 'append');
+        end
+        fprintf('Combined SHAP summary exported to: %s.xlsx\n', summaryFile);
+        
+        % Also create standard name file
+        analysisResultsFile = fullfile(shapDir, 'shap_analysis_results.xlsx');
+        copyfile([summaryFile '.xlsx'], analysisResultsFile);
+        fprintf('Copied summary to standard name: %s\n', analysisResultsFile);
+    catch excelErr
+        fprintf('Excel export for summary file failed: %s\n', excelErr.message);
+        useCSVFallback = true;
+    end
+catch
+    useCSVFallback = true;
+    fprintf('Error during Excel export, falling back to CSV...\n');
+end
 
-fprintf('Combined SHAP summary exported to: %s\n', summaryFile);
+% Export CSV versions of summary data
+if useCSVFallback
+    writetable(infoTable, [summaryFile '_info.csv']);
+    writetable(targetTable, [summaryFile '_targets.csv']);
+    
+    % Export each importance table to a separate CSV
+    for i = 1:length(summaryTables)
+        writetable(summaryTables{i}, [summaryFile '_' summarySheetNames{i} '.csv']);
+    end
+    fprintf('Combined SHAP summary exported as CSV files\n');
+    
+    % Create a simple text file as the standard result file
+    standardResultsFile = fullfile(shapDir, 'shap_analysis_results.txt');
+    fid = fopen(standardResultsFile, 'w');
+    if fid > 0
+        fprintf(fid, 'SHAP Analysis Results\n');
+        fprintf(fid, '===================\n\n');
+        fprintf(fid, 'Number of Samples: %d\n', numInstances);
+        fprintf(fid, 'Number of Features: %d\n', numFeatures);
+        fprintf(fid, 'Number of Targets: %d\n\n', numTargets);
+        fprintf(fid, 'Target Names:\n');
+        for i = 1:numTargets
+            fprintf(fid, '  %d. %s (Base Value: %.6f)\n', i, targetNames{i}, baseValue(i));
+        end
+        fprintf(fid, '\nResults exported as CSV files in: %s\n', dataDir);
+        fclose(fid);
+    end
+    fprintf('Created standard results text file: %s\n', standardResultsFile);
+end
 
-% Also create a file with the standard name shap_analysis_results.xlsx
-analysisResultsFile = fullfile(shapDir, 'shap_analysis_results.xlsx');
-copyfile(summaryFile, analysisResultsFile);
-fprintf('Copied summary to standard name: %s\n', analysisResultsFile);
-
-fprintf('===== SHAP Excel Export Completed Successfully =====\n\n'); 
+fprintf('===== SHAP Export Completed Successfully =====\n\n');

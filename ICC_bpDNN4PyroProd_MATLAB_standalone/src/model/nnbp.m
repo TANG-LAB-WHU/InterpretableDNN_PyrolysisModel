@@ -48,6 +48,20 @@ for i = Nl - 1 : -1 : 1
             % Create a binary mask where outputs > 0
             mask = outlayer{i} > 0;
             grad = mask; % For ReLU, gradient is 1 where x>0, 0 elsewhere
+
+            % --- START INSERTION 4 (Inside nnbp.m, first loop, only needed if using poslin) ---
+            if strcmp(net.layer{i}.transferFcn, 'poslin') % Check only necessary for poslin case in this specific code structure
+                W_term = net.weight{i + 1}';
+                d_term = d{i + 1};
+                fprintf('DEBUG nnbp (d{%d} calc): Size W'' = [%d, %d], Size d{%d} = [%d, %d]\n', ...
+                        i, size(W_term,1), size(W_term,2), i+1, size(d_term,1), size(d_term,2));
+                if size(W_term, 2) ~= size(d_term, 1)
+                    fprintf('ERROR nnbp (d{%d} calc): Dimension mismatch detected BEFORE multiplication!\n', i);
+                    % Handle error appropriately
+                end
+            end
+            % --- END INSERTION 4 ---
+
             d{i} = grad .* (net.weight{i + 1}' * d{i + 1});
     end
 end
@@ -56,8 +70,30 @@ end
 X = input;
 for i = Nl : -1 : 1
     if i == 1
+
+        % --- START INSERTION 5 (Inside nnbp.m, second loop, i==1 case) ---
+        d_term = d{i};
+        X_term = X'; % Note: X is 'input' here
+        fprintf('DEBUG nnbp (dW{%d} calc): Size d{%d} = [%d, %d], Size X'' = [%d, %d]\n', ...
+                i, i, size(d_term,1), size(d_term,2), size(X_term,1), size(X_term,2));
+        if size(d_term, 2) ~= size(X_term, 1)
+             fprintf('ERROR nnbp (dW{%d} calc): Dimension mismatch detected BEFORE multiplication (i=1)!\n', i);
+             % Handle error appropriately
+        end
+        % --- END INSERTION 5 ---
+
         dW{i} = (d{i} * X') / Q;
     else
+        % --- START INSERTION 6 (Inside nnbp.m, second loop, i>1 case) ---
+        d_term = d{i};
+        out_term = outlayer{i - 1}';
+        fprintf('DEBUG nnbp (dW{%d} calc): Size d{%d} = [%d, %d], Size outlayer{%d}'' = [%d, %d]\n', ...
+                i, i, size(d_term,1), size(d_term,2), i-1, size(out_term,1), size(out_term,2));
+        if size(d_term, 2) ~= size(out_term, 1)
+            fprintf('ERROR nnbp (dW{%d} calc): Dimension mismatch detected BEFORE multiplication (i>1)!\n', i);
+            % Handle error appropriately
+        end
+        % --- END INSERTION 6 ---
         dW{i} = (d{i} * outlayer{i - 1}') / Q;
     end
         db{i} = d{i} * ones(1, Q)' / Q;
