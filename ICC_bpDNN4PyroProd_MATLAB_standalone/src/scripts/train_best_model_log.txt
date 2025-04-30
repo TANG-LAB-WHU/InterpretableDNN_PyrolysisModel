@@ -1,0 +1,116 @@
+===== BEST MODEL TRAINING STARTED =====
+Starting train_best_model.m
+Script execution started at: 29-Apr-2025 16:35:52
+======================================
+
+--- Setting up directories and paths ---
+Root directory determined: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone
+Added model directory to path: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/src/model
+Checking for required model functions in /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/src/model...
+All required model functions found.
+
+--- Checking for required data files ---
+Checking primary data locations:
+  Feedstock file (/projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/data/processed/CopyrolysisFeedstock.mat): Exists
+  Raw data file (/projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/data/raw/RawInputData.xlsx): Exists
+Data files located successfully.
+
+--- Loading best hyperparameters ---
+Loading optimization results from: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/optimization/best_model.mat
+Best configuration loaded from 'best_config' field.
+Best configuration details loaded:
+             lr: 0.2000
+             mc: 0.7000
+    hiddenLayer: 20
+    transferFcn: 'poslin'
+       trainMSE: 4.6213e-05
+         valMSE: 4.8285e-05
+        testMSE: 5.2252e-05
+       strategy: 'TT'
+     trainRatio: 0.7000
+       valRatio: 0
+       hiddenTF: 'poslin'
+       outputTF: 'purelin'
+         lr_inc: 1.0500
+         lr_dec: 0.7000
+
+
+--- Determining data dimensions and model parameters ---
+Assuming data structure:
+ Header Row=1, Input Cols=[1 2 3 4 5 6 7 8 9 10 11 12 13], Target Cols=[14 15 16]
+RawInputData.xlsx: Found 859 samples (Rows 2 to 860).
+Loading /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/data/processed/CopyrolysisFeedstock.mat to determine feedstock feature size...
+FeedType_size (from CopyrolysisFeedstockTag rows): 98
+Total expected feature count: 209 (13 base + 2 * 98 feedstock)
+Using 3 outputs for neural network targets (Columns [14 15 16]).
+
+--- Configuring training strategy and data split ---
+Model parameters: 209 features, 859 samples, 3 outputs
+Strategy: TT, TrainRatio: 0.70, ValRatio: 0.00, TestRatio: 0.30
+
+--- Loading and processing data for training ---
+Loaded base features [859 x 13] and targets [859 x 3] from RawInputData.xlsx
+Loading feedstock variables from /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/data/processed/CopyrolysisFeedstock.mat...
+Constructing per-sample feedstock features using loop...
+Constructed Feedstock4training matrix [859 x 196]
+Final input matrix X created by concatenation [859 x 209]
+Obtaining preprocessing settings (PS/TS)...
+Calculated PS and TS using mapminmax directly on full dataset.
+Final data dimensions prepared for NN training:
+- input_data (Features x Samples): [209 x 859]
+- target_data (Outputs x Samples): [3 x 859]
+
+--- Configuring neural network based on best hyperparameters ---
+Using Hyperparameters:
+ LR=0.2000, MC=0.70, HiddenLayer=[20], HiddenTF=poslin, OutputTF=purelin
+DEBUG: Calling nncreate with numFeatures=209, hiddenLayer=[20], numOutputs=3, hiddenTF=poslin, outputTF=purelin
+DEBUG nncreate: Received numInputs = 209
+DEBUG nncreate: Received hiddenLayer = [20]
+DEBUG nncreate: Received numOutputs = 3
+DEBUG nncreate: Received hiddenTF = poslin
+DEBUG nncreate: Received outputTF = purelin
+DEBUG nncreate: Total number of layers (Nl) = 2
+DEBUG nncreate: Layer 1 size = 20
+DEBUG nncreate: Layer 1 (Hidden) transferFcn = poslin
+DEBUG nncreate: Layer 2 size = 3
+DEBUG nncreate: Layer 2 (Output) transferFcn = purelin
+DEBUG nncreate: Initializing weights and biases...
+DEBUG nncreate: Layer 1: Previous Size=209, Current Size=20
+DEBUG nncreate: Calculated Layer 1 weight size = [20, 209]
+DEBUG nncreate: Calculated Layer 1 bias size = [20, 1]
+DEBUG nncreate: Initialized net.weight{1} and net.bias{1}
+DEBUG nncreate: Layer 2: Previous Size=20, Current Size=3
+DEBUG nncreate: Calculated Layer 2 weight size = [3, 20]
+DEBUG nncreate: Calculated Layer 2 bias size = [3, 1]
+DEBUG nncreate: Initialized net.weight{2} and net.bias{2}
+DEBUG nncreate: Network creation complete.
+DEBUG: nncreate completed. Network structure initialized.
+
+--- Setting network training parameters ---
+Data division ratios set: Train=0.70, Val=0.00, Test=0.30
+
+===== ERROR OCCURRED in train_best_model.m =====
+Error: Unrecognized function or variable 'initial_lr'.
+Identifier: MATLAB:UndefinedFunction
+Stack trace:
+  3x1 struct array with fields:
+
+    file
+    name
+    line
+
+
+Attempting to save basic results despite error...
+Essential variables (net, input_data, target_data) exist. Creating placeholders for others...
+Emergency results saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/best_model/best_model_FAILED.mat
+
+--- Checking final results for completion marker ---
+Script finished with errors OR final training record 'tr' is invalid/missing.
+Error caught: Unrecognized function or variable 'initial_lr'.
+Creating FAILED marker, referencing: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/best_model/best_model_FAILED.mat
+Metadata for completion marker:
+    finalPerformance: NaN
+              status: 'Failed'
+       error_message: 'Unrecognized function or variable 'initial_lr'.'
+    error_identifier: 'MATLAB:UndefinedFunction'
+

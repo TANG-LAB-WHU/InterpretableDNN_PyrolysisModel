@@ -1,0 +1,5 @@
+Workflow failed at 29-Apr-2025 16:35:53
+Error message: Training failed: No model file created
+Stack trace:
+  Function: complete_workflow, Line: 138, File: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/tmp_matlab_2002613/complete_workflow.m
+  Function: run, Line: 112, File: /sw/apps/matlab/R2024a/toolbox/matlab/lang/run.m

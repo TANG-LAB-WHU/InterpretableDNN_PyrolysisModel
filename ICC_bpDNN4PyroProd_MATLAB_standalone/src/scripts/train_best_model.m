@@ -1,655 +1,546 @@
 %% Train Best Model Script
-% This script loads the best hyperparameters from optimization 
-% and trains a full model with those parameters
-
-% Clear workspace and command window
-clear all; close all; clc;
+% This script loads the best hyperparameters from optimization results
+% and trains the final neural network model using the full dataset
+% according to the specified strategy (TVT or TT).
 
 % Start timer
 startTime = tic;
 
+% Initialize error variable for final check
+e = []; % Initialize empty error object
+
 % Setup diary for logging
-diary('train_best_model_log.txt');
+% Construct a unique log file name if desired, or keep it fixed
+logFileName = fullfile(fileparts(mfilename('fullpath')), 'train_best_model_log.txt');
+if exist(logFileName, 'file')
+    delete(logFileName); % Delete old log file
+end
+diary(logFileName);
 diary on;
 
+fprintf('===== BEST MODEL TRAINING STARTED =====\n');
 fprintf('Starting train_best_model.m\n');
+fprintf('Script execution started at: %s\n', datestr(now));
 fprintf('======================================\n\n');
 
-try
+try % Main try block for the whole script
     %% Setup directories and paths
-    % Get the root directory
-scriptPath = mfilename('fullpath');
-[scriptDir, ~, ~] = fileparts(scriptPath);
-rootDir = fileparts(fileparts(scriptDir));
-    fprintf('Root directory: %s\n', rootDir);
-    
-    % Set paths to various directories
+    fprintf('--- Setting up directories and paths ---\n');
+    % Get the root directory based on the script's location
+    scriptPath = mfilename('fullpath');
+    scriptDir = fileparts(scriptPath);
+    rootDir = fileparts(fileparts(scriptDir)); % Assumes script is in src/scripts
+    fprintf('Root directory determined: %s\n', rootDir);
+
+    % Define standard paths
     modelDir = fullfile(rootDir, 'src', 'model');
-resultsDir = fullfile(rootDir, 'results');
-bestModelDir = fullfile(resultsDir, 'best_model');
-    trainingDir = fullfile(resultsDir, 'training');
-optimizationDir = fullfile(resultsDir, 'optimization');
+    resultsDir = fullfile(rootDir, 'results');
+    bestModelDir = fullfile(resultsDir, 'best_model');
+    trainingDir = fullfile(resultsDir, 'training'); % Used for saving a copy
+    optimizationDir = fullfile(resultsDir, 'optimization'); % Source of best_config
+    dataDir = fullfile(rootDir, 'data', 'processed');
+    dataRawDir = fullfile(rootDir, 'data', 'raw');
 
-% Create directories if they don't exist
-if ~exist(resultsDir, 'dir')
-    mkdir(resultsDir);
-    fprintf('Created results directory: %s\n', resultsDir);
-end
+    % Create results directories if they don't exist
+    if ~exist(resultsDir, 'dir'), mkdir(resultsDir); fprintf('Created directory: %s\n', resultsDir); end
+    if ~exist(bestModelDir, 'dir'), mkdir(bestModelDir); fprintf('Created directory: %s\n', bestModelDir); end
+    if ~exist(trainingDir, 'dir'), mkdir(trainingDir); fprintf('Created directory: %s\n', trainingDir); end
 
-if ~exist(bestModelDir, 'dir')
-    mkdir(bestModelDir);
-    fprintf('Created best model directory: %s\n', bestModelDir);
-end
+    % Figures directory (within bestModelDir)
+    figuresDir = fullfile(bestModelDir, 'Figures');
+    if ~exist(figuresDir, 'dir'), mkdir(figuresDir); fprintf('Created directory: %s\n', figuresDir); end
 
-if ~exist(trainingDir, 'dir')
-    mkdir(trainingDir);
-    fprintf('Created training directory: %s\n', trainingDir);
-end
-
-% Figures directory
-figuresDir = fullfile(bestModelDir, 'Figures');
-if ~exist(figuresDir, 'dir')
-    mkdir(figuresDir);
-    fprintf('Created figures directory: %s\n', figuresDir);
-end
-
-    % Add model directory to path
+    % Add model directory to path (contains custom nn functions)
     addpath(modelDir);
+    fprintf('Added model directory to path: %s\n', modelDir);
 
-% Check for required functions
-requiredFunctions = {'nncreate', 'nnpredict', 'nnpreprocess', 'nntrain', 'nneval'};
-for i = 1:length(requiredFunctions)
+    % Check for required custom model functions
+    requiredFunctions = {'nncreate', 'nnpredict', 'nnpreprocess', 'nntrain', 'nneval', 'nnpostprocess'}; % Add others if needed
+    fprintf('Checking for required model functions in %s...\n', modelDir);
+    for i = 1:length(requiredFunctions)
         if ~exist(fullfile(modelDir, [requiredFunctions{i} '.m']), 'file')
-            error('Required function not found: %s', fullfile(modelDir, [requiredFunctions{i} '.m']));
+            error('Required function not found: %s. Ensure it is in the model directory.', fullfile(modelDir, [requiredFunctions{i} '.m']));
         end
-end
+    end
+    fprintf('All required model functions found.\n');
 
-% Check data files existence and prepare paths
-dataDir = fullfile(rootDir, 'data', 'processed');
-dataRawDir = fullfile(rootDir, 'data', 'raw');
-feedstockFile = fullfile(dataDir, 'CopyrolysisFeedstock.mat');
-rawDataFile = fullfile(dataRawDir, 'RawInputData.xlsx');
+    %% Check Data Files
+    fprintf('\n--- Checking for required data files ---\n');
+    feedstockFile = fullfile(dataDir, 'CopyrolysisFeedstock.mat');
+    rawDataFile = fullfile(dataRawDir, 'RawInputData.xlsx');
 
-    % Check if data files exist
+    % Check primary locations
     feedstockExists = exist(feedstockFile, 'file');
     rawDataExists = exist(rawDataFile, 'file');
-    
-    fprintf('Checking data files...\n');
-    if feedstockExists
-        fprintf('Feedstock file (%s): %s\n', feedstockFile, 'Exists');
-    else
-        fprintf('Feedstock file (%s): %s\n', feedstockFile, 'Not found');
-    end
-    
-    if rawDataExists
-        fprintf('Raw data file (%s): %s\n', rawDataFile, 'Exists');
-    else
-        fprintf('Raw data file (%s): %s\n', rawDataFile, 'Not found');
-    end
-    
-    % If data files don't exist in data directory, check if they exist in model directory
+
+    fprintf('Checking primary data locations:\n');
+    fprintf('  Feedstock file (%s): %s\n', feedstockFile, iif(feedstockExists, 'Exists', 'Not found'));
+    fprintf('  Raw data file (%s): %s\n', rawDataFile, iif(rawDataExists, 'Exists', 'Not found'));
+
+    % Fallback: Check model directory (less ideal)
     if ~feedstockExists
         modelFeedstockFile = fullfile(modelDir, 'CopyrolysisFeedstock.mat');
         if exist(modelFeedstockFile, 'file')
             feedstockFile = modelFeedstockFile;
             feedstockExists = true;
-            fprintf('Found feedstock file in model directory: %s\n', feedstockFile);
+            fprintf('INFO: Using feedstock file found in model directory: %s\n', feedstockFile);
         end
     end
-    
     if ~rawDataExists
         modelRawDataFile = fullfile(modelDir, 'RawInputData.xlsx');
         if exist(modelRawDataFile, 'file')
             rawDataFile = modelRawDataFile;
             rawDataExists = true;
-            fprintf('Found raw data file in model directory: %s\n', rawDataFile);
+            fprintf('INFO: Using raw data file found in model directory: %s\n', rawDataFile);
         end
     end
 
-%% Load best hyperparameters
-fprintf('Loading best hyperparameters...\n');
-
-% Load the best configuration from optimization results
-if ~exist('optimDir', 'var') || isempty(optimDir)
-    optimDir = fullfile(rootDir, 'results', 'optimization');
-end
-
-% Check if optimization results exist
-optimResultsFile = fullfile(optimDir, 'best_model.mat');
-if ~exist(optimResultsFile, 'file')
-    error('ERROR: Best model optimization results not found at %s', optimResultsFile);
-end
-
-% Load optimization results
-disp('Loading optimization results...');
-optimResults = load(optimResultsFile);
-if ~isfield(optimResults, 'best_config')
-    error('ERROR: Invalid optimization results file. Missing best_config field.');
-end
-
-best_config = optimResults.best_config;
-disp('Best configuration loaded:');
-disp(best_config);
-
-% Make sure we can access the raw data file
-rawDataFile = fullfile(modelDir, 'RawInputData.xlsx');
-if ~exist(rawDataFile, 'file')
-    rawDataFile = fullfile(rootDir, 'data', 'raw', 'RawInputData.xlsx');
-    if ~exist(rawDataFile, 'file')
-        error('ERROR: RawInputData.xlsx file not found. Cannot proceed with model training.');
+    % Ensure data files were found somewhere
+    if ~feedstockExists || ~rawDataExists
+        error('Required data file(s) not found. Checked primary locations (data/processed, data/raw) and fallback (%s).', modelDir);
     end
-end
+    fprintf('Data files located successfully.\n');
 
-% Try to determine actual sample count from RawInputData.xlsx
-fprintf('Reading RawInputData.xlsx to determine sample count and data dimensions\n');
-try
-    % Read the file to determine dimensions
-    [~, ~, raw] = xlsread(rawDataFile);
-    [numRows, numCols] = size(raw);
-    numSamples = numRows - 1; % Subtract 1 for header row if present
-    
-    if numSamples <= 0
-        error('Invalid sample count: RawInputData.xlsx contains no data rows');
+    %% Load Best Hyperparameters from Optimization Results
+    fprintf('\n--- Loading best hyperparameters ---\n');
+    optimResultsFile = fullfile(optimizationDir, 'best_model.mat'); % Standard filename from optimize script
+    if ~exist(optimResultsFile, 'file')
+        error('ERROR: Best model optimization results not found at %s. Run optimization workflow step first.', optimResultsFile);
     end
-    
-    % Based on bpDNN4PyroProd.m, target variables start at column 14
-    inputFeatureEndCol = 13; % The last column index for input features before adding feedstock data
-    targetStartCol = 14;     % The first column index where target variables begin
-    numTargetCols = numCols - targetStartCol + 1; % Calculate how many target columns exist
-    
-    % Validate target columns
-    if numTargetCols <= 0
-        error('Invalid target column count. Target data should be in columns starting from column 14.');
-    end
-    
-    fprintf('Sample count determined from RawInputData.xlsx: %d samples\n', numSamples);
-    fprintf('Detected %d target variable columns (starting from column %d)\n', numTargetCols, targetStartCol);
-catch readErr
-    error('Error reading RawInputData.xlsx: %s', readErr.message);
-end
 
-% Determine the number of features dynamically instead of hardcoding
-% Check if we can access CopyrolysisFeedstock.mat to determine FeedType_size
-feedstockFile = fullfile(modelDir, 'CopyrolysisFeedstock.mat');
-if ~exist(feedstockFile, 'file')
-    feedstockFile = fullfile(rootDir, 'data', 'processed', 'CopyrolysisFeedstock.mat');
-    if ~exist(feedstockFile, 'file')
-        error('ERROR: CopyrolysisFeedstock.mat file not found. Cannot determine feature count.');
-    end
-end
+    fprintf('Loading optimization results from: %s\n', optimResultsFile);
+    optimResults = load(optimResultsFile);
 
-% Try to determine feature count from CopyrolysisFeedstock.mat
-fprintf('Determining feature count from CopyrolysisFeedstock.mat\n');
-try
-    feedstockData = load(feedstockFile);
-    if isfield(feedstockData, 'CopyrolysisFeedstockTag')
-        fprintf('Loaded CopyrolysisFeedstock.mat to determine feature count\n');
-        FeedType_size = size(feedstockData.CopyrolysisFeedstockTag, 1);
-        fprintf('FeedType_size determined: %d\n', FeedType_size);
-        numFeatures = 13 + 2 * FeedType_size; % 13 basic features + 2*FeedType_size
-        fprintf('Total feature count calculated: %d\n', numFeatures);
+    % Check for the structure containing best parameters
+    if isfield(optimResults, 'best_config')
+        best_config = optimResults.best_config;
+        fprintf('Best configuration loaded from ''best_config'' field.\n');
+    elseif isfield(optimResults, 'bestParams') % Handle alternative naming
+        best_config = optimResults.bestParams;
+        fprintf('Best configuration loaded from ''bestParams'' field.\n');
     else
-        error('CopyrolysisFeedstock.mat does not contain CopyrolysisFeedstockTag field');
+        error('ERROR: Invalid optimization results file (%s). Missing ''best_config'' or ''bestParams'' field.', optimResultsFile);
     end
-catch loadErr
-    error('Error loading CopyrolysisFeedstock.mat: %s', loadErr.message);
-end
 
-% Set up the number of outputs
-numOutputs = numTargetCols;  % Dynamically determined outputs
-fprintf('Using %d outputs for neural network targets\n', numOutputs);
-
-% Define default training strategy and data split parameters if not already defined
-if ~exist('strategy', 'var')
-    strategy = 'TT'; % Default to Train-Test strategy
-    fprintf('Using default strategy: %s\n', strategy);
-end
-
-if ~exist('trainRatio', 'var')
-    trainRatio = 0.7; % Default to using 70% of data for training
-    fprintf('Using default trainRatio: %.2f\n', trainRatio);
-end
-
-if ~exist('valRatio', 'var')
-    valRatio = 0.15; % Default to using 15% of data for validation
-    fprintf('Using default valRatio: %.2f\n', valRatio);
-    % Note: remaining 15% will be used for testing
-end
-
-fprintf('Training model with %d features, %d samples, and %d outputs\n', numFeatures, numSamples, numOutputs);
-
-%% Load and prepare data
-fprintf('\nLoading real data for training...\n');
-
-% Check for the required data files
-rawDataFile = fullfile(modelDir, 'RawInputData.xlsx');
-if ~exist(rawDataFile, 'file')
-    rawDataFile = fullfile(rootDir, 'data', 'raw', 'RawInputData.xlsx');
-    if ~exist(rawDataFile, 'file')
-        error('ERROR: RawInputData.xlsx file not found. Cannot proceed with model training.');
+    if ~isstruct(best_config)
+         error('ERROR: Loaded ''best_config'' or ''bestParams'' is not a structure.');
     end
-end
+    fprintf('Best configuration details loaded:\n');
+    disp(best_config); % Display the loaded structure
 
-feedstockFile = fullfile(modelDir, 'CopyrolysisFeedstock.mat');
-if ~exist(feedstockFile, 'file')
-    feedstockFile = fullfile(rootDir, 'data', 'processed', 'CopyrolysisFeedstock.mat');
-    if ~exist(feedstockFile, 'file')
-        error('ERROR: CopyrolysisFeedstock.mat file not found. Cannot determine feature count.');
-    end
-end
+    %% Determine Data Dimensions and Model Parameters
+    fprintf('\n--- Determining data dimensions and model parameters ---\n');
+    try
+        % --- Explicitly define expected data structure ---
+        expectedHeaderRow = 1;
+        expectedInputCols = 1:13; 
+        expectedTargetCols = 14:16; 
+        fprintf('Assuming data structure:\n Header Row=%d, Input Cols=%s, Target Cols=%s\n', ...
+                expectedHeaderRow, mat2str(expectedInputCols), mat2str(expectedTargetCols));
+        % --- End explicit definition ---
 
-% Load the raw data
-try
-    % Try to load raw data from Excel
-    fprintf('Loading data from %s...\n', rawDataFile);
-    [num, txt, raw] = xlsread(rawDataFile);
-    
-    % Check if data is properly loaded
-    if isempty(num) || size(num, 1) < 1
-        error('RawInputData.xlsx contains no numeric data or is empty');
-    end
-    
-    % Extract feature data (assume first row is header)
-    % Target variables start at column 14 based on bpDNN4PyroProd.m
-    inputFeatures = num(:, 1:inputFeatureEndCol);
-    targetData = num(:, targetStartCol:end);
-    
-    fprintf('Loaded raw data successfully. Features: %d, Samples: %d, Targets: %d\n', ...
-        size(inputFeatures, 2), size(inputFeatures, 1), size(targetData, 2));
-    
-    % Load feedstock data
-    fprintf('Loading feedstock data from %s...\n', feedstockFile);
-    feedstockData = load(feedstockFile);
-    
-    % Process the data according to bpDNN4PyroProd.m logic
-    % Here we need to add the feedstock features as defined in that file
-    if isfield(feedstockData, 'CopyrolysisFeedstockTag')
-        fprintf('Processing feedstock data...\n');
-        % The processing logic would depend on bpDNN4PyroProd.m
-        % For now, we'll create a simplified version: expand features based on feedstock
-        
-        % Calculate feature matrix size
-        totalFeatures = size(inputFeatures, 2) + 2 * size(feedstockData.CopyrolysisFeedstockTag, 1);
-        
-        % For actual implementation, you would need to consult bpDNN4PyroProd.m
-        % to exactly replicate the feature engineering process
-        
-        % As a placeholder, we'll create an expanded feature matrix with the correct dimensions
-        expandedFeatures = zeros(size(inputFeatures, 1), totalFeatures);
-        expandedFeatures(:, 1:size(inputFeatures, 2)) = inputFeatures;
-        
-        % Here you would add the feedstock features according to the actual algorithm
-        fprintf('Created expanded feature matrix with %d features\n', size(expandedFeatures, 2));
-        
-        % Set X to the expanded features
-        X = expandedFeatures;
-    else
-        fprintf('Warning: CopyrolysisFeedstockTag not found in feedstock data\n');
-        X = inputFeatures;
-    end
-    
-    % Set y to the target data
-    y = targetData;
-    
-catch loadErr
-    error('Error loading or processing data: %s', loadErr.message);
-end
+        % Read RawInputData.xlsx to get sample count and verify structure
+        [~, ~, rawExcelData] = xlsread(rawDataFile);
+        if isempty(rawExcelData)
+            error('RawInputData.xlsx (%s) appears to be empty.', rawDataFile);
+        end
+        [numRows, numCols] = size(rawExcelData);
 
-% Convert to format expected by NN functions
-input_data = X';  % Convert to features as rows, samples as columns
-target_data = y'; % Convert to outputs as rows, samples as columns
+        if numRows <= expectedHeaderRow
+            error('RawInputData.xlsx has too few rows (%d) to contain header (row %d) and data.', numRows, expectedHeaderRow);
+        end
+        headerRow = expectedHeaderRow;
+        numSamples = numRows - headerRow; % Number of data samples
+        fprintf('RawInputData.xlsx: Found %d samples (Rows %d to %d).\n', numSamples, headerRow + 1, numRows);
 
-% Output data dimensions for monitoring
-fprintf('Data dimensions check:\n');
-fprintf('- Input data: %d features, %d samples\n', size(input_data, 1), size(input_data, 2));
-fprintf('- Target data: %d outputs, %d samples\n', size(target_data, 1), size(target_data, 2));
+        % Validate column ranges against actual columns
+        inputFeatureEndCol = max(expectedInputCols);
+        targetStartCol = min(expectedTargetCols);
+        targetEndCol = max(expectedTargetCols);
+        numTargetCols = length(expectedTargetCols);
+        if inputFeatureEndCol > numCols || targetStartCol > numCols || targetEndCol > numCols
+            error('Defined column ranges (Inputs: %d, Targets: %d-%d) exceed actual columns (%d) in RawInputData.xlsx.', ...
+                  inputFeatureEndCol, targetStartCol, targetEndCol, numCols);
+        end
 
-% Verify if dimensions match the expected values
-if size(input_data, 1) ~= numFeatures
-    fprintf('Warning: Input data features (%d) do not match expected feature count (%d)\n', ...
-        size(input_data, 1), numFeatures);
-    % Try to fix by padding or truncating if necessary
-    if size(input_data, 1) < numFeatures
-        % Pad with zeros
-        padding = zeros(numFeatures - size(input_data, 1), size(input_data, 2));
-        input_data = [input_data; padding];
-        fprintf('Padded input data to match expected feature count\n');
-    else
-        % Truncate
-        input_data = input_data(1:numFeatures, :);
-        fprintf('Truncated input data to match expected feature count\n');
-    end
-end
-
-if size(target_data, 1) ~= numOutputs
-    fprintf('Warning: Target data outputs (%d) do not match expected output count (%d)\n', ...
-        size(target_data, 1), numOutputs);
-    if size(target_data, 1) < numOutputs
-        % Pad with zeros
-        padding = zeros(numOutputs - size(target_data, 1), size(target_data, 2));
-        target_data = [target_data; padding];
-        fprintf('Padded target data to match expected output count\n');
-    else
-        % Truncate
-        target_data = target_data(1:numOutputs, :);
-        fprintf('Truncated target data to match expected output count\n');
-    end
-end
-
-fprintf('Final data dimensions:\n');
-fprintf('- Input data: %d features, %d samples\n', size(input_data, 1), size(input_data, 2));
-fprintf('- Target data: %d outputs, %d samples\n', size(target_data, 1), size(target_data, 2));
-
-%% Configure and train the neural network
-fprintf('\nConfiguring neural network...\n');
-
-% Extract hyperparameters from best_config
-if ~isstruct(best_config)
-    error('Invalid best_config: Not a structure');
-end
-
-% Extract and validate learning rate
-if isfield(best_config, 'lr')
-    lr = best_config.lr;
-else
-    lr = 0.01; % Default value
-    fprintf('Warning: lr not found in best_config, using default value: %f\n', lr);
-end
-
-% Extract and validate momentum coefficient 
-if isfield(best_config, 'mc')
-    mc = best_config.mc;
-else
-    mc = 0.7; % Default value
-    fprintf('Warning: mc not found in best_config, using default value: %f\n', mc);
-end
-
-% Extract and validate hidden layer structure
-if isfield(best_config, 'hiddenLayer')
-    % Check if hiddenLayer is a scalar or array
-    if isscalar(best_config.hiddenLayer)
-        hiddenLayer = [best_config.hiddenLayer]; % Convert to array
-        fprintf('Converting scalar hiddenLayer to array: [%d]\n', hiddenLayer);
-    else
-        hiddenLayer = best_config.hiddenLayer;
-    end
-else
-    hiddenLayer = [10]; % Default value
-    fprintf('Warning: hiddenLayer not found in best_config, using default value: [%s]\n', num2str(hiddenLayer));
-end
-
-% Extract and validate transfer function
-if isfield(best_config, 'transferFcn')
-    hiddenTF = best_config.transferFcn;
-else
-    hiddenTF = 'tansig'; % Default value
-    fprintf('Warning: transferFcn not found in best_config, using default value: %s\n', hiddenTF);
-end
-
-% Set default output transfer function
-outputTF = 'purelin'; % Linear for regression problems
-
-% Extract and validate other parameters if present
-if isfield(best_config, 'lr_inc')
-    lr_inc = best_config.lr_inc;
-else
-    lr_inc = 1.05; % Default value
-end
-
-if isfield(best_config, 'lr_dec')
-    lr_dec = best_config.lr_dec;
-else
-    lr_dec = 0.7; % Default value
-end
-
-fprintf('Creating neural network with structure: [%s]\n', num2str(hiddenLayer));
-net = nncreate(hiddenLayer);
-
-% Manually set transfer functions
-for i = 1:length(net.layer)-1
-    net.layer{i}.transferFcn = hiddenTF;
-end
-% Set output layer transfer function
-net.layer{end}.transferFcn = outputTF;
-
-% Set learning parameters
-net.trainFcn = 'trainlm';  % Levenberg-Marquardt backpropagation
-net.performFcn = 'mse';    % Mean squared error
-
-% Set data division function to match bpDNN4PyroProd.m definition
-net.divideFcn = 'dividerand'; % Random division (matching bpDNN4PyroProd.m line 111)
-
-% Set training parameters
-net.trainParam.epochs = 100;  % Maximum epochs (reduced for testing)
-net.trainParam.goal = 1e-5;   % Performance goal
-net.trainParam.min_grad = 1e-6; % Minimum gradient
-net.trainParam.max_fail = 10;  % Maximum validation failures
-net.trainParam.lr = lr;        % Learning rate
-net.trainParam.mc = mc;        % Momentum
-net.trainParam.lr_inc = lr_inc; % Learning rate increase
-net.trainParam.lr_dec = lr_dec; % Learning rate decrease
-
-fprintf('Training neural network...\n');
-fprintf('Epochs: %d, Learning rate: %.4f, Momentum: %.2f\n', ...
-    net.trainParam.epochs, net.trainParam.lr, net.trainParam.mc);
-
-% Train the network
-if strcmp(strategy, 'TVT')
-    % TVT strategy with validation data
-    fprintf('Using TVT training strategy\n');
-    
-    % Set division ratios according to bpDNN4PyroProd.m
-    net.divideParam.trainRatio = trainRatio;
-    net.divideParam.valRatio = valRatio;
-    net.divideParam.testRatio = 1 - trainRatio - valRatio;
-    
-    fprintf('Data division ratios: %.2f training, %.2f validation, %.2f testing\n', ...
-        net.divideParam.trainRatio, net.divideParam.valRatio, net.divideParam.testRatio);
-    
-    % Train the network with all data
-    [net, tr] = nntrain(net, input_data, target_data);
-    
-    % Evaluate performance
-    trainPerf = tr.best_perf;
-    valPerf = tr.best_vperf;
-    testPerf = tr.best_tperf;
-    
-    fprintf('Training complete. Performance:\n');
-    fprintf('  Training MSE: %.6f\n', trainPerf);
-    fprintf('  Validation MSE: %.6f\n', valPerf);
-    fprintf('  Testing MSE: %.6f\n', testPerf);
-else
-    % TT strategy without validation data
-    fprintf('Using TT training strategy\n');
-    
-    % Set division parameters for TT strategy
-    net.divideParam.trainRatio = trainRatio;
-    net.divideParam.valRatio = 0; % No validation in TT strategy
-    net.divideParam.testRatio = 1 - trainRatio;
-    valRatio = 0; % Update valRatio variable to be consistent with network parameter
-    
-    fprintf('Data division ratios: %.2f training, %.2f testing\n', ...
-        net.divideParam.trainRatio, net.divideParam.testRatio);
-    
-    % Train the network with all data
-    [net, tr] = nntrain(net, input_data, target_data);
-    
-    % Evaluate performance
-    trainPerf = tr.best_perf;
-    if isfield(tr, 'best_tperf')
-        testPerf = tr.best_tperf;
-    else
-        % Fallback if best_tperf not available
-        fprintf('Warning: Testing performance metric not available in training results.\n');
-        fprintf('Computing testing performance manually...\n');
-        % Manually evaluate on test data
-        testInd = tr.testInd;
-        if ~isempty(testInd) && length(testInd) > 0
-            test_input = input_data(:, testInd);
-            test_target = target_data(:, testInd);
-            testPerf = evaluate_network_performance(net, test_input, test_target);
+        % Determine FeedType_size and numFeatures from CopyrolysisFeedstock.mat
+        fprintf('Loading %s to determine feedstock feature size...\n', feedstockFile);
+        feedstockDataCheck = load(feedstockFile);
+        if isfield(feedstockDataCheck, 'CopyrolysisFeedstockTag')
+            FeedType_size = size(feedstockDataCheck.CopyrolysisFeedstockTag, 1);
+            fprintf('FeedType_size (from CopyrolysisFeedstockTag rows): %d\n', FeedType_size);
+            numBaseFeatures = length(expectedInputCols);
+            numFeatures = numBaseFeatures + 2 * FeedType_size;
+            fprintf('Total expected feature count: %d (%d base + 2 * %d feedstock)\n', numFeatures, numBaseFeatures, FeedType_size);
         else
-            testPerf = NaN;
-            fprintf('Warning: No test indices available, cannot compute test performance.\n');
+            error('CopyrolysisFeedstock.mat does not contain CopyrolysisFeedstockTag field. Cannot determine feature count.');
         end
+
+        numOutputs = numTargetCols;
+        fprintf('Using %d outputs for neural network targets (Columns %s).\n', numOutputs, mat2str(expectedTargetCols));
+
+    catch dimErr
+        error('Error determining data dimensions: %s\nCheck file paths and formats:\n  Raw Data: %s\n  Feedstock: %s', ...
+              dimErr.message, rawDataFile, feedstockFile);
     end
-    
-    fprintf('Training complete. Performance:\n');
-    fprintf('  Training MSE: %.6f\n', trainPerf);
-    if ~isnan(testPerf)
-        fprintf('  Testing MSE: %.6f\n', testPerf);
-    else
-        fprintf('  Testing MSE: Not available\n');
-    end
-end
 
-%% Save the model
-fprintf('\nSaving trained model...\n');
+    %% Extract Training Strategy and Ratios from best_config
+    fprintf('\n--- Configuring training strategy and data split ---\n');
+    strategy = getOrDefault(best_config, 'strategy', 'TT', 'Training Strategy');
+    trainRatio = getOrDefault(best_config, 'trainRatio', 0.7, 'Training Ratio');
+    if strcmpi(strategy, 'TVT')
+        valRatio = getOrDefault(best_config, 'valRatio', 0.15, 'Validation Ratio');
+        if valRatio <= 0, warning('Validation Ratio (valRatio=%.2f) must be positive for TVT strategy. Using default 0.15.', valRatio); valRatio = 0.15; end
+    else, valRatio = 0; end
+    testRatio = 1 - trainRatio - valRatio;
+    if trainRatio <= 0 || trainRatio >= 1, error('Invalid trainRatio (%.2f). Must be between 0 and 1.', trainRatio); end
+    if valRatio < 0 || valRatio >= 1, error('Invalid valRatio (%.2f). Must be between 0 and 1.', valRatio); end
+    if testRatio < 0 || testRatio > 1, error('Invalid calculated testRatio (%.2f). Ratios do not sum to 1 correctly (Train:%.2f, Val:%.2f).', testRatio, trainRatio, valRatio); end
+    if abs(trainRatio + valRatio + testRatio - 1.0) > 1e-6, warning('Data split ratios (Train:%.2f, Val:%.2f, Test:%.2f) do not sum exactly to 1. Check configuration.', trainRatio, valRatio, testRatio); end
 
-% Prepare data for saving
-PS = struct();
-PS.name = 'mapminmax';
-PS.xoffset = min(input_data, [], 2);
-PS.gain = 2./(max(input_data, [], 2) - min(input_data, [], 2));
-PS.ymin = -1;
+    fprintf('Model parameters: %d features, %d samples, %d outputs\n', numFeatures, numSamples, numOutputs);
+    fprintf('Strategy: %s, TrainRatio: %.2f, ValRatio: %.2f, TestRatio: %.2f\n', strategy, trainRatio, valRatio, testRatio);
 
-TS = struct();
-TS.name = 'mapminmax';
-TS.xoffset = min(target_data, [], 2);
-TS.gain = 2./(max(target_data, [], 2) - min(target_data, [], 2));
-TS.ymin = -1;
+    %% Load and Prepare Final Data Matrices
+    fprintf('\n--- Loading and processing data for training ---\n');
+    try
+        % Read numeric data from Excel
+        numericData = xlsread(rawDataFile);
+        if size(numericData, 1) ~= numSamples
+             rangeStr = sprintf('%s%d:%s%d', num2col(1), headerRow + 1, num2col(numCols), numRows);
+             fprintf('Warning: xlsread row count (%d) differs from expected (%d). Trying to read range: %s\n', size(numericData,1), numSamples, rangeStr);
+              try
+                  [~, ~, rawExcelDataRange] = xlsread(rawDataFile, 1, rangeStr);
+                  numericData = cell2mat(rawExcelDataRange);
+                  if size(numericData,1) ~= numSamples, error('Failed to read correct number of samples even with specific range. Check RawInputData.xlsx structure.'); end
+              catch readErrRange, error('Error reading specific range (%s) from RawInputData.xlsx: %s', rangeStr, readErrRange.message); end
+         end
 
-% Create global versions
-PS_global = PS;
-TS_global = TS;
+        % Extract base features and targets
+        inputFeatures = numericData(:, expectedInputCols);
+        targetData = numericData(:, expectedTargetCols);
+        fprintf('Loaded base features [%d x %d] and targets [%d x %d] from RawInputData.xlsx\n', ...
+            size(inputFeatures, 1), size(inputFeatures, 2), size(targetData, 1), size(targetData, 2));
 
-% Save to best model directory
-bestModelFile = fullfile(bestModelDir, 'best_model.mat');
-save(bestModelFile, 'net', 'input_data', 'target_data', 'PS', 'TS', 'PS_global', 'TS_global', ...
-    'strategy', 'trainRatio', 'valRatio', 'lr', 'mc', 'lr_inc', 'lr_dec', ...
-    'hiddenLayer', 'hiddenTF', 'outputTF');
-fprintf('Best model saved to: %s\n', bestModelFile);
+        % Load feedstock data
+        fprintf('Loading feedstock variables from %s...\n', feedstockFile);
+        feedstockData = load(feedstockFile);
+        requiredVars = {'CopyrolysisFeedstockTag', 'Total_FeedID', 'Total_MixingRatio', 'FeedstockIndex'};
+        if ~all(isfield(feedstockData, requiredVars)), missingVars = requiredVars(~isfield(feedstockData, requiredVars)); error('Missing required variables in %s: %s', feedstockFile, strjoin(missingVars, ', ')); end
+        CopyrolysisFeedstockTag = feedstockData.CopyrolysisFeedstockTag; Total_FeedID = feedstockData.Total_FeedID; Total_MixingRatio = feedstockData.Total_MixingRatio; FeedstockIndex = feedstockData.FeedstockIndex;
 
-% Save a copy to training directory for analysis scripts
-trainingModelFile = fullfile(trainingDir, 'trained_model.mat');
-save(trainingModelFile, 'net', 'input_data', 'target_data', 'PS', 'TS', 'PS_global', 'TS_global', ...
-    'strategy', 'trainRatio', 'valRatio', 'lr', 'mc', 'lr_inc', 'lr_dec', ...
-    'hiddenLayer', 'hiddenTF', 'outputTF');
-fprintf('Training model copy saved to: %s\n', trainingModelFile);
-
-% Calculate execution time
-executionTime = toc(startTime);
-fprintf('\nExecution time: %.2f seconds (%.2f minutes)\n', ...
-    executionTime, executionTime/60);
-
-fprintf('\nTrain best model completed successfully!\n');
-catch e
-    % Handle errors
-    fprintf('\n===== ERROR OCCURRED =====\n');
-    fprintf('Error: %s\n', e.message);
-    fprintf('Stack trace:\n');
-    disp(e.stack);
-    
-    % Try to save a basic model anyway to allow SHAP analysis to proceed
-    fprintf('\nAttempting to save a basic model despite errors...\n');
-    
-    % Check if we have the necessary variables
-    if ~exist('net', 'var') || ~exist('input_data', 'var') || ~exist('target_data', 'var')
-        fprintf('ERROR: Missing essential variables, cannot create even a basic model.\n');
-    else
-        try
-            % Create simple preprocessing structures if they don't exist
-            if ~exist('PS', 'var')
-                PS = struct();
-                PS.name = 'mapminmax';
-                PS.xoffset = min(input_data, [], 2);
-                PS.gain = 2./(max(input_data, [], 2) - min(input_data, [], 2));
-                PS.ymin = -1;
-            end
-            
-            if ~exist('TS', 'var')
-                TS = struct();
-                TS.name = 'mapminmax';
-                TS.xoffset = min(target_data, [], 2);
-                TS.gain = 2./(max(target_data, [], 2) - min(target_data, [], 2));
-                TS.ymin = -1;
-            end
-            
-            % Create global versions
-            PS_global = PS;
-            TS_global = TS;
-            
-            % Set default values for any missing variables
-            if ~exist('strategy', 'var')
-                strategy = 'TT';
-            end
-            
-            if ~exist('trainRatio', 'var')
-                trainRatio = 0.7;
-            end
-            
-            if ~exist('valRatio', 'var')
-                valRatio = 0;
-            end
-            
-            if ~exist('lr', 'var')
-                lr = 0.01;
-            end
-            
-            if ~exist('mc', 'var')
-                mc = 0.7;
-            end
-            
-            if ~exist('lr_inc', 'var')
-                lr_inc = 1.05;
-            end
-            
-            if ~exist('lr_dec', 'var')
-                lr_dec = 0.7;
-            end
-            
-            if ~exist('hiddenLayer', 'var')
-                hiddenLayer = [10];
-            end
-            
-            if ~exist('hiddenTF', 'var')
-                hiddenTF = 'tansig';
-            end
-            
-            if ~exist('outputTF', 'var')
-                outputTF = 'purelin';
-            end
-            
-            % Save to best model directory
-            fprintf('Saving emergency best model...\n');
-            bestModelFile = fullfile(bestModelDir, 'best_model.mat');
-            save(bestModelFile, 'net', 'input_data', 'target_data', 'PS', 'TS', 'PS_global', 'TS_global', ...
-                'strategy', 'trainRatio', 'valRatio', 'lr', 'mc', 'lr_inc', 'lr_dec', ...
-                'hiddenLayer', 'hiddenTF', 'outputTF');
-            
-            % Save a copy to training directory for analysis scripts
-            trainingModelFile = fullfile(trainingDir, 'trained_model.mat');
-            save(trainingModelFile, 'net', 'input_data', 'target_data', 'PS', 'TS', 'PS_global', 'TS_global', ...
-                'strategy', 'trainRatio', 'valRatio', 'lr', 'mc', 'lr_inc', 'lr_dec', ...
-                'hiddenLayer', 'hiddenTF', 'outputTF');
-            
-            fprintf('Emergency model files saved successfully.\n');
-        catch saveErr
-            fprintf('ERROR: Failed to save emergency model: %s\n', saveErr.message);
+        % Verify dimensions of loaded feedstock variables
+        if size(Total_FeedID, 1) ~= numSamples || size(Total_MixingRatio, 1) ~= numSamples || size(FeedstockIndex, 1) ~= numSamples
+            error('Sample count mismatch between RawInputData (%d) and Feedstock variables (ID:%d, Ratio:%d, Index:%d)', numSamples, size(Total_FeedID, 1), size(Total_MixingRatio, 1), size(FeedstockIndex, 1));
         end
+        if size(CopyrolysisFeedstockTag, 1) ~= FeedType_size
+             error('Dimension mismatch: CopyrolysisFeedstockTag rows (%d) ~= FeedType_size (%d)', size(CopyrolysisFeedstockTag, 1), FeedType_size);
+        end
+
+        % Construct per-sample feedstock features
+        fprintf('Constructing per-sample feedstock features using loop...\n');
+        MixingFeedID = zeros(numSamples, FeedType_size); MixingRatio = zeros(numSamples, FeedType_size); validSampleCount = 0;
+        for i = 1 : numSamples
+            idx1 = FeedstockIndex(i, 1); idx2 = FeedstockIndex(i, 2);
+            isValidIdx1 = isnumeric(idx1) && isscalar(idx1) && isfinite(idx1) && idx1 >= 1 && idx1 <= FeedType_size && (idx1 == floor(idx1));
+            isValidIdx2 = isnumeric(idx2) && isscalar(idx2) && isfinite(idx2) && idx2 >= 1 && idx2 <= FeedType_size && (idx2 == floor(idx2));
+            if ~isValidIdx1 || ~isValidIdx2, warning('Sample %d has invalid FeedstockIndex [%s, %s]. Indices must be integers between 1 and %d. Skipping sample features construction.', i, num2str(idx1), num2str(idx2), FeedType_size); continue; end
+            MixingFeedID(i, idx1) = Total_FeedID(i, 1); MixingFeedID(i, idx2) = Total_FeedID(i, 2); MixingRatio(i, idx1) = Total_MixingRatio(i, 1); MixingRatio(i, idx2) = Total_MixingRatio(i, 2); validSampleCount = validSampleCount + 1;
+        end
+        if validSampleCount ~= numSamples, fprintf('Warning: Features constructed for %d out of %d samples due to invalid FeedstockIndex values.\n', validSampleCount, numSamples); end
+        Feedstock4training = [MixingFeedID MixingRatio];
+        fprintf('Constructed Feedstock4training matrix [%d x %d]\n', size(Feedstock4training,1), size(Feedstock4training,2));
+
+        % Concatenate features
+        X = [inputFeatures Feedstock4training];
+        fprintf('Final input matrix X created by concatenation [%d x %d]\n', size(X,1), size(X,2));
+        if size(X, 2) ~= numFeatures, error('CRITICAL: Final input matrix columns (%d) do not match expected feature count (%d). Check processing logic.', size(X, 2), numFeatures); end
+        y = targetData;
+
+    catch loadErr
+        error('Error loading or processing data for training: %s', loadErr.message);
+    end
+
+    % --- Get Preprocessing Settings BEFORE training ---
+    fprintf('Obtaining preprocessing settings (PS/TS)...\n');
+    try
+        % Calculate PS/TS directly using MATLAB's functions on the full dataset
+        % Use documented syntax: [Y, PS] = mapminmax(X) [cite: 2, 17]
+        % Data is expected as Features x Samples for mapminmax, so transpose X and y.
+        % Capture BOTH output arguments to avoid MATLAB:unassignedOutputs error.
+        
+        % ***** CORRECTED LINES based on Documentation & Error Log *****
+        [Xnorm_temp, PS] = mapminmax(X'); % Capture 1st output (Y) and 2nd (PS)
+        [ynorm_temp, TS] = mapminmax(y'); % Capture 1st output (Y) and 2nd (TS)
+        % *************************************************************
+
+        fprintf('Calculated PS and TS using mapminmax directly on full dataset.\n');
+
+        PS_global = PS; % Keep global copies if needed elsewhere
+        TS_global = TS;
+    catch preprocSetErr
+        fprintf('ERROR obtaining preprocessing settings before training: %s\n', preprocSetErr.message);
+        % Create empty/error placeholders if generation fails
+        PS = createPlaceholderPS(); PS.status = ['Preprocessing settings generation failed: ' preprocSetErr.message];
+        TS = createPlaceholderTS(); TS.status = ['Preprocessing settings generation failed: ' preprocSetErr.message];
+        PS_global = PS; TS_global = TS;
+        if isempty(e), e = preprocSetErr; end % Store error
+        % Rethrow the error to stop execution if PS/TS are critical
+        rethrow(preprocSetErr); 
+    end
+    % --- End Preprocessing Settings ---
+
+    % Convert data to format expected by NN functions (Features x Samples)
+    input_data = X';  
+    target_data = y'; 
+
+    fprintf('Final data dimensions prepared for NN training:\n');
+    fprintf('- input_data (Features x Samples): [%d x %d]\n', size(input_data, 1), size(input_data, 2));
+    fprintf('- target_data (Outputs x Samples): [%d x %d]\n', size(target_data, 1), size(target_data, 2));
+    if size(input_data, 1) ~= numFeatures || size(target_data, 1) ~= numOutputs || size(input_data, 2) ~= numSamples || size(target_data, 2) ~= numSamples
+        error('CRITICAL dimension mismatch between calculated parameters and final data matrices. Check data loading/processing.');
+    end
+
+    %% Configure Neural Network
+    fprintf('\n--- Configuring neural network based on best hyperparameters ---\n');
+    lr = getOrDefault(best_config, 'lr', 0.01, 'Learning Rate (lr)'); mc = getOrDefault(best_config, 'mc', 0.7, 'Momentum (mc)'); hiddenLayer = getOrDefault(best_config, 'hiddenLayer', [10], 'Hidden Layer Structure'); hiddenTF = getOrDefault(best_config, 'hiddenTF', 'tansig', 'Hidden Transfer Function');
+    if ~isfield(best_config, 'hiddenTF') && isfield(best_config, 'transferFcn'), hiddenTF = getOrDefault(best_config, 'transferFcn', 'tansig', 'Transfer Function (fallback)'); fprintf('INFO: Using ''transferFcn'' field from best_config as hiddenTF.\n'); end
+    outputTF = getOrDefault(best_config, 'outputTF', 'purelin', 'Output Transfer Function'); lr_inc = getOrDefault(best_config, 'lr_inc', 1.05, 'Learning Rate Increase'); lr_dec = getOrDefault(best_config, 'lr_dec', 0.7, 'Learning Rate Decrease');
+    if isscalar(hiddenLayer), hiddenLayer = [hiddenLayer]; elseif ~isrow(hiddenLayer), hiddenLayer = hiddenLayer(:)'; end
+    fprintf('Using Hyperparameters:\n LR=%.4f, MC=%.2f, HiddenLayer=[%s], HiddenTF=%s, OutputTF=%s\n', lr, mc, num2str(hiddenLayer), hiddenTF, outputTF);
+
+    fprintf('DEBUG: Calling nncreate with numFeatures=%d, hiddenLayer=[%s], numOutputs=%d, hiddenTF=%s, outputTF=%s\n', numFeatures, num2str(hiddenLayer), numOutputs, hiddenTF, outputTF);
+    net = nncreate(numFeatures, hiddenLayer, numOutputs, hiddenTF, outputTF);
+    fprintf('DEBUG: nncreate completed. Network structure initialized.\n');
+
+    %% Set Training Parameters
+    fprintf('\n--- Setting network training parameters ---\n');
+    net.performFcn = 'mse'; net.divideFcn = 'dividerand';
+    net.divideParam.trainRatio = trainRatio; net.divideParam.valRatio = valRatio; net.divideParam.testRatio = testRatio;
+    fprintf('Data division ratios set: Train=%.2f, Val=%.2f, Test=%.2f\n', net.divideParam.trainRatio, net.divideParam.valRatio, net.divideParam.testRatio);
+    net.trainParam.epochs = 5000; net.trainParam.goal = 1e-8; net.trainParam.min_grad = 1e-10; net.trainParam.max_fail = 25;
+    net.trainParam.showWindow = false; net.trainParam.showCommandLine = true; net.trainParam.show = 25;
+    net.trainParam.lr = lr; net.trainParam.mc = mc; net.trainParam.lr_inc = lr_inc; net.trainParam.lr_dec = lr_dec;
+
+    net.trainParam.lr = 0.01; % override the initial LR
+    fprintf('INFO: Overriding Initial LR from %.4f to %.4f\n', initial_lr, net.trainParam.lr);
+    fprintf('INFO: Using Optimized LR_INC = %.4f\n', net.trainParam.lr_inc);
+    fprintf('INFO: Using Optimized LR_DEC = %.4f\n', net.trainParam.lr_dec);
+
+    fprintf('Training parameters set: Epochs=%d, Goal=%.e, Initial LR=%.4f, MC=%.2f, LR_INC=%.2f, LR_DEC=%.2f\n', ...
+            net.trainParam.epochs, net.trainParam.goal, net.trainParam.lr, net.trainParam.mc, net.trainParam.lr_inc, net.trainParam.lr_dec);
+
+    %% Train the Neural Network
+    fprintf('\n--- Training neural network using %s strategy ---\n', upper(strategy));
+    fprintf('DEBUG: Checking final dimensions before calling nntrain...\n');
+    fprintf('DEBUG: Size of input_data: [%d x %d]\n', size(input_data, 1), size(input_data, 2)); fprintf('DEBUG: Size of target_data: [%d x %d]\n', size(target_data, 1), size(target_data, 2));
+    fprintf('DEBUG: Network expected input size (net.numInput): %d\n', net.numInput); fprintf('DEBUG: Network expected output size (net.numOutput): %d\n', net.numOutput);
+    if ~isfield(net,'numInput') || net.numInput ~= size(input_data, 1) || ~isfield(net,'numOutput') || net.numOutput ~= size(target_data, 1), error('CRITICAL dimension mismatch between network structure and prepared data. Check nncreate or data processing.'); end
+
+    tr = struct(); % Initialize training record
+    try
+        fprintf('DEBUG: Calling custom nntrain function...\n');
+        [net, tr] = nntrain(net, input_data, target_data);
+        fprintf('DEBUG: nntrain call completed.\n');
+        if isfield(tr, 'stop') && ~isempty(tr.stop), fprintf('INFO: Training stopped. Reason: %s\n', tr.stop{end}); else fprintf('INFO: Training completed (or tr.stop field missing).\n'); end
+        if isfield(tr, 'best_epoch') && ~isempty(tr.best_epoch), fprintf('INFO: Best performance achieved at epoch %d.\n', tr.best_epoch(end)); end
+    catch trainError
+        fprintf('\n===== FATAL ERROR during nntrain =====\n'); fprintf('ERROR MESSAGE: %s\n', trainError.message); fprintf('ERROR IDENTIFIER: %s\n', trainError.identifier); fprintf('STACK TRACE:\n');
+        for k=1:length(trainError.stack), fprintf('  File: %s, Name: %s, Line: %d\n', trainError.stack(k).file, trainError.stack(k).name, trainError.stack(k).line); end
+        fprintf('======================================\n');
+        tr = createMinimalTR(trainError.message, 'Failed in nntrain'); fprintf('Attempting to continue to save results despite nntrain error...\n'); e = trainError;
+    end
+
+    %% Evaluate Performance
+    fprintf('\n--- Evaluating final model performance ---\n');
+    trainPerf = NaN; valPerf = NaN; testPerf = NaN;
+    if exist('tr', 'var') && isstruct(tr) && ~isempty(fieldnames(tr))
+        if isfield(tr, 'status') && contains(tr.status, 'Failed', 'IgnoreCase', true), fprintf('Training status in ''tr'' indicates failure: "%s". Performance metrics may be NaN.\n', tr.status); end
+        if isfield(tr, 'best_perf') && isscalar(tr.best_perf) && isnumeric(tr.best_perf), trainPerf = tr.best_perf; fprintf('  Best Training MSE (tr.best_perf):   %.6f\n', trainPerf); else fprintf('  Best Training MSE: Not available in training record (tr.best_perf).\n'); end
+        if isfield(tr, 'best_vperf') && isscalar(tr.best_vperf) && isnumeric(tr.best_vperf) && ~isnan(tr.best_vperf), valPerf = tr.best_vperf; fprintf('  Best Validation MSE (tr.best_vperf): %.6f\n', valPerf); else fprintf('  Best Validation MSE: Not available or not applicable (tr.best_vperf).\n'); end
+        if isfield(tr, 'best_tperf') && isscalar(tr.best_tperf) && isnumeric(tr.best_tperf), testPerf = tr.best_tperf; fprintf('  Best Testing MSE (tr.best_tperf):    %.6f\n', testPerf); else fprintf('  Best Testing MSE: Not available in training record (tr.best_tperf).\n'); end
+    else fprintf('  Training record structure ''tr'' is missing, empty, or invalid. Cannot report performance.\n'); end
+
+    %% Save the Trained Model and Results
+    fprintf('\n--- Saving trained model and results ---\n');
+    fprintf('Using preprocessing structures PS and TS obtained before training.\n');
+    if ~exist('PS','var') || ~isstruct(PS) || ~exist('TS','var') || ~isstruct(TS)
+         warning('Preprocessing structures PS/TS not found before save. Saving placeholders.');
+         PS = createPlaceholderPS(); PS.status = 'PS not found before save.';
+         TS = createPlaceholderTS(); TS.status = 'TS not found before save.';
+    end
+    if ~exist('PS_global','var'), PS_global = PS; end 
+    if ~exist('TS_global','var'), TS_global = TS; end 
+
+    params = struct();
+    params.lr = lr; params.mc = mc; params.lr_inc = lr_inc; params.lr_dec = lr_dec; params.hiddenLayer = hiddenLayer; params.hiddenTF = hiddenTF; params.outputTF = outputTF;
+    params.strategy = strategy; params.trainRatio = trainRatio; params.valRatio = valRatio; params.testRatio = testRatio;
+    if isfield(net, 'trainParam'), params.epochs = net.trainParam.epochs; params.goal = net.trainParam.goal; params.min_grad = net.trainParam.min_grad; params.max_fail = net.trainParam.max_fail; else params.epochs = NaN; end
+    params.finalTrainMSE = trainPerf; params.finalValMSE = valPerf; params.finalTestMSE = testPerf;
+    fprintf('Parameter structure for saving created.\n'); disp(params);
+
+    if ~exist('tr', 'var') || ~isstruct(tr) || isempty(fieldnames(tr))
+        fprintf('Warning: Training record ''tr'' not found or invalid before final save. Using placeholder.\n');
+        errorMessage = 'Training did not run or tr not generated/valid'; if ~isempty(e), errorMessage = e.message; end
+        tr = createMinimalTR(errorMessage, 'Not Run/Failed Early');
+    end
+    if ~isfield(tr, 'status'), if ~isempty(e), tr.status = ['Failed: ' e.message]; else tr.status = 'Completed or Failed - Status Unknown'; end; end
+
+    fprintf('Saving final results to .mat files...\n');
+    bestModelFile = fullfile(bestModelDir, 'best_model.mat');
+    save(bestModelFile, 'net', 'tr', 'params', 'input_data', 'target_data', 'PS', 'TS', 'PS_global', 'TS_global', 'numFeatures', 'numOutputs', 'numSamples', 'FeedType_size');
+    fprintf('Best model results saved to: %s\n', bestModelFile);
+
+    trainingModelFile = fullfile(trainingDir, 'trained_model.mat');
+    save(trainingModelFile, 'net', 'tr', 'params', 'input_data', 'target_data', 'PS', 'TS', 'PS_global', 'TS_global', 'numFeatures', 'numOutputs', 'numSamples', 'FeedType_size');
+    fprintf('Training model copy saved to: %s\n', trainingModelFile);
+
+    executionTime = toc(startTime);
+    fprintf('\nTotal execution time for train_best_model: %.2f seconds (%.2f minutes)\n', executionTime, executionTime/60);
+    fprintf('\nTrain best model script finished.\n');
+
+catch e % Catch block for the main script try
+    fprintf('\n===== ERROR OCCURRED in train_best_model.m =====\n'); fprintf('Error: %s\n', e.message); fprintf('Identifier: %s\n', e.identifier); fprintf('Stack trace:\n'); disp(e.stack);
+    fprintf('\nAttempting to save basic results despite error...\n');
+    try
+        if ~exist('rootDir','var') || isempty(rootDir), try scriptPath = mfilename('fullpath'); scriptDir = fileparts(scriptPath); rootDir = fileparts(fileparts(scriptDir)); catch, rootDir = pwd; fprintf('Warning: Could not determine rootDir automatically, using pwd: %s\n', rootDir); end; end
+        if ~exist('resultsDir','var') || isempty(resultsDir), resultsDir = fullfile(rootDir, 'results'); end; if ~exist('bestModelDir','var') || isempty(bestModelDir), bestModelDir = fullfile(resultsDir, 'best_model'); end
+        if ~exist(resultsDir, 'dir'), mkdir(resultsDir); end; if ~exist(bestModelDir, 'dir'), mkdir(bestModelDir); end
+        essentialsExist = exist('net','var') && isstruct(net) && exist('input_data','var') && ~isempty(input_data) && exist('target_data','var') && ~isempty(target_data);
+        if essentialsExist
+            fprintf('Essential variables (net, input_data, target_data) exist. Creating placeholders for others...\n');
+            if ~exist('PS', 'var') || ~isstruct(PS), PS = createPlaceholderPS(); PS.status = ['Emergency save: ' e.message]; end; if ~exist('TS', 'var') || ~isstruct(TS), TS = createPlaceholderTS(); TS.status = ['Emergency save: ' e.message]; end
+            PS_global = PS; TS_global = TS;
+            if ~exist('params', 'var') || ~isstruct(params), params = createPlaceholderParams(); end; params.status = ['Failed in train_best_model: ' e.message]; params.error_identifier = e.identifier;
+            tr_emergency = createMinimalTR(e.message, ['Failed: ' e.identifier]);
+            if exist('numFeatures','var'), params.numFeatures = numFeatures; else params.numFeatures = NaN; end; if exist('numOutputs','var'), params.numOutputs = numOutputs; else params.numOutputs = NaN; end
+            if exist('numSamples','var'), params.numSamples = numSamples; else params.numSamples = NaN; end; if exist('FeedType_size','var'), params.FeedType_size = FeedType_size; else params.FeedType_size = NaN; end
+            failedModelFile = fullfile(bestModelDir, 'best_model_FAILED.mat');
+            save(failedModelFile, 'net', 'tr_emergency', 'params', 'input_data', 'target_data', 'PS', 'TS', 'PS_global', 'TS_global');
+            fprintf('Emergency results saved to: %s\n', failedModelFile);
+        else fprintf('ERROR: Missing essential variables (net, input_data, target_data). Cannot save emergency results.\n'); end
+    catch saveErr, fprintf('ERROR: Failed during attempt to save emergency results: %s\n', saveErr.message); end
+end % End main try-catch block
+
+
+%% --- Completion Marker Logic ---
+% finalPerformance = NaN;
+% fprintf('\n--- Checking final results for completion marker ---\n');
+% scriptSucceeded = isempty(e); trExistsAndValid = exist('tr', 'var') && isstruct(tr) && ~isempty(fieldnames(tr)); trainingSucceeded = false;
+% if scriptSucceeded && trExistsAndValid
+%     fprintf('Script finished without catching errors. Training record ''tr'' exists.\n');
+%     if isfield(tr, 'status') && contains(tr.status, 'Failed', 'IgnoreCase', true), fprintf('Training status in ''tr'' indicates failure: "%s".\n', tr.status);
+%     elseif isfield(tr, 'best_perf') && isscalar(tr.best_perf) && isnumeric(tr.best_perf) && ~isnan(tr.best_perf), finalPerformance = tr.best_perf; fprintf('Final training performance (best_perf) from ''tr'': %.6f\n', finalPerformance); trainingSucceeded = true;
+%     else fprintf('Warning: tr.best_perf field missing, empty, or invalid in final ''tr''. Assuming failure for marker.\n'); end
+% else fprintf('Script finished with errors or final training record ''tr'' is invalid/missing.\n'); if ~isempty(e), fprintf('Error caught: %s\n', e.message); end; end
+% if ~exist('bestModelDir','var') || isempty(bestModelDir), try scriptPath = mfilename('fullpath'); scriptDir = fileparts(scriptPath); rootDir = fileparts(fileparts(scriptDir)); catch, rootDir = pwd; end; resultsDir = fullfile(rootDir, 'results'); bestModelDir = fullfile(resultsDir, 'best_model'); end
+% resultPath = fullfile(bestModelDir, 'best_model.mat'); metadata = struct('finalPerformance', finalPerformance);
+% if ~isempty(e), metadata.status = 'Failed'; metadata.error_message = e.message; metadata.error_identifier = e.identifier; else metadata.status = 'Completed'; if ~trainingSucceeded, metadata.status = 'CompletedWithTrainingIssue'; metadata.warning = 'Script completed, but training record analysis suggests issues.'; end; end
+% fprintf('Metadata for completion marker:\n'); disp(metadata); diary off;
+% if exist('create_completion_marker', 'file') == 2
+%     fprintf('Attempting to create completion marker...\n');
+%     try
+%         if scriptSucceeded && trainingSucceeded && exist(resultPath, 'file'), marker_status = 'training'; marker_path = resultPath; fprintf('Creating SUCCESS marker for: %s\n', marker_path);
+%         else marker_status = 'training_failed'; failedPath = fullfile(bestModelDir, 'best_model_FAILED.mat'); if exist(failedPath,'file'), marker_path = failedPath; else marker_path = resultPath; end; fprintf('Creating FAILED marker, referencing: %s\n', marker_path); end
+%         create_completion_marker(marker_status, marker_path, metadata); fprintf('✓ Completion marker created (Status: %s).\n', marker_status);
+%     catch markerErr, fprintf('ERROR creating completion marker: %s\n', markerErr.message); end
+% else fprintf('Note: create_completion_marker function not found. Skipping marker creation.\n'); end
+%% --- Completion Marker Logic ---
+finalPerformance = NaN; % Initialize
+fprintf('\n--- Checking final results for completion marker ---\n');
+scriptErrorOccurred = ~isempty(e); % Check if an error was caught by the main try-catch
+trExists = exist('tr', 'var') && isstruct(tr) && ~isempty(fieldnames(tr)); % Check if tr exists and is valid
+
+trainingSucceeded = false; % Default assumption
+
+if ~scriptErrorOccurred && trExists
+    fprintf('Script finished without catching errors. Training record ''tr'' exists.\n');
+    % Check status field first
+    if isfield(tr, 'status') && iscell(tr.status) && ~isempty(tr.status) && contains(tr.status{1}, 'Failed', 'IgnoreCase', true)
+        fprintf('Training status in ''tr'' indicates failure: "%s".\n', strjoin(tr.status,'; '));
+    elseif isfield(tr, 'best_perf') && isscalar(tr.best_perf) && isnumeric(tr.best_perf) && ~isnan(tr.best_perf) && ~isinf(tr.best_perf)
+        finalPerformance = tr.best_perf;
+        trainingSucceeded = true; % Mark as succeeded only if perf is a valid finite number
+        fprintf('Final training performance (best_perf) from ''tr'': %.6e\n', finalPerformance);
+    else
+        fprintf('Warning: tr.best_perf field missing, empty, invalid, NaN or Inf in final ''tr''. Assuming training failure for marker.\n');
+    end
+else
+    fprintf('Script finished with errors OR final training record ''tr'' is invalid/missing.\n');
+    if scriptErrorOccurred, fprintf('Error caught: %s\n', e.message); end
+end
+
+% Determine marker status and path
+if ~exist('bestModelDir','var') || isempty(bestModelDir)
+    try % Try to determine path again just in case
+        scriptPath = mfilename('fullpath'); scriptDir = fileparts(scriptPath); rootDir = fileparts(fileparts(scriptDir));
+    catch, rootDir = pwd; end
+    resultsDir = fullfile(rootDir, 'results'); bestModelDir = fullfile(resultsDir, 'best_model');
+end
+resultPathSuccess = fullfile(bestModelDir, 'best_model.mat');
+resultPathFailed = fullfile(bestModelDir, 'best_model_FAILED.mat');
+
+% Prepare metadata
+metadata = struct('finalPerformance', finalPerformance);
+if scriptErrorOccurred
+    metadata.status = 'Failed';
+    metadata.error_message = e.message;
+    metadata.error_identifier = e.identifier;
+    marker_status = 'training_failed';
+    marker_path = resultPathFailed; % Point to the FAILED file if it exists
+    if ~exist(marker_path, 'file'), marker_path = resultPathSuccess; end % Fallback if FAILED file wasn't saved
+    fprintf('Creating FAILED marker, referencing: %s\n', marker_path);
+else % Script didn't error, but training might have failed internally
+    if trainingSucceeded && exist(resultPathSuccess, 'file')
+         metadata.status = 'Completed';
+         marker_status = 'training';
+         marker_path = resultPathSuccess;
+         fprintf('Creating SUCCESS marker for: %s\n', marker_path);
+    else % Training failed (e.g., NaN perf) or success file missing
+        metadata.status = 'CompletedWithTrainingIssue';
+        metadata.warning = 'Script completed, but training failed/stalled or output file missing.';
+         if isfield(tr, 'status') && ~isempty(tr.status), metadata.tr_status = strjoin(tr.status,'; '); end
+         marker_status = 'training_failed';
+         marker_path = resultPathFailed;
+         if ~exist(marker_path, 'file'), marker_path = resultPathSuccess; end
+         fprintf('Creating FAILED marker (due to training issue), referencing: %s\n', marker_path);
     end
 end
 
-% Close diary
-diary off;
+fprintf('Metadata for completion marker:\n'); disp(metadata);
+diary off; % Turn off diary before creating marker
 
-function perf = evaluate_network_performance(net, input, target)
-% Manually evaluate network performance on given data
-% This function mimics the behavior of evaluate_network in nntrain.m
-
-% Get network output
-output = nnpredict(net, input);
-
-% Calculate mean squared error
-perf = mean((target - output).^2, 'all');
+% Create the marker
+if exist('create_completion_marker', 'file') == 2
+    fprintf('Attempting to create completion marker...\n');
+    try
+        create_completion_marker(marker_status, marker_path, metadata);
+        fprintf('✓ Completion marker created (Status: %s).\n', marker_status);
+    catch markerErr
+        fprintf('ERROR creating completion marker: %s\n', markerErr.message);
+        diary on; % Turn diary back on if marker fails
+    end
+else
+    fprintf('Note: create_completion_marker function not found. Skipping marker creation.\n');
 end
+
+%% --- Final Exit ---
+if ~isempty(e), fprintf('\nExiting train_best_model.m due to captured error.\n'); % exit(1); % Uncomment for non-zero exit
+end
+fprintf('\nExiting train_best_model.m normally.\n');
+
+%% ===== HELPER FUNCTIONS =====
+function value = getOrDefault(structVar, fieldName, defaultValue, fieldDesc)
+    if nargin < 4, fieldDesc = fieldName; end
+    if isstruct(structVar) && isfield(structVar, fieldName) && ~isempty(structVar.(fieldName)), value = structVar.(fieldName); else value = defaultValue; if ~isstruct(structVar) || ~isfield(structVar, fieldName) || isempty(structVar.(fieldName)), fprintf('Warning: Parameter "%s" (%s) not found or empty in provided structure. Using default value: %s\n', fieldDesc, fieldName, mat2str(value)); end; end
+end
+function tr = createMinimalTR(errorMessage, statusMessage)
+    if nargin < 2 || isempty(statusMessage), statusMessage = 'Failed'; end; if nargin < 1 || isempty(errorMessage), errorMessage = 'Unknown error during training'; end
+    tr = struct('trainInd', [], 'valInd', [], 'testInd', [], 'stop', {{errorMessage}}, 'status', statusMessage, 'best_epoch', NaN, 'goal', NaN, 'states', {{}}, 'best_perf', NaN, 'best_vperf', NaN, 'best_tperf', NaN, 'epoch', NaN, 'time', NaN, 'perf', NaN, 'vperf', NaN, 'tperf', NaN, 'gradient', NaN, 'num_epochs', NaN, 'val_fail', NaN);
+end
+function PS = createPlaceholderPS(), PS = struct('name', 'placeholder', 'status', 'Created during emergency save', 'xoffset', [], 'gain', [], 'ymin', -1); end
+function TS = createPlaceholderTS(), TS = struct('name', 'placeholder', 'status', 'Created during emergency save', 'xoffset', [], 'gain', [], 'ymin', -1); end
+function params = createPlaceholderParams(), params = struct('lr', NaN, 'mc', NaN, 'hiddenLayer', [], 'hiddenTF', 'Unknown', 'outputTF', 'Unknown', 'strategy', 'Unknown', 'status', 'Created during emergency save', 'finalTrainMSE', NaN, 'finalValMSE', NaN, 'finalTestMSE', NaN); end
+function msg = safeGetErrorMsg(errVar), if exist('errVar','var') && isobject(errVar) && isprop(errVar, 'message') && ~isempty(errVar.message), msg = errVar.message; else msg = 'Unknown error or error occurred before variable capture.'; end; end
+function colStr = num2col(colNum), if ~isnumeric(colNum) || ~isscalar(colNum) || colNum < 1 || colNum ~= floor(colNum), error('Input must be a positive integer.'); end; A = 'A'; Z = 'Z'; base = Z-A+1; colStr = ''; while colNum > 0, rem = mod(colNum-1, base); colStr = [char(A+rem), colStr]; colNum = floor((colNum - rem - 1) / base); end; end
+function result = iif(condition, trueVal, falseVal), if condition, result = trueVal; else result = falseVal; end; end

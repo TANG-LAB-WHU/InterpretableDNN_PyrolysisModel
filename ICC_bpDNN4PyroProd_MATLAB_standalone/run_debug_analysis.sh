@@ -1,425 +1,275 @@
 #!/bin/bash
-# Debug analysis script for GPM_SHAP neural network model
-# This script runs a shorter version of the SHAP analysis for testing purposes
-# Usage: sbatch run_debug_analysis.sh
-# 
-# This script will:
-# 1. Initialize the project structure and check for required files
-# 2. Check and copy necessary data files
-# 3. Create required directories
-# 4. Run the debug version of the SHAP analysis (with fewer samples/iterations)
-# 5. Generate a summary of results
-
-#SBATCH --job-name=debug_GPM_SHAP
-#SBATCH --account=siqi-ic      # Replace with your ICC account name
-#SBATCH --partition=IllinoisComputes   # Replace with your available partition
-#SBATCH --nodes=1
-#SBATCH --ntasks-per-node=8          # Fewer cores for debug version
-#SBATCH --time=2:00:00               # Less time for debug version
+#SBATCH --job-name=debug_shap
 #SBATCH --output=output/debug_analysis/debug_%j.out
 #SBATCH --error=output/debug_analysis/debug_%j.err
+#SBATCH --time=2:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=32G
+#SBATCH --account=siqi-ic          # Account name from debug script
+#SBATCH --partition=IllinoisComputes  # Partition name from debug script
+#SBATCH --mail-type=BEGIN,END,FAIL    # Email notification
+#SBATCH --mail-user=siqi@illinois.edu
 
-echo "=== Starting GPM_SHAP Debug Analysis Job ==="
+# Improved run_debug_analysis.sh script with enhanced SHAP implementation
+
+echo "===== DEBUG SHAP ANALYSIS JOB STARTED ====="
 echo "Job ID: $SLURM_JOB_ID"
-echo "Running on: $SLURM_JOB_NODELIST"
+echo "Running on node: $SLURM_JOB_NODELIST"
 echo "Start time: $(date)"
+echo ""
 
-# Create complete directory structure
-echo "Creating complete directory structure..."
-mkdir -p data/processed
-mkdir -p data/raw
+# Create output directories if they don't exist
 mkdir -p output/debug_analysis
-mkdir -p output/full_analysis
-mkdir -p results/training/Figures
-mkdir -p results/debug/Figures
 mkdir -p results/analysis/debug/data
 mkdir -p results/analysis/debug/figures
-mkdir -p results/analysis/full/data
-mkdir -p results/analysis/full/figures
-mkdir -p results/optimization
-mkdir -p results/best_model/Figures
-mkdir -p src/model
-mkdir -p src/scripts
-mkdir -p src/visualization
-# Note: No longer creating src/shap/data directory as all SHAP outputs go to results/analysis
 
-# Get current working directory
-WORK_DIR=$(pwd)
-echo "Working directory: $WORK_DIR"
+# Set project directory to current directory (no hardcoded paths)
+PROJECT_DIR=$(pwd)
+echo "Project directory: $PROJECT_DIR"
 
-# Check required data files
-echo "Checking data files..."
-DATA_MISSING=0
+# Log script version
+SCRIPT_VERSION="2.0.0"
+echo "Script version: $SCRIPT_VERSION (Enhanced SHAP Implementation)"
+echo ""
 
-if [ ! -f "data/processed/CopyrolysisFeedstock.mat" ]; then
-    echo "ERROR: CopyrolysisFeedstock.mat file not found"
-    DATA_MISSING=1
-fi
+# Create a summary file for easier reference
+SUMMARY_FILE="output/debug_analysis/debug_summary_${SLURM_JOB_ID}.txt"
 
-if [ ! -f "data/raw/RawInputData.xlsx" ]; then
-    echo "ERROR: RawInputData.xlsx file not found"
-    DATA_MISSING=1
-fi
+# Start summary file
+echo "===== DEBUG SHAP ANALYSIS SUMMARY =====" > $SUMMARY_FILE
+echo "Job ID: $SLURM_JOB_ID" >> $SUMMARY_FILE
+echo "Node: $SLURM_JOB_NODELIST" >> $SUMMARY_FILE
+echo "Start time: $(date)" >> $SUMMARY_FILE
+echo "Script version: $SCRIPT_VERSION" >> $SUMMARY_FILE
+echo "" >> $SUMMARY_FILE
 
-if [ $DATA_MISSING -eq 1 ]; then
-    echo "ERROR: Critical data files are missing. Exiting."
+# Check for critical files/directories
+echo "Checking for required files and directories..."
+
+# Check 1: Project directory should exist
+if [ ! -d "$PROJECT_DIR" ]; then
+    echo "ERROR: Project directory $PROJECT_DIR not found!" | tee -a $SUMMARY_FILE
     exit 1
 fi
 
-# Check model files
-echo "Checking model files..."
-MODEL_FILES=("bpDNN4PyroProd.m" "nnbp.m" "nncheckgrad.m" "nnconfigure.m" "nncreate.m" 
-             "nneval.m" "nnff.m" "nnfindbest.m" "nninit.m" "nnpostprocess.m" "nnpredict.m" 
-             "nnprepare.m" "nnpreprocess.m" "nnstopcriteria.m" "nntrain.m" "nnupdatefigure.m")
-
-MODEL_MISSING=0
-for file in "${MODEL_FILES[@]}"; do
-    if [ ! -f "src/model/$file" ]; then
-        echo "WARNING: Required model file not found: src/model/$file"
-        MODEL_MISSING=1
-    fi
-done
-
-# Check script files
-echo "Checking script files..."
-SCRIPT_FILES=("run_analysis.m" "debug_run_analysis.m" "calc_shap_values.m" "export_shap_to_excel.m")
-SCRIPT_MISSING=0
-
-for file in "${SCRIPT_FILES[@]}"; do
-    if [ ! -f "src/scripts/$file" ]; then
-        echo "WARNING: src/scripts/$file not found. Please add this file."
-        SCRIPT_MISSING=1
-    fi
-done
-
-# Check visualization files
-echo "Checking visualization files..."
-VIZ_FILES=("plot_shap_results.m" "plot_shap_beeswarm.m" 
-          "plot_shap_original_summary.m" "fix_colorbar_style.m")
-VIZ_MISSING=0
-
-for file in "${VIZ_FILES[@]}"; do
-    if [ ! -f "src/visualization/$file" ]; then
-        echo "WARNING: src/visualization/$file not found. Creating placeholder."
-        VIZ_MISSING=1
-    fi
-done
-
-# Create placeholder visualization files if they don't exist
-echo "Creating placeholder visualization files if needed..."
-mkdir -p src/visualization
-
-for file in "${VIZ_FILES[@]}"; do
-    if [ ! -f "src/visualization/$file" ]; then
-        echo "Creating placeholder for $file (will need to be replaced with actual implementation)..."
-        FUNC_NAME=$(basename "$file" .m)
-        
-        # Create more appropriate placeholder based on function name
-        case "$FUNC_NAME" in
-            plot_shap_results)
-                cat > "src/visualization/$file" << 'EOL'
-%% Plot SHAP Results
-% This script generates visualizations for SHAP analysis results
-%
-% Features:
-% - Creates multiple visualization types:
-%   1. Bar plots showing top 20 most important features per target
-%   2. Bar plots showing all features sorted by importance
-%   3. Force plots showing top feature contributions for individual samples
-%   4. Summary plots showing global feature importance patterns
-
-% Check if required variables exist in the workspace
-if ~exist('shapValues', 'var') || ~exist('baseValue', 'var') || ~exist('varNames', 'var')
-    warning('Required SHAP variables not found in workspace. Load from file or generate them first.');
-    return;
-end
-
-% Convert varNames to featureNames if needed
-if ~exist('featureNames', 'var')
-    featureNames = varNames;
-end
-
-% Get script directory to determine output location
-scriptPath = mfilename('fullpath');
-[scriptDir, ~, ~] = fileparts(scriptPath);
-
-% If this is a placeholder, simply report
-warning('This is a placeholder version of plot_shap_results.');
-disp('For proper visualization, replace this placeholder with the correct implementation.');
-disp(['Will look for SHAP values in workspace or in results directory']);
-disp(['Feature names available: ' num2str(length(featureNames))]);
-disp(['SHAP values shape: ' num2str(size(shapValues))]);
-
-% Create a simple summary plot as placeholder
-if numel(shapValues) > 0
-    try
-        % Get dimensions
-        [numSamples, numFeatures, numTargets] = size(shapValues);
-        
-        % For each target, create a simple feature importance plot
-        for target = 1:numTargets
-            % Calculate mean absolute SHAP values for feature importance
-            mean_abs_shap = mean(abs(shapValues(:,:,target)), 1);
-            
-            % Sort features by importance
-            [sorted_shap, sort_idx] = sort(mean_abs_shap, 'descend');
-            
-            % Create a simple figure
-            figure('Name', sprintf('Feature Importance (Target %d)', target));
-            bar(sorted_shap(1:min(20, end)));
-            title(sprintf('Feature Importance (Target %d)', target));
-            xlabel('Feature Index');
-            ylabel('Mean |SHAP Value|');
-            
-            % Note that this is a placeholder
-            text(0.5, 0.5, 'Placeholder visualization', 'Units', 'normalized', ...
-                 'HorizontalAlignment', 'center', 'FontSize', 14, 'Color', 'red');
-        end
-    catch me
-        warning('Failed to create placeholder visualization: %s', me.message);
-    end
-end
-EOL
-                ;;
-            plot_shap_beeswarm)
-                cat > "src/visualization/$file" << 'EOL'
-%% SHAP Beeswarm Plot
-% This script creates beeswarm plots for SHAP values
-
-% Check if required variables exist in the workspace
-if ~exist('shapValues', 'var') || ~exist('baseValue', 'var') || ~exist('varNames', 'var')
-    warning('Required SHAP variables not found in workspace. Load from file or generate them first.');
-    return;
-end
-
-% Convert varNames to featureNames if needed
-if ~exist('featureNames', 'var')
-    featureNames = varNames;
-end
-
-% Get script directory to determine output location
-scriptPath = mfilename('fullpath');
-[scriptDir, ~, ~] = fileparts(scriptPath);
-
-% If this is a placeholder, simply report
-warning('This is a placeholder version of plot_shap_beeswarm.');
-disp('For proper visualization, replace this placeholder with the correct implementation.');
-disp(['Will look for SHAP values in workspace or in results directory']);
-disp(['Feature names available: ' num2str(length(featureNames))]);
-disp(['SHAP values shape: ' num2str(size(shapValues))]);
-
-% Create a simple summary plot as placeholder
-if numel(shapValues) > 0
-    try
-        % Get dimensions
-        [numSamples, numFeatures, numTargets] = size(shapValues);
-        
-        % For each target, create a simple feature importance plot
-        for target = 1:numTargets
-            % Calculate mean absolute SHAP values for feature importance
-            mean_abs_shap = mean(abs(shapValues(:,:,target)), 1);
-            
-            % Sort features by importance
-            [sorted_shap, sort_idx] = sort(mean_abs_shap, 'descend');
-            
-            % Create a simple figure
-            figure('Name', sprintf('Beeswarm Plot (Target %d)', target));
-            bar(sorted_shap(1:min(10, end)));
-            title(sprintf('Beeswarm Plot Placeholder (Target %d)', target));
-            xlabel('Feature Index');
-            ylabel('Mean |SHAP Value|');
-            
-            % Note that this is a placeholder
-            text(0.5, 0.5, 'Placeholder beeswarm plot', 'Units', 'normalized', ...
-                 'HorizontalAlignment', 'center', 'FontSize', 14, 'Color', 'red');
-        end
-    catch me
-        warning('Failed to create placeholder visualization: %s', me.message);
-    end
-end
-EOL
-                ;;
-            plot_shap_original_summary)
-                cat > "src/visualization/$file" << 'EOL'
-%% SHAP Original Summary Plot
-% This script creates original summary plots for SHAP values
-
-% Check if required variables exist in the workspace
-if ~exist('shapValues', 'var') || ~exist('baseValue', 'var') || ~exist('varNames', 'var')
-    warning('Required SHAP variables not found in workspace. Load from file or generate them first.');
-    return;
-end
-
-% Convert varNames to featureNames if needed
-if ~exist('featureNames', 'var')
-    featureNames = varNames;
-end
-
-% Get script directory to determine output location
-scriptPath = mfilename('fullpath');
-[scriptDir, ~, ~] = fileparts(scriptPath);
-
-% If this is a placeholder, simply report
-warning('This is a placeholder version of plot_shap_original_summary.');
-disp('For proper visualization, replace this placeholder with the correct implementation.');
-disp(['Will look for SHAP values in workspace or in results directory']);
-disp(['Feature names available: ' num2str(length(featureNames))]);
-disp(['SHAP values shape: ' num2str(size(shapValues))]);
-EOL
-                ;;
-            fix_colorbar_style)
-                cat > "src/visualization/$file" << 'EOL'
-%% Fix Colorbar Style Script
-% This script creates a colorbar legend file with a standardized style
-
-% Get script directory
-scriptPath = mfilename('fullpath');
-[scriptDir, ~, ~] = fileparts(scriptPath);
-
-% Get project root directory
-rootDir = fileparts(fileparts(scriptDir));
-
-% If this is a placeholder, simply report
-warning('This is a placeholder version of fix_colorbar_style.');
-disp('For proper visualization, replace this placeholder with the correct implementation.');
-disp(['Root directory: ' rootDir]);
-EOL
-                ;;
-            *)
-                cat > "src/visualization/$file" << 'EOL'
-function [] = placeholder_function()
-% This is a placeholder function
-% Please replace with the actual implementation
-    warning('This is a placeholder function. Please replace with the actual implementation.');
-    disp('For proper visualization, replace this placeholder with the correct implementation.');
-end
-EOL
-                # Rename the function in the file to match the filename
-                sed -i "s/placeholder_function/$(echo $FUNC_NAME)/g" "src/visualization/$file"
-                ;;
-        esac
-        
-        echo "Created placeholder for $file"
-    fi
-done
-
-# Copy data files to model directory
-echo "Copying data files to model directory..."
-mkdir -p src/model
-mkdir -p src/visualization
-cp -f "data/processed/CopyrolysisFeedstock.mat" "src/model/"
-cp -f "data/raw/RawInputData.xlsx" "src/model/"
-echo "Data files copied to model directory"
-
-# Check for SHAP_Analysis metadata and copy if available
-echo "Checking for SHAP feature metadata..."
-if [ -d "SHAP_Analysis" ] && [ -f "SHAP_Analysis/Data/SHAP_metadata.xlsx" ]; then
-    echo "Found SHAP metadata file. Copying for feature name reference..."
-    mkdir -p "results/analysis/debug/data"
-    cp -f "SHAP_Analysis/Data/SHAP_metadata.xlsx" "results/analysis/debug/data/"
-    echo "SHAP metadata copied to results directory"
-elif [ -d "SHAP_Analysis_Debug" ] && [ -f "SHAP_Analysis_Debug/Data/SHAP_metadata.xlsx" ]; then
-    echo "Found SHAP_Analysis_Debug metadata file. Copying for feature name reference..."
-    mkdir -p "results/analysis/debug/data"
-    cp -f "SHAP_Analysis_Debug/Data/SHAP_metadata.xlsx" "results/analysis/debug/data/"
-    echo "SHAP debug metadata copied to results directory"
+# Check 2: Source directories should exist
+if [ ! -d "$PROJECT_DIR/src" ]; then
+    echo "ERROR: Source directory $PROJECT_DIR/src not found!" | tee -a $SUMMARY_FILE
+    exit 1
 fi
 
-# Set up MATLAB temporary directory
-export MATLAB_TEMP_DIR="/scratch/${USER}/matlab_temp_${SLURM_JOB_ID}"
-mkdir -p ${MATLAB_TEMP_DIR}
-echo "MATLAB temp directory: $MATLAB_TEMP_DIR"
+# Check 3: Data directories should exist
+if [ ! -d "$PROJECT_DIR/data" ]; then
+    echo "ERROR: Data directory $PROJECT_DIR/data not found!" | tee -a $SUMMARY_FILE
+    exit 1
+fi
+
+# Check 4: Raw data file should exist
+if [ ! -f "$PROJECT_DIR/data/raw/RawInputData.xlsx" ]; then
+    echo "WARNING: Raw data file $PROJECT_DIR/data/raw/RawInputData.xlsx not found!" | tee -a $SUMMARY_FILE
+    echo "  Some feature names may not be available." | tee -a $SUMMARY_FILE
+else
+    echo "Raw data file found: $PROJECT_DIR/data/raw/RawInputData.xlsx" | tee -a $SUMMARY_FILE
+fi
+
+# Look for model files - for debug mode, we don't need to search as extensively
+MODEL_FOUND="no"
+
+# Check for debug model
+if [ -f "$PROJECT_DIR/results/debug/Results_trained.mat" ]; then
+    echo "Found debug model: results/debug/Results_trained.mat" | tee -a $SUMMARY_FILE
+    MODEL_FOUND="yes"
+# Fallback to any model
+elif [ -f "$PROJECT_DIR/results/best_model/best_model.mat" ]; then
+    echo "Found best model: results/best_model/best_model.mat" | tee -a $SUMMARY_FILE
+    MODEL_FOUND="yes"
+fi
+
+if [ "$MODEL_FOUND" == "no" ]; then
+    echo "INFO: No pre-trained model found. Debug run will train a model with 20 epochs." | tee -a $SUMMARY_FILE
+fi
+
+echo "" | tee -a $SUMMARY_FILE
+echo "All required directories found. Starting analysis..." | tee -a $SUMMARY_FILE
+echo "" | tee -a $SUMMARY_FILE
+
+# Create a temporary directory for MATLAB
+MATLAB_TEMP_DIR="$PROJECT_DIR/tmp_matlab_debug_${SLURM_JOB_ID}"
+mkdir -p $MATLAB_TEMP_DIR
+
+echo "Created MATLAB temporary directory: $MATLAB_TEMP_DIR" | tee -a $SUMMARY_FILE
+echo "Allocated memory: 32G (sufficient for debug run)" | tee -a $SUMMARY_FILE
+echo "" | tee -a $SUMMARY_FILE
 
 # Load MATLAB module
 echo "Loading MATLAB module..."
-module load matlab/24.1
+module load matlab/R2021a
 
-# Run MATLAB debug analysis script
-echo "Running debug SHAP analysis script..."
-echo "MATLAB will use following directories:"
-echo "- Working directory: $WORK_DIR"
-echo "- Scripts directory: $WORK_DIR/src/scripts"
-echo "- Model directory: $WORK_DIR/src/model"
-echo "- Visualization directory: $WORK_DIR/src/visualization"
-echo "- Results directory: $WORK_DIR/results/analysis/debug"
-echo "- Training directory: $WORK_DIR/results/debug"
+# Set MATLAB paths
+MATLAB_PATHS="\
+addpath(genpath('$PROJECT_DIR/src')); \
+addpath('$PROJECT_DIR/src/model'); \
+addpath('$PROJECT_DIR/src/scripts'); \
+addpath('$PROJECT_DIR/src/shap'); \
+addpath('$PROJECT_DIR/src/visualization'); \
+cd('$PROJECT_DIR/src/scripts'); \
+"
 
-# Ensure proper directory variables and structure for MATLAB script
-matlab -nodisplay -nosplash -nodesktop -r "try; cd('$WORK_DIR'); addpath('$WORK_DIR/src/scripts'); addpath('$WORK_DIR/src/model'); addpath('$WORK_DIR/src/visualization'); pc = parcluster('local'); pc.NumWorkers = str2num(getenv('SLURM_NTASKS')); pc.JobStorageLocation = getenv('MATLAB_TEMP_DIR'); parpool(pc, pc.NumWorkers); rootDir='$WORK_DIR'; analysisMode='debug'; trainingDir=fullfile(rootDir,'results','debug'); shapDir=fullfile(rootDir,'results','analysis','debug'); debug_results_dir=shapDir; fprintf('MATLAB environment setup:\n'); fprintf('- Root directory: %s\n', rootDir); fprintf('- Training directory: %s\n', trainingDir); fprintf('- SHAP directory: %s\n', shapDir); fprintf('- Debug results directory: %s\n', debug_results_dir); fprintf('- Results trained file: %s\n', fullfile(trainingDir,'Results_trained.mat')); if exist(fullfile(trainingDir,'Results_trained.mat'),'file'), fprintf('  Results file exists!\n'); else, fprintf('  Results file does not exist!\n'); end; debug_run_analysis; delete(gcp('nocreate')); exit; catch ME; disp(getReport(ME)); exit(1); end;"
+# Create MATLAB script for debug analysis
+MATLAB_SCRIPT="$MATLAB_TEMP_DIR/run_debug_analysis.m"
 
-# Check MATLAB execution status
-MATLAB_STATUS=$?
-if [ $MATLAB_STATUS -ne 0 ]; then
-    echo "ERROR: MATLAB execution failed with exit code: $MATLAB_STATUS"
-    echo "Trying export_shap_to_excel.m directly to ensure Excel files are created..."
+cat << EOF > $MATLAB_SCRIPT
+try
+    % Set startup information
+    disp('===== STARTING DEBUG ANALYSIS =====');
+    disp(['Job ID: $SLURM_JOB_ID']);
+    disp(['Running on node: $SLURM_JOB_NODELIST']);
+    disp(['Start time: ' datestr(now)]);
+    disp(' ');
     
-    # Try running the Excel export directly if the main script failed
-    matlab -nodisplay -nosplash -nodesktop -r "try; cd('$WORK_DIR'); addpath('$WORK_DIR/src/scripts'); addpath('$WORK_DIR/src/model'); addpath('$WORK_DIR/src/visualization'); shapDir = fullfile('$WORK_DIR', 'results', 'analysis', 'debug'); export_shap_to_excel; exit; catch ME; disp(getReport(ME)); exit(1); end;"
+    % Add all required paths
+    $MATLAB_PATHS
     
-    EXCEL_STATUS=$?
-    if [ $EXCEL_STATUS -ne 0 ]; then
-        echo "ERROR: Excel export also failed with exit code: $EXCEL_STATUS"
+    % Define analysis mode as 'debug'
+    analysisMode = 'debug';
+    disp(['Analysis mode: ' analysisMode]);
+    
+    % Create a diary file for logging
+    diaryFile = fullfile('$PROJECT_DIR', 'output', 'debug_analysis', ['debug_matlab_log_' num2str($SLURM_JOB_ID) '.txt']);
+    diary(diaryFile);
+    disp(['Creating log file: ' diaryFile]);
+    
+    % Record diagnostic information
+    disp('=== Environment Information ===');
+    disp(['MATLAB Version: ' version]);
+    if exist('parpool')
+        poolobj = gcp('nocreate');
+        if isempty(poolobj)
+            disp('No parallel pool exists');
+        else
+            disp(['Parallel pool exists with ' num2str(poolobj.NumWorkers) ' workers']);
+        end
     else
-        echo "Excel export completed successfully."
-    fi
+        disp('Parallel Computing Toolbox not available');
+    end
+    
+    % Note: Debug mode runs much faster with reduced epochs (20 instead of 6000)
+    disp('Debug mode will use 20 epochs instead of 6000 for ultra-fast execution');
+    
+    % Start timing
+    totalTimer = tic;
+    
+    % Run the debug analysis
+    disp('Calling debug_run_analysis.m...');
+    debug_run_analysis;
+    
+    % End timing
+    totalTime = toc(totalTimer);
+    disp(['Total execution time: ' num2str(totalTime) ' seconds (' num2str(totalTime/60) ' minutes)']);
+    
+    % Export SHAP results to Excel
+    disp('Exporting SHAP results to Excel...');
+    export_shap_to_excel;
+    
+    % Verify output files
+    disp('Verifying output files...');
+    shapDir = fullfile('$PROJECT_DIR', 'results', 'analysis', 'debug');
+    dataDir = fullfile(shapDir, 'data');
+    figDir = fullfile(shapDir, 'figures');
+    
+    % Check for SHAP results file
+    if exist(fullfile(dataDir, 'shap_results.mat'), 'file')
+        disp('✓ SHAP results file found');
+    else
+        disp('✗ SHAP results file missing!');
+    end
+    
+    % Count figure files
+    figFiles = dir(fullfile(figDir, '*.fig'));
+    pngFiles = dir(fullfile(figDir, '*.png'));
+    disp(['✓ Figure files: ' num2str(length(figFiles)) ' .fig files and ' num2str(length(pngFiles)) ' .png files']);
+    
+    % Check Excel exports
+    xlsFiles = dir(fullfile(dataDir, '*.xlsx'));
+    disp(['✓ Excel exports: ' num2str(length(xlsFiles)) ' .xlsx files']);
+    
+    disp('===== DEBUG ANALYSIS COMPLETED SUCCESSFULLY =====');
+    disp(['End time: ' datestr(now)]);
+    diary off;
+    exit(0);
+catch ME
+    % Handle errors
+    disp('===== ERROR DURING DEBUG ANALYSIS =====');
+    disp(['Error: ' ME.message]);
+    for i = 1:length(ME.stack)
+        disp(['File: ' ME.stack(i).file ', Line: ' num2str(ME.stack(i).line) ', Function: ' ME.stack(i).name]);
+    end
+    diary off;
+    exit(1);
+end
+EOF
+
+echo "Running MATLAB script..." | tee -a $SUMMARY_FILE
+matlab -nodisplay -r "run('$MATLAB_SCRIPT')"
+MATLAB_EXIT_CODE=$?
+
+# Check if MATLAB completed successfully
+if [ $MATLAB_EXIT_CODE -eq 0 ]; then
+    echo "MATLAB completed successfully." | tee -a $SUMMARY_FILE
 else
-    echo "SHAP analysis completed successfully with exit code: $MATLAB_STATUS"
+    echo "ERROR: MATLAB exited with code $MATLAB_EXIT_CODE" | tee -a $SUMMARY_FILE
 fi
 
-# Clean up any SHAP outputs that might have been saved to src/shap wrongly
-echo "Cleaning up any incorrect SHAP outputs in src/shap directory..."
-if [ -d "src/shap/figures" ]; then
-    echo "Found incorrect figures in src/shap/figures - removing..."
-    rm -rf src/shap/figures
-fi
+# Check for output files
+echo "" | tee -a $SUMMARY_FILE
+echo "Checking for output files..." | tee -a $SUMMARY_FILE
 
-if [ -d "src/shap/data" ]; then
-    echo "Found incorrect data in src/shap/data - removing..."
-    rm -rf src/shap/data
-fi
-
-# Create a job summary
-echo "Creating job summary..."
-SUMMARY_FILE="output/debug_analysis/debug_summary_${SLURM_JOB_ID}.txt"
-echo "=== Debug Analysis Summary ===" > $SUMMARY_FILE
-echo "Job ID: $SLURM_JOB_ID" >> $SUMMARY_FILE
-echo "Completion time: $(date)" >> $SUMMARY_FILE
-echo -e "\nMATLAB log file:" >> $SUMMARY_FILE
-ls -lh debug_run_analysis_log.txt >> $SUMMARY_FILE 2>/dev/null
-echo -e "\nResults directory structure:" >> $SUMMARY_FILE
-ls -la results/ >> $SUMMARY_FILE 2>/dev/null
-echo -e "\nHyperparameter optimization results:" >> $SUMMARY_FILE
-ls -la results/optimization/debug_* >> $SUMMARY_FILE 2>/dev/null
-echo -e "\nBest model from optimization:" >> $SUMMARY_FILE
-ls -la results/optimization/debug_best_model.mat >> $SUMMARY_FILE 2>/dev/null
-echo -e "\nDebug results directory:" >> $SUMMARY_FILE
-ls -la results/debug >> $SUMMARY_FILE 2>/dev/null
-echo -e "\nSHAP Debug Analysis directory:" >> $SUMMARY_FILE
-ls -la results/analysis/debug >> $SUMMARY_FILE 2>/dev/null
-echo -e "\nSHAP Excel outputs:" >> $SUMMARY_FILE
-ls -la results/analysis/debug/*.xlsx >> $SUMMARY_FILE 2>/dev/null
-
-# Check if there are any incorrect outputs in src/shap
-echo -e "\nVerifying correct output locations:" >> $SUMMARY_FILE
-if [ -d "src/shap/figures" ] || [ -d "src/shap/data" ]; then
-    echo "WARNING: Some SHAP results were incorrectly saved to src/shap directory." >> $SUMMARY_FILE
-    echo "         These should be moved to results/analysis/debug/ directory." >> $SUMMARY_FILE
-    if [ -d "src/shap/figures" ]; then
-        echo "Incorrect figures found:" >> $SUMMARY_FILE
-        ls -la src/shap/figures >> $SUMMARY_FILE 2>/dev/null
-    fi
-    if [ -d "src/shap/data" ]; then
-        echo "Incorrect data found:" >> $SUMMARY_FILE
-        ls -la src/shap/data >> $SUMMARY_FILE 2>/dev/null
-    fi
+# Check for SHAP results file
+if [ -f "$PROJECT_DIR/results/analysis/debug/data/shap_results.mat" ]; then
+    echo "✓ SHAP results file found: results/analysis/debug/data/shap_results.mat" | tee -a $SUMMARY_FILE
 else
-    echo "PASS: All SHAP results are correctly saved to results/analysis/debug directory." >> $SUMMARY_FILE
-    echo "      No incorrect outputs found in src/shap directory." >> $SUMMARY_FILE
+    echo "✗ SHAP results file not found!" | tee -a $SUMMARY_FILE
 fi
 
-# Clean up MATLAB temporary directory
-echo "Cleaning up temporary files..."
-rm -rf ${MATLAB_TEMP_DIR}
+# Count figure files
+if [ -d "$PROJECT_DIR/results/analysis/debug/figures" ]; then
+    FIG_COUNT=$(ls -1 "$PROJECT_DIR/results/analysis/debug/figures"/*.fig 2>/dev/null | wc -l)
+    PNG_COUNT=$(ls -1 "$PROJECT_DIR/results/analysis/debug/figures"/*.png 2>/dev/null | wc -l)
+    echo "✓ Figure directory found with $FIG_COUNT .fig files and $PNG_COUNT .png files" | tee -a $SUMMARY_FILE
+else
+    echo "✗ Figure directory not found!" | tee -a $SUMMARY_FILE
+fi
 
-echo "Debug analysis completed. Check the results/ directory for output."
-echo "End time: $(date)"
+# Check for Excel exports
+EXCEL_FILES=$(ls -1 "$PROJECT_DIR/results/analysis/debug/data"/*.xlsx 2>/dev/null | wc -l)
+if [ $EXCEL_FILES -gt 0 ]; then
+    echo "✓ Excel exports found: $EXCEL_FILES files" | tee -a $SUMMARY_FILE
+else
+    echo "✗ Excel exports not found!" | tee -a $SUMMARY_FILE
+fi
+
+# Clean up temporary directory
+echo "" | tee -a $SUMMARY_FILE
+echo "Cleaning up temporary files..." | tee -a $SUMMARY_FILE
+rm -rf $MATLAB_TEMP_DIR
+echo "Removed temporary directory: $MATLAB_TEMP_DIR" | tee -a $SUMMARY_FILE
+
+# Final summary
+echo "" | tee -a $SUMMARY_FILE
+echo "===== DEBUG SHAP ANALYSIS JOB COMPLETED =====" | tee -a $SUMMARY_FILE
+echo "End time: $(date)" | tee -a $SUMMARY_FILE
+if [ $MATLAB_EXIT_CODE -eq 0 ]; then
+    echo "Status: SUCCESS" | tee -a $SUMMARY_FILE
+else
+    echo "Status: FAILED (MATLAB exit code: $MATLAB_EXIT_CODE)" | tee -a $SUMMARY_FILE
+fi
+echo "" | tee -a $SUMMARY_FILE
+echo "Results can be found in:" | tee -a $SUMMARY_FILE
+echo "  - Data files: $PROJECT_DIR/results/analysis/debug/data/" | tee -a $SUMMARY_FILE
+echo "  - Figures: $PROJECT_DIR/results/analysis/debug/figures/" | tee -a $SUMMARY_FILE
+echo "  - Log files: $PROJECT_DIR/output/debug_analysis/" | tee -a $SUMMARY_FILE
+echo "" | tee -a $SUMMARY_FILE
+
+echo "Debug analysis completed. Check $SUMMARY_FILE for a detailed summary."

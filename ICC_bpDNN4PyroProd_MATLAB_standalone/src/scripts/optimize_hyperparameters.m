@@ -3,7 +3,7 @@
 % to find the optimal configuration for the neural network model.
 
 % Clear workspace and command window
-clear; clc;
+% clear; clc;
 
 % Force full optimization mode regardless of external settings
 fullOptimization = true;
@@ -248,7 +248,7 @@ end
 lr_options = [0.01, 0.05, 0.1, 0.2, 0.5, 0.8];
 
 % Momentum coefficient options
-mc_options = [0.7, 0.8, 0.9, 0.95, 0.99];
+mc_options = [0.7, 0.8, 0.9, 0.95, 99];
 
 % Hidden layer structure options
 % Each option is a cell array defining the structure
@@ -430,7 +430,16 @@ for configNum = config_indices
             
             % Save the best configuration
             fprintf('Saving best configuration to: %s\n', fullfile(optimizationDir, 'best_model.mat'));
-            save(fullfile(optimizationDir, 'best_model.mat'), 'best_config');
+            
+            % Create the required structure for validation
+            bestParams = best_config; % Copy the existing config to bestParams
+            optimizationResults = struct('bestObjective', best_mse, ...
+                                        'bestConfigId', configNum, ...
+                                        'totalConfigurations', total_combinations, ...
+                                        'completionTime', datestr(now));
+
+            % Save with the required field structure
+            save(fullfile(optimizationDir, 'best_model.mat'), 'best_config', 'bestParams', 'optimizationResults');
             fprintf('Best configuration saved successfully\n');
             
             % Create a human-readable summary
@@ -548,4 +557,16 @@ function indices = calculateIndices(configNum, numLR, numMC, numHL, numTF)
     for i = 1:4
         indices(i) = max(1, min(indices(i), paramSizes(i)));
     end
-end 
+end
+
+% Check if directory exists and create if needed
+markers_dir = fullfile(optimizationDir, 'markers');
+if ~exist(markers_dir, 'dir')
+    mkdir(markers_dir);
+end
+
+% Use best_mse variable for metadata
+metadata = struct('bestObjective', best_mse, 'timestamp', datestr(now));
+
+% Then the existing call to create_completion_marker
+create_completion_marker('optimization', optimizationDir, metadata);
