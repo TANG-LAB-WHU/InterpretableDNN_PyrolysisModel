@@ -2,11 +2,11 @@
 #SBATCH --job-name=full_wf
 #SBATCH --output=output/full_analysis/full_%j.out
 #SBATCH --error=output/full_analysis/full_%j.err
-#SBATCH --time=70:00:00
+#SBATCH --time=2:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=32
-#SBATCH --mem=128G
+#SBATCH --mem=96G
 #SBATCH --account=siqi-ic
 #SBATCH --partition=IllinoisComputes
 #SBATCH --mail-type=BEGIN,END,FAIL

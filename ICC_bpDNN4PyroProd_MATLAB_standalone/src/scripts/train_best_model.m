@@ -301,28 +301,107 @@ try % Main try block for the whole script
         error('CRITICAL dimension mismatch between calculated parameters and final data matrices. Check data loading/processing.');
     end
 
+    % %% Configure Neural Network
+    % fprintf('\n--- Configuring neural network based on best hyperparameters ---\n');
+    % lr = getOrDefault(best_config, 'lr', 0.01, 'Learning Rate (lr)'); mc = getOrDefault(best_config, 'mc', 0.7, 'Momentum (mc)'); hiddenLayer = getOrDefault(best_config, 'hiddenLayer', [10], 'Hidden Layer Structure'); hiddenTF = getOrDefault(best_config, 'hiddenTF', 'tansig', 'Hidden Transfer Function');
+    % if ~isfield(best_config, 'hiddenTF') && isfield(best_config, 'transferFcn'), hiddenTF = getOrDefault(best_config, 'transferFcn', 'tansig', 'Transfer Function (fallback)'); fprintf('INFO: Using ''transferFcn'' field from best_config as hiddenTF.\n'); end
+    % outputTF = getOrDefault(best_config, 'outputTF', 'purelin', 'Output Transfer Function'); lr_inc = getOrDefault(best_config, 'lr_inc', 1.05, 'Learning Rate Increase'); lr_dec = getOrDefault(best_config, 'lr_dec', 0.7, 'Learning Rate Decrease');
+    % if isscalar(hiddenLayer), hiddenLayer = [hiddenLayer]; elseif ~isrow(hiddenLayer), hiddenLayer = hiddenLayer(:)'; end
+    % fprintf('Using Hyperparameters:\n LR=%.4f, MC=%.2f, HiddenLayer=[%s], HiddenTF=%s, OutputTF=%s\n', lr, mc, num2str(hiddenLayer), hiddenTF, outputTF);
+
+    % fprintf('DEBUG: Calling nncreate with numFeatures=%d, hiddenLayer=[%s], numOutputs=%d, hiddenTF=%s, outputTF=%s\n', numFeatures, num2str(hiddenLayer), numOutputs, hiddenTF, outputTF);
+    % net = nncreate(numFeatures, hiddenLayer, numOutputs, hiddenTF, outputTF);
+    % fprintf('DEBUG: nncreate completed. Network structure initialized.\n');
+
     %% Configure Neural Network
     fprintf('\n--- Configuring neural network based on best hyperparameters ---\n');
-    lr = getOrDefault(best_config, 'lr', 0.01, 'Learning Rate (lr)'); mc = getOrDefault(best_config, 'mc', 0.7, 'Momentum (mc)'); hiddenLayer = getOrDefault(best_config, 'hiddenLayer', [10], 'Hidden Layer Structure'); hiddenTF = getOrDefault(best_config, 'hiddenTF', 'tansig', 'Hidden Transfer Function');
-    if ~isfield(best_config, 'hiddenTF') && isfield(best_config, 'transferFcn'), hiddenTF = getOrDefault(best_config, 'transferFcn', 'tansig', 'Transfer Function (fallback)'); fprintf('INFO: Using ''transferFcn'' field from best_config as hiddenTF.\n'); end
-    outputTF = getOrDefault(best_config, 'outputTF', 'purelin', 'Output Transfer Function'); lr_inc = getOrDefault(best_config, 'lr_inc', 1.05, 'Learning Rate Increase'); lr_dec = getOrDefault(best_config, 'lr_dec', 0.7, 'Learning Rate Decrease');
-    if isscalar(hiddenLayer), hiddenLayer = [hiddenLayer]; elseif ~isrow(hiddenLayer), hiddenLayer = hiddenLayer(:)'; end
-    fprintf('Using Hyperparameters:\n LR=%.4f, MC=%.2f, HiddenLayer=[%s], HiddenTF=%s, OutputTF=%s\n', lr, mc, num2str(hiddenLayer), hiddenTF, outputTF);
+    % --- Get Hyperparameters from best_config ---
+    % Use getOrDefault to handle potentially missing fields and assign defaults
+    config_lr = getOrDefault(best_config, 'lr', 0.01, 'Learning Rate (lr)');
+    config_mc = getOrDefault(best_config, 'mc', 0.7, 'Momentum (mc)');
+    config_hiddenLayer = getOrDefault(best_config, 'hiddenLayer', [10], 'Hidden Layer Structure');
+    config_hiddenTF = getOrDefault(best_config, 'hiddenTF', 'poslin', 'Hidden Transfer Function');
+    % Fallback for older config files that might use 'transferFcn'
+    if ~isfield(best_config, 'hiddenTF') && isfield(best_config, 'transferFcn')
+        config_hiddenTF = getOrDefault(best_config, 'transferFcn', 'poslin', 'Transfer Function (fallback)');
+        fprintf('INFO: Using ''transferFcn'' field from best_config as original hiddenTF.\n');
+    end
+    config_outputTF = getOrDefault(best_config, 'outputTF', 'purelin', 'Output Transfer Function');
+    config_lr_inc = getOrDefault(best_config, 'lr_inc', 1.05, 'Learning Rate Increase');
+    config_lr_dec = getOrDefault(best_config, 'lr_dec', 0.7, 'Learning Rate Decrease');
+    % --- End Get Hyperparameters ---
 
-    fprintf('DEBUG: Calling nncreate with numFeatures=%d, hiddenLayer=[%s], numOutputs=%d, hiddenTF=%s, outputTF=%s\n', numFeatures, num2str(hiddenLayer), numOutputs, hiddenTF, outputTF);
-    net = nncreate(numFeatures, hiddenLayer, numOutputs, hiddenTF, outputTF);
-    fprintf('DEBUG: nncreate completed. Network structure initialized.\n');
+    % --- Apply Overrides for Stability ---
+    % Change activation function for potentially better stability
+    final_hiddenTF = 'tansig'; % Override to tansig
+    % Use a conservative starting LR
+    final_initial_lr = 0.01;
+    % Reduce momentum
+    final_mc = 0.5;
+    % Use original dynamic factors from optimization for nnbp logic
+    final_lr_inc = config_lr_inc;
+    final_lr_dec = config_lr_dec;
 
-    %% Set Training Parameters
+    fprintf('INFO: Original best config HiddenTF=%s, LR=%.4f, MC=%.2f\n', config_hiddenTF, config_lr, config_mc);
+    fprintf('INFO: Overriding for stability: HiddenTF=%s, Initial LR=%.4f, MC=%.2f\n', final_hiddenTF, final_initial_lr, final_mc);
+    fprintf('INFO: Using dynamic LR factors from config: LR_INC=%.4f, LR_DEC=%.4f\n', final_lr_inc, final_lr_dec);
+    % --- End Overrides ---
+
+    % Ensure hiddenLayer is a row vector
+    if isscalar(config_hiddenLayer), config_hiddenLayer = [config_hiddenLayer]; elseif ~isrow(config_hiddenLayer), config_hiddenLayer = config_hiddenLayer(:)'; end
+
+    % Create the network using the potentially overridden parameters
+    fprintf('DEBUG: Calling nncreate with numFeatures=%d, hiddenLayer=[%s], numOutputs=%d, hiddenTF=%s, outputTF=%s\n', ...
+            numFeatures, num2str(config_hiddenLayer), numOutputs, final_hiddenTF, config_outputTF);
+    try
+        net = nncreate(numFeatures, config_hiddenLayer, numOutputs, final_hiddenTF, config_outputTF);
+        fprintf('DEBUG: nncreate completed. Network structure initialized.\n');
+    catch createErr
+        error('Failed to create network with nncreate: %s', createErr.message);
+    end
+
+    % %% Set Training Parameters
+    % fprintf('\n--- Setting network training parameters ---\n');
+    % net.performFcn = 'mse'; net.divideFcn = 'dividerand';
+    % net.divideParam.trainRatio = trainRatio; net.divideParam.valRatio = valRatio; net.divideParam.testRatio = testRatio;
+    % fprintf('Data division ratios set: Train=%.2f, Val=%.2f, Test=%.2f\n', net.divideParam.trainRatio, net.divideParam.valRatio, net.divideParam.testRatio);
+    % net.trainParam.epochs = 5000; net.trainParam.goal = 1e-8; net.trainParam.min_grad = 1e-10; net.trainParam.max_fail = 25;
+    % net.trainParam.showWindow = false; net.trainParam.showCommandLine = true; net.trainParam.show = 25;
+    % net.trainParam.lr = lr; net.trainParam.mc = mc; net.trainParam.lr_inc = lr_inc; net.trainParam.lr_dec = lr_dec;
+
+    % net.trainParam.lr = 0.01; % override the initial LR
+    % fprintf('INFO: Overriding Initial LR from %.4f to %.4f\n', initial_lr, net.trainParam.lr);
+    % fprintf('INFO: Using Optimized LR_INC = %.4f\n', net.trainParam.lr_inc);
+    % fprintf('INFO: Using Optimized LR_DEC = %.4f\n', net.trainParam.lr_dec);
+
+    % fprintf('Training parameters set: Epochs=%d, Goal=%.e, Initial LR=%.4f, MC=%.2f, LR_INC=%.2f, LR_DEC=%.2f\n', ...
+    %         net.trainParam.epochs, net.trainParam.goal, net.trainParam.lr, net.trainParam.mc, net.trainParam.lr_inc, net.trainParam.lr_dec);
+    %% Set Training Parameters in Network Structure
     fprintf('\n--- Setting network training parameters ---\n');
-    net.performFcn = 'mse'; net.divideFcn = 'dividerand';
-    net.divideParam.trainRatio = trainRatio; net.divideParam.valRatio = valRatio; net.divideParam.testRatio = testRatio;
+    net.performFcn = 'mse';
+    net.divideFcn = 'dividerand'; % Ensure data division happens correctly
+    net.divideParam.trainRatio = trainRatio;
+    net.divideParam.valRatio = valRatio;
+    net.divideParam.testRatio = testRatio;
     fprintf('Data division ratios set: Train=%.2f, Val=%.2f, Test=%.2f\n', net.divideParam.trainRatio, net.divideParam.valRatio, net.divideParam.testRatio);
-    net.trainParam.epochs = 1000; net.trainParam.goal = 1e-6; net.trainParam.min_grad = 1e-7; net.trainParam.max_fail = 25;
-    net.trainParam.showWindow = false; net.trainParam.showCommandLine = true; net.trainParam.show = 25;
-    net.trainParam.lr = lr; net.trainParam.mc = mc; net.trainParam.lr_inc = lr_inc; net.trainParam.lr_dec = lr_dec;
-    fprintf('Training parameters set: Epochs=%d, Goal=%.e, LR=%.4f, MC=%.2f\n', net.trainParam.epochs, net.trainParam.goal, net.trainParam.lr, net.trainParam.mc);
 
+    net.trainParam.epochs = 5000;
+    net.trainParam.goal = 1e-6;
+    net.trainParam.min_grad = 1e-8;
+    net.trainParam.max_fail = 25; % Used only if validation is enabled
+    net.trainParam.showWindow = false;
+    net.trainParam.showCommandLine = true;
+    net.trainParam.show = 25; % Frequency of command line updates
+
+    % --- Assign final training parameters to the net structure ---
+    net.trainParam.lr = final_initial_lr; % Use the overridden initial LR
+    net.trainParam.mc = final_mc;         % Use the overridden momentum
+    net.trainParam.lr_inc = final_lr_inc; % Use original factor (nnbp controls extremes)
+    net.trainParam.lr_dec = final_lr_dec; % Use original factor (nnbp controls extremes)
+    % --- End Assign final params ---
+
+    fprintf('Final Training parameters set: Epochs=%d, Goal=%.e, Initial LR=%.4f, MC=%.2f, LR_INC=%.2f, LR_DEC=%.2f\n', ...
+            net.trainParam.epochs, net.trainParam.goal, net.trainParam.lr, net.trainParam.mc, net.trainParam.lr_inc, net.trainParam.lr_dec);
     %% Train the Neural Network
     fprintf('\n--- Training neural network using %s strategy ---\n', upper(strategy));
     fprintf('DEBUG: Checking final dimensions before calling nntrain...\n');
@@ -417,33 +496,110 @@ end % End main try-catch block
 
 
 %% --- Completion Marker Logic ---
-finalPerformance = NaN;
+% finalPerformance = NaN;
+% fprintf('\n--- Checking final results for completion marker ---\n');
+% scriptSucceeded = isempty(e); trExistsAndValid = exist('tr', 'var') && isstruct(tr) && ~isempty(fieldnames(tr)); trainingSucceeded = false;
+% if scriptSucceeded && trExistsAndValid
+%     fprintf('Script finished without catching errors. Training record ''tr'' exists.\n');
+%     if isfield(tr, 'status') && contains(tr.status, 'Failed', 'IgnoreCase', true), fprintf('Training status in ''tr'' indicates failure: "%s".\n', tr.status);
+%     elseif isfield(tr, 'best_perf') && isscalar(tr.best_perf) && isnumeric(tr.best_perf) && ~isnan(tr.best_perf), finalPerformance = tr.best_perf; fprintf('Final training performance (best_perf) from ''tr'': %.6f\n', finalPerformance); trainingSucceeded = true;
+%     else fprintf('Warning: tr.best_perf field missing, empty, or invalid in final ''tr''. Assuming failure for marker.\n'); end
+% else fprintf('Script finished with errors or final training record ''tr'' is invalid/missing.\n'); if ~isempty(e), fprintf('Error caught: %s\n', e.message); end; end
+% if ~exist('bestModelDir','var') || isempty(bestModelDir), try scriptPath = mfilename('fullpath'); scriptDir = fileparts(scriptPath); rootDir = fileparts(fileparts(scriptDir)); catch, rootDir = pwd; end; resultsDir = fullfile(rootDir, 'results'); bestModelDir = fullfile(resultsDir, 'best_model'); end
+% resultPath = fullfile(bestModelDir, 'best_model.mat'); metadata = struct('finalPerformance', finalPerformance);
+% if ~isempty(e), metadata.status = 'Failed'; metadata.error_message = e.message; metadata.error_identifier = e.identifier; else metadata.status = 'Completed'; if ~trainingSucceeded, metadata.status = 'CompletedWithTrainingIssue'; metadata.warning = 'Script completed, but training record analysis suggests issues.'; end; end
+% fprintf('Metadata for completion marker:\n'); disp(metadata); diary off;
+% if exist('create_completion_marker', 'file') == 2
+%     fprintf('Attempting to create completion marker...\n');
+%     try
+%         if scriptSucceeded && trainingSucceeded && exist(resultPath, 'file'), marker_status = 'training'; marker_path = resultPath; fprintf('Creating SUCCESS marker for: %s\n', marker_path);
+%         else marker_status = 'training_failed'; failedPath = fullfile(bestModelDir, 'best_model_FAILED.mat'); if exist(failedPath,'file'), marker_path = failedPath; else marker_path = resultPath; end; fprintf('Creating FAILED marker, referencing: %s\n', marker_path); end
+%         create_completion_marker(marker_status, marker_path, metadata); fprintf('✓ Completion marker created (Status: %s).\n', marker_status);
+%     catch markerErr, fprintf('ERROR creating completion marker: %s\n', markerErr.message); end
+% else fprintf('Note: create_completion_marker function not found. Skipping marker creation.\n'); end
+%% --- Completion Marker Logic ---
+finalPerformance = NaN; % Initialize
 fprintf('\n--- Checking final results for completion marker ---\n');
-scriptSucceeded = isempty(e); trExistsAndValid = exist('tr', 'var') && isstruct(tr) && ~isempty(fieldnames(tr)); trainingSucceeded = false;
-if scriptSucceeded && trExistsAndValid
+scriptErrorOccurred = ~isempty(e); % Check if an error was caught by the main try-catch
+trExists = exist('tr', 'var') && isstruct(tr) && ~isempty(fieldnames(tr)); % Check if tr exists and is valid
+
+trainingSucceeded = false; % Default assumption
+
+if ~scriptErrorOccurred && trExists
     fprintf('Script finished without catching errors. Training record ''tr'' exists.\n');
-    if isfield(tr, 'status') && contains(tr.status, 'Failed', 'IgnoreCase', true), fprintf('Training status in ''tr'' indicates failure: "%s".\n', tr.status);
-    elseif isfield(tr, 'best_perf') && isscalar(tr.best_perf) && isnumeric(tr.best_perf) && ~isnan(tr.best_perf), finalPerformance = tr.best_perf; fprintf('Final training performance (best_perf) from ''tr'': %.6f\n', finalPerformance); trainingSucceeded = true;
-    else fprintf('Warning: tr.best_perf field missing, empty, or invalid in final ''tr''. Assuming failure for marker.\n'); end
-else fprintf('Script finished with errors or final training record ''tr'' is invalid/missing.\n'); if ~isempty(e), fprintf('Error caught: %s\n', e.message); end; end
-if ~exist('bestModelDir','var') || isempty(bestModelDir), try scriptPath = mfilename('fullpath'); scriptDir = fileparts(scriptPath); rootDir = fileparts(fileparts(scriptDir)); catch, rootDir = pwd; end; resultsDir = fullfile(rootDir, 'results'); bestModelDir = fullfile(resultsDir, 'best_model'); end
-resultPath = fullfile(bestModelDir, 'best_model.mat'); metadata = struct('finalPerformance', finalPerformance);
-if ~isempty(e), metadata.status = 'Failed'; metadata.error_message = e.message; metadata.error_identifier = e.identifier; else metadata.status = 'Completed'; if ~trainingSucceeded, metadata.status = 'CompletedWithTrainingIssue'; metadata.warning = 'Script completed, but training record analysis suggests issues.'; end; end
-fprintf('Metadata for completion marker:\n'); disp(metadata); diary off;
+    % Check status field first
+    if isfield(tr, 'status') && iscell(tr.status) && ~isempty(tr.status) && contains(tr.status{1}, 'Failed', 'IgnoreCase', true)
+        fprintf('Training status in ''tr'' indicates failure: "%s".\n', strjoin(tr.status,'; '));
+    elseif isfield(tr, 'best_perf') && isscalar(tr.best_perf) && isnumeric(tr.best_perf) && ~isnan(tr.best_perf) && ~isinf(tr.best_perf)
+        finalPerformance = tr.best_perf;
+        trainingSucceeded = true; % Mark as succeeded only if perf is a valid finite number
+        fprintf('Final training performance (best_perf) from ''tr'': %.6e\n', finalPerformance);
+    else
+        fprintf('Warning: tr.best_perf field missing, empty, invalid, NaN or Inf in final ''tr''. Assuming training failure for marker.\n');
+    end
+else
+    fprintf('Script finished with errors OR final training record ''tr'' is invalid/missing.\n');
+    if scriptErrorOccurred, fprintf('Error caught: %s\n', e.message); end
+end
+
+% Determine marker status and path
+if ~exist('bestModelDir','var') || isempty(bestModelDir)
+    try % Try to determine path again just in case
+        scriptPath = mfilename('fullpath'); scriptDir = fileparts(scriptPath); rootDir = fileparts(fileparts(scriptDir));
+    catch, rootDir = pwd; end
+    resultsDir = fullfile(rootDir, 'results'); bestModelDir = fullfile(resultsDir, 'best_model');
+end
+resultPathSuccess = fullfile(bestModelDir, 'best_model.mat');
+resultPathFailed = fullfile(bestModelDir, 'best_model_FAILED.mat');
+
+% Prepare metadata
+metadata = struct('finalPerformance', finalPerformance);
+if scriptErrorOccurred
+    metadata.status = 'Failed';
+    metadata.error_message = e.message;
+    metadata.error_identifier = e.identifier;
+    marker_status = 'training_failed';
+    marker_path = resultPathFailed; % Point to the FAILED file if it exists
+    if ~exist(marker_path, 'file'), marker_path = resultPathSuccess; end % Fallback if FAILED file wasn't saved
+    fprintf('Creating FAILED marker, referencing: %s\n', marker_path);
+else % Script didn't error, but training might have failed internally
+    if trainingSucceeded && exist(resultPathSuccess, 'file')
+         metadata.status = 'Completed';
+         marker_status = 'training';
+         marker_path = resultPathSuccess;
+         fprintf('Creating SUCCESS marker for: %s\n', marker_path);
+    else % Training failed (e.g., NaN perf) or success file missing
+        metadata.status = 'CompletedWithTrainingIssue';
+        metadata.warning = 'Script completed, but training failed/stalled or output file missing.';
+         if isfield(tr, 'status') && ~isempty(tr.status), metadata.tr_status = strjoin(tr.status,'; '); end
+         marker_status = 'training_failed';
+         marker_path = resultPathFailed;
+         if ~exist(marker_path, 'file'), marker_path = resultPathSuccess; end
+         fprintf('Creating FAILED marker (due to training issue), referencing: %s\n', marker_path);
+    end
+end
+
+fprintf('Metadata for completion marker:\n'); disp(metadata);
+diary off; % Turn off diary before creating marker
+
+% Create the marker
 if exist('create_completion_marker', 'file') == 2
     fprintf('Attempting to create completion marker...\n');
     try
-        if scriptSucceeded && trainingSucceeded && exist(resultPath, 'file'), marker_status = 'training'; marker_path = resultPath; fprintf('Creating SUCCESS marker for: %s\n', marker_path);
-        else marker_status = 'training_failed'; failedPath = fullfile(bestModelDir, 'best_model_FAILED.mat'); if exist(failedPath,'file'), marker_path = failedPath; else marker_path = resultPath; end; fprintf('Creating FAILED marker, referencing: %s\n', marker_path); end
-        create_completion_marker(marker_status, marker_path, metadata); fprintf('✓ Completion marker created (Status: %s).\n', marker_status);
-    catch markerErr, fprintf('ERROR creating completion marker: %s\n', markerErr.message); end
-else fprintf('Note: create_completion_marker function not found. Skipping marker creation.\n'); end
+        create_completion_marker(marker_status, marker_path, metadata);
+        fprintf('✓ Completion marker created (Status: %s).\n', marker_status);
+    catch markerErr
+        fprintf('ERROR creating completion marker: %s\n', markerErr.message);
+        diary on; % Turn diary back on if marker fails
+    end
+else
+    fprintf('Note: create_completion_marker function not found. Skipping marker creation.\n');
+end
 
 %% --- Final Exit ---
 if ~isempty(e), fprintf('\nExiting train_best_model.m due to captured error.\n'); % exit(1); % Uncomment for non-zero exit
 end
 fprintf('\nExiting train_best_model.m normally.\n');
-
 
 %% ===== HELPER FUNCTIONS =====
 function value = getOrDefault(structVar, fieldName, defaultValue, fieldDesc)
