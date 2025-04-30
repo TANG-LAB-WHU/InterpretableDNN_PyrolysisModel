@@ -145,6 +145,7 @@ try % Main try block for the whole script
             error('RawInputData.xlsx (%s) appears to be empty.', rawDataFile);
         end
         [numRows, numCols] = size(rawExcelData);
+<<<<<<< HEAD
 
         if numRows <= expectedHeaderRow
             error('RawInputData.xlsx has too few rows (%d) to contain header (row %d) and data.', numRows, expectedHeaderRow);
@@ -294,6 +295,157 @@ try % Main try block for the whole script
     input_data = X';  
     target_data = y'; 
 
+=======
+
+        if numRows <= expectedHeaderRow
+            error('RawInputData.xlsx has too few rows (%d) to contain header (row %d) and data.', numRows, expectedHeaderRow);
+        end
+        headerRow = expectedHeaderRow;
+        numSamples = numRows - headerRow; % Number of data samples
+        fprintf('RawInputData.xlsx: Found %d samples (Rows %d to %d).\n', numSamples, headerRow + 1, numRows);
+
+        % Validate column ranges against actual columns
+        inputFeatureEndCol = max(expectedInputCols);
+        targetStartCol = min(expectedTargetCols);
+        targetEndCol = max(expectedTargetCols);
+        numTargetCols = length(expectedTargetCols);
+        if inputFeatureEndCol > numCols || targetStartCol > numCols || targetEndCol > numCols
+            error('Defined column ranges (Inputs: %d, Targets: %d-%d) exceed actual columns (%d) in RawInputData.xlsx.', ...
+                  inputFeatureEndCol, targetStartCol, targetEndCol, numCols);
+        end
+
+        % Determine FeedType_size and numFeatures from CopyrolysisFeedstock.mat
+        fprintf('Loading %s to determine feedstock feature size...\n', feedstockFile);
+        feedstockDataCheck = load(feedstockFile);
+        if isfield(feedstockDataCheck, 'CopyrolysisFeedstockTag')
+            FeedType_size = size(feedstockDataCheck.CopyrolysisFeedstockTag, 1);
+            fprintf('FeedType_size (from CopyrolysisFeedstockTag rows): %d\n', FeedType_size);
+            numBaseFeatures = length(expectedInputCols);
+            numFeatures = numBaseFeatures + 2 * FeedType_size;
+            fprintf('Total expected feature count: %d (%d base + 2 * %d feedstock)\n', numFeatures, numBaseFeatures, FeedType_size);
+        else
+            error('CopyrolysisFeedstock.mat does not contain CopyrolysisFeedstockTag field. Cannot determine feature count.');
+        end
+
+        numOutputs = numTargetCols;
+        fprintf('Using %d outputs for neural network targets (Columns %s).\n', numOutputs, mat2str(expectedTargetCols));
+
+    catch dimErr
+        error('Error determining data dimensions: %s\nCheck file paths and formats:\n  Raw Data: %s\n  Feedstock: %s', ...
+              dimErr.message, rawDataFile, feedstockFile);
+    end
+
+    %% Extract Training Strategy and Ratios from best_config
+    fprintf('\n--- Configuring training strategy and data split ---\n');
+    strategy = getOrDefault(best_config, 'strategy', 'TT', 'Training Strategy');
+    trainRatio = getOrDefault(best_config, 'trainRatio', 0.7, 'Training Ratio');
+    if strcmpi(strategy, 'TVT')
+        valRatio = getOrDefault(best_config, 'valRatio', 0.15, 'Validation Ratio');
+        if valRatio <= 0, warning('Validation Ratio (valRatio=%.2f) must be positive for TVT strategy. Using default 0.15.', valRatio); valRatio = 0.15; end
+    else, valRatio = 0; end
+    testRatio = 1 - trainRatio - valRatio;
+    if trainRatio <= 0 || trainRatio >= 1, error('Invalid trainRatio (%.2f). Must be between 0 and 1.', trainRatio); end
+    if valRatio < 0 || valRatio >= 1, error('Invalid valRatio (%.2f). Must be between 0 and 1.', valRatio); end
+    if testRatio < 0 || testRatio > 1, error('Invalid calculated testRatio (%.2f). Ratios do not sum to 1 correctly (Train:%.2f, Val:%.2f).', testRatio, trainRatio, valRatio); end
+    if abs(trainRatio + valRatio + testRatio - 1.0) > 1e-6, warning('Data split ratios (Train:%.2f, Val:%.2f, Test:%.2f) do not sum exactly to 1. Check configuration.', trainRatio, valRatio, testRatio); end
+
+    fprintf('Model parameters: %d features, %d samples, %d outputs\n', numFeatures, numSamples, numOutputs);
+    fprintf('Strategy: %s, TrainRatio: %.2f, ValRatio: %.2f, TestRatio: %.2f\n', strategy, trainRatio, valRatio, testRatio);
+
+    %% Load and Prepare Final Data Matrices
+    fprintf('\n--- Loading and processing data for training ---\n');
+    try
+        % Read numeric data from Excel
+        numericData = xlsread(rawDataFile);
+        if size(numericData, 1) ~= numSamples
+             rangeStr = sprintf('%s%d:%s%d', num2col(1), headerRow + 1, num2col(numCols), numRows);
+             fprintf('Warning: xlsread row count (%d) differs from expected (%d). Trying to read range: %s\n', size(numericData,1), numSamples, rangeStr);
+              try
+                  [~, ~, rawExcelDataRange] = xlsread(rawDataFile, 1, rangeStr);
+                  numericData = cell2mat(rawExcelDataRange);
+                  if size(numericData,1) ~= numSamples, error('Failed to read correct number of samples even with specific range. Check RawInputData.xlsx structure.'); end
+              catch readErrRange, error('Error reading specific range (%s) from RawInputData.xlsx: %s', rangeStr, readErrRange.message); end
+         end
+
+        % Extract base features and targets
+        inputFeatures = numericData(:, expectedInputCols);
+        targetData = numericData(:, expectedTargetCols);
+        fprintf('Loaded base features [%d x %d] and targets [%d x %d] from RawInputData.xlsx\n', ...
+            size(inputFeatures, 1), size(inputFeatures, 2), size(targetData, 1), size(targetData, 2));
+
+        % Load feedstock data
+        fprintf('Loading feedstock variables from %s...\n', feedstockFile);
+        feedstockData = load(feedstockFile);
+        requiredVars = {'CopyrolysisFeedstockTag', 'Total_FeedID', 'Total_MixingRatio', 'FeedstockIndex'};
+        if ~all(isfield(feedstockData, requiredVars)), missingVars = requiredVars(~isfield(feedstockData, requiredVars)); error('Missing required variables in %s: %s', feedstockFile, strjoin(missingVars, ', ')); end
+        CopyrolysisFeedstockTag = feedstockData.CopyrolysisFeedstockTag; Total_FeedID = feedstockData.Total_FeedID; Total_MixingRatio = feedstockData.Total_MixingRatio; FeedstockIndex = feedstockData.FeedstockIndex;
+
+        % Verify dimensions of loaded feedstock variables
+        if size(Total_FeedID, 1) ~= numSamples || size(Total_MixingRatio, 1) ~= numSamples || size(FeedstockIndex, 1) ~= numSamples
+            error('Sample count mismatch between RawInputData (%d) and Feedstock variables (ID:%d, Ratio:%d, Index:%d)', numSamples, size(Total_FeedID, 1), size(Total_MixingRatio, 1), size(FeedstockIndex, 1));
+        end
+        if size(CopyrolysisFeedstockTag, 1) ~= FeedType_size
+             error('Dimension mismatch: CopyrolysisFeedstockTag rows (%d) ~= FeedType_size (%d)', size(CopyrolysisFeedstockTag, 1), FeedType_size);
+        end
+
+        % Construct per-sample feedstock features
+        fprintf('Constructing per-sample feedstock features using loop...\n');
+        MixingFeedID = zeros(numSamples, FeedType_size); MixingRatio = zeros(numSamples, FeedType_size); validSampleCount = 0;
+        for i = 1 : numSamples
+            idx1 = FeedstockIndex(i, 1); idx2 = FeedstockIndex(i, 2);
+            isValidIdx1 = isnumeric(idx1) && isscalar(idx1) && isfinite(idx1) && idx1 >= 1 && idx1 <= FeedType_size && (idx1 == floor(idx1));
+            isValidIdx2 = isnumeric(idx2) && isscalar(idx2) && isfinite(idx2) && idx2 >= 1 && idx2 <= FeedType_size && (idx2 == floor(idx2));
+            if ~isValidIdx1 || ~isValidIdx2, warning('Sample %d has invalid FeedstockIndex [%s, %s]. Indices must be integers between 1 and %d. Skipping sample features construction.', i, num2str(idx1), num2str(idx2), FeedType_size); continue; end
+            MixingFeedID(i, idx1) = Total_FeedID(i, 1); MixingFeedID(i, idx2) = Total_FeedID(i, 2); MixingRatio(i, idx1) = Total_MixingRatio(i, 1); MixingRatio(i, idx2) = Total_MixingRatio(i, 2); validSampleCount = validSampleCount + 1;
+        end
+        if validSampleCount ~= numSamples, fprintf('Warning: Features constructed for %d out of %d samples due to invalid FeedstockIndex values.\n', validSampleCount, numSamples); end
+        Feedstock4training = [MixingFeedID MixingRatio];
+        fprintf('Constructed Feedstock4training matrix [%d x %d]\n', size(Feedstock4training,1), size(Feedstock4training,2));
+
+        % Concatenate features
+        X = [inputFeatures Feedstock4training];
+        fprintf('Final input matrix X created by concatenation [%d x %d]\n', size(X,1), size(X,2));
+        if size(X, 2) ~= numFeatures, error('CRITICAL: Final input matrix columns (%d) do not match expected feature count (%d). Check processing logic.', size(X, 2), numFeatures); end
+        y = targetData;
+
+    catch loadErr
+        error('Error loading or processing data for training: %s', loadErr.message);
+    end
+
+    % --- Get Preprocessing Settings BEFORE training ---
+    fprintf('Obtaining preprocessing settings (PS/TS)...\n');
+    try
+        % Calculate PS/TS directly using MATLAB's functions on the full dataset
+        % Use documented syntax: [Y, PS] = mapminmax(X) [cite: 2, 17]
+        % Data is expected as Features x Samples for mapminmax, so transpose X and y.
+        % Capture BOTH output arguments to avoid MATLAB:unassignedOutputs error.
+        
+        % ***** CORRECTED LINES based on Documentation & Error Log *****
+        [Xnorm_temp, PS] = mapminmax(X'); % Capture 1st output (Y) and 2nd (PS)
+        [ynorm_temp, TS] = mapminmax(y'); % Capture 1st output (Y) and 2nd (TS)
+        % *************************************************************
+
+        fprintf('Calculated PS and TS using mapminmax directly on full dataset.\n');
+
+        PS_global = PS; % Keep global copies if needed elsewhere
+        TS_global = TS;
+    catch preprocSetErr
+        fprintf('ERROR obtaining preprocessing settings before training: %s\n', preprocSetErr.message);
+        % Create empty/error placeholders if generation fails
+        PS = createPlaceholderPS(); PS.status = ['Preprocessing settings generation failed: ' preprocSetErr.message];
+        TS = createPlaceholderTS(); TS.status = ['Preprocessing settings generation failed: ' preprocSetErr.message];
+        PS_global = PS; TS_global = TS;
+        if isempty(e), e = preprocSetErr; end % Store error
+        % Rethrow the error to stop execution if PS/TS are critical
+        rethrow(preprocSetErr); 
+    end
+    % --- End Preprocessing Settings ---
+
+    % Convert data to format expected by NN functions (Features x Samples)
+    input_data = X';  
+    target_data = y'; 
+
+>>>>>>> 5532f15296ed6babaee64d74dd966e573480e3cb
     fprintf('Final data dimensions prepared for NN training:\n');
     fprintf('- input_data (Features x Samples): [%d x %d]\n', size(input_data, 1), size(input_data, 2));
     fprintf('- target_data (Outputs x Samples): [%d x %d]\n', size(target_data, 1), size(target_data, 2));
@@ -301,6 +453,7 @@ try % Main try block for the whole script
         error('CRITICAL dimension mismatch between calculated parameters and final data matrices. Check data loading/processing.');
     end
 
+<<<<<<< HEAD
     % %% Configure Neural Network
     % fprintf('\n--- Configuring neural network based on best hyperparameters ---\n');
     % lr = getOrDefault(best_config, 'lr', 0.01, 'Learning Rate (lr)'); mc = getOrDefault(best_config, 'mc', 0.7, 'Momentum (mc)'); hiddenLayer = getOrDefault(best_config, 'hiddenLayer', [10], 'Hidden Layer Structure'); hiddenTF = getOrDefault(best_config, 'hiddenTF', 'tansig', 'Hidden Transfer Function');
@@ -402,6 +555,37 @@ try % Main try block for the whole script
 
     fprintf('Final Training parameters set: Epochs=%d, Goal=%.e, Initial LR=%.4f, MC=%.2f, LR_INC=%.2f, LR_DEC=%.2f\n', ...
             net.trainParam.epochs, net.trainParam.goal, net.trainParam.lr, net.trainParam.mc, net.trainParam.lr_inc, net.trainParam.lr_dec);
+=======
+    %% Configure Neural Network
+    fprintf('\n--- Configuring neural network based on best hyperparameters ---\n');
+    lr = getOrDefault(best_config, 'lr', 0.01, 'Learning Rate (lr)'); mc = getOrDefault(best_config, 'mc', 0.7, 'Momentum (mc)'); hiddenLayer = getOrDefault(best_config, 'hiddenLayer', [10], 'Hidden Layer Structure'); hiddenTF = getOrDefault(best_config, 'hiddenTF', 'tansig', 'Hidden Transfer Function');
+    if ~isfield(best_config, 'hiddenTF') && isfield(best_config, 'transferFcn'), hiddenTF = getOrDefault(best_config, 'transferFcn', 'tansig', 'Transfer Function (fallback)'); fprintf('INFO: Using ''transferFcn'' field from best_config as hiddenTF.\n'); end
+    outputTF = getOrDefault(best_config, 'outputTF', 'purelin', 'Output Transfer Function'); lr_inc = getOrDefault(best_config, 'lr_inc', 1.05, 'Learning Rate Increase'); lr_dec = getOrDefault(best_config, 'lr_dec', 0.7, 'Learning Rate Decrease');
+    if isscalar(hiddenLayer), hiddenLayer = [hiddenLayer]; elseif ~isrow(hiddenLayer), hiddenLayer = hiddenLayer(:)'; end
+    fprintf('Using Hyperparameters:\n LR=%.4f, MC=%.2f, HiddenLayer=[%s], HiddenTF=%s, OutputTF=%s\n', lr, mc, num2str(hiddenLayer), hiddenTF, outputTF);
+
+    fprintf('DEBUG: Calling nncreate with numFeatures=%d, hiddenLayer=[%s], numOutputs=%d, hiddenTF=%s, outputTF=%s\n', numFeatures, num2str(hiddenLayer), numOutputs, hiddenTF, outputTF);
+    net = nncreate(numFeatures, hiddenLayer, numOutputs, hiddenTF, outputTF);
+    fprintf('DEBUG: nncreate completed. Network structure initialized.\n');
+
+    %% Set Training Parameters
+    fprintf('\n--- Setting network training parameters ---\n');
+    net.performFcn = 'mse'; net.divideFcn = 'dividerand';
+    net.divideParam.trainRatio = trainRatio; net.divideParam.valRatio = valRatio; net.divideParam.testRatio = testRatio;
+    fprintf('Data division ratios set: Train=%.2f, Val=%.2f, Test=%.2f\n', net.divideParam.trainRatio, net.divideParam.valRatio, net.divideParam.testRatio);
+    net.trainParam.epochs = 5000; net.trainParam.goal = 1e-8; net.trainParam.min_grad = 1e-10; net.trainParam.max_fail = 25;
+    net.trainParam.showWindow = false; net.trainParam.showCommandLine = true; net.trainParam.show = 25;
+    net.trainParam.lr = lr; net.trainParam.mc = mc; net.trainParam.lr_inc = lr_inc; net.trainParam.lr_dec = lr_dec;
+
+    net.trainParam.lr = 0.01; % override the initial LR
+    fprintf('INFO: Overriding Initial LR from %.4f to %.4f\n', initial_lr, net.trainParam.lr);
+    fprintf('INFO: Using Optimized LR_INC = %.4f\n', net.trainParam.lr_inc);
+    fprintf('INFO: Using Optimized LR_DEC = %.4f\n', net.trainParam.lr_dec);
+
+    fprintf('Training parameters set: Epochs=%d, Goal=%.e, Initial LR=%.4f, MC=%.2f, LR_INC=%.2f, LR_DEC=%.2f\n', ...
+            net.trainParam.epochs, net.trainParam.goal, net.trainParam.lr, net.trainParam.mc, net.trainParam.lr_inc, net.trainParam.lr_dec);
+
+>>>>>>> 5532f15296ed6babaee64d74dd966e573480e3cb
     %% Train the Neural Network
     fprintf('\n--- Training neural network using %s strategy ---\n', upper(strategy));
     fprintf('DEBUG: Checking final dimensions before calling nntrain...\n');
