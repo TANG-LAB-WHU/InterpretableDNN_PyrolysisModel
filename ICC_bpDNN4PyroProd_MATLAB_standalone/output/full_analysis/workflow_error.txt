@@ -1,5 +1,5 @@
-Workflow failed at 02-May-2025 00:22:52
-Error message: Failed to validate trained model: Trained model missing required fields: trainResults
+Workflow failed at 03-May-2025 18:11:39
+Error message: Failed to validate trained model: Unrecognized field name "layers".
 Stack trace:
-  Function: complete_workflow, Line: 135, File: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/tmp_matlab_2031890/complete_workflow.m
+  Function: complete_workflow, Line: 135, File: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/tmp_matlab_2057909/complete_workflow.m
   Function: run, Line: 112, File: /sw/apps/matlab/R2024a/toolbox/matlab/lang/run.m
