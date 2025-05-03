@@ -527,13 +527,22 @@ end
     end
     if ~isfield(tr, 'status'), if ~isempty(e), tr.status = ['Failed: ' e.message]; else tr.status = 'Completed or Failed - Status Unknown'; end; end
 
+    % Create trainResults structure for model validation in complete_workflow.m
+    trainResults = struct();
+    trainResults.best_perf = NaN;
+    if isfield(tr, 'best_perf') && ~isnan(tr.best_perf), trainResults.best_perf = tr.best_perf; end
+    if isfield(tr, 'best_vperf') && ~isnan(tr.best_vperf), trainResults.best_vperf = tr.best_vperf; end
+    if isfield(tr, 'best_tperf') && ~isnan(tr.best_tperf), trainResults.best_tperf = tr.best_tperf; end
+    if isfield(tr, 'status'), trainResults.status = tr.status; end
+    fprintf('Created trainResults structure for model validation.\n');
+
     fprintf('Saving final results to .mat files...\n');
     bestModelFile = fullfile(bestModelDir, 'best_model.mat');
-    save(bestModelFile, 'net', 'tr', 'params', 'input_data', 'target_data', 'PS', 'TS', 'PS_global', 'TS_global', 'numFeatures', 'numOutputs', 'numSamples', 'FeedType_size');
+    save(bestModelFile, 'net', 'tr', 'trainResults', 'params', 'input_data', 'target_data', 'PS', 'TS', 'PS_global', 'TS_global', 'numFeatures', 'numOutputs', 'numSamples', 'FeedType_size');
     fprintf('Best model results saved to: %s\n', bestModelFile);
 
     trainingModelFile = fullfile(trainingDir, 'trained_model.mat');
-    save(trainingModelFile, 'net', 'tr', 'params', 'input_data', 'target_data', 'PS', 'TS', 'PS_global', 'TS_global', 'numFeatures', 'numOutputs', 'numSamples', 'FeedType_size');
+    save(trainingModelFile, 'net', 'tr', 'trainResults', 'params', 'input_data', 'target_data', 'PS', 'TS', 'PS_global', 'TS_global', 'numFeatures', 'numOutputs', 'numSamples', 'FeedType_size');
     fprintf('Training model copy saved to: %s\n', trainingModelFile);
 
     executionTime = toc(startTime);
@@ -554,10 +563,17 @@ catch e % Catch block for the main script try
             PS_global = PS; TS_global = TS;
             if ~exist('params', 'var') || ~isstruct(params), params = createPlaceholderParams(); end; params.status = ['Failed in train_best_model: ' e.message]; params.error_identifier = e.identifier;
             tr_emergency = createMinimalTR(e.message, ['Failed: ' e.identifier]);
+            
+            % Create trainResults structure for emergency save
+            trainResults_emergency = struct();
+            trainResults_emergency.best_perf = NaN;
+            trainResults_emergency.status = ['Failed: ' e.identifier];
+            trainResults_emergency.error_message = e.message;
+            
             if exist('numFeatures','var'), params.numFeatures = numFeatures; else params.numFeatures = NaN; end; if exist('numOutputs','var'), params.numOutputs = numOutputs; else params.numOutputs = NaN; end
             if exist('numSamples','var'), params.numSamples = numSamples; else params.numSamples = NaN; end; if exist('FeedType_size','var'), params.FeedType_size = FeedType_size; else params.FeedType_size = NaN; end
             failedModelFile = fullfile(bestModelDir, 'best_model_FAILED.mat');
-            save(failedModelFile, 'net', 'tr_emergency', 'params', 'input_data', 'target_data', 'PS', 'TS', 'PS_global', 'TS_global');
+            save(failedModelFile, 'net', 'tr_emergency', 'trainResults_emergency', 'params', 'input_data', 'target_data', 'PS', 'TS', 'PS_global', 'TS_global');
             fprintf('Emergency results saved to: %s\n', failedModelFile);
         else fprintf('ERROR: Missing essential variables (net, input_data, target_data). Cannot save emergency results.\n'); end
     catch saveErr, fprintf('ERROR: Failed during attempt to save emergency results: %s\n', saveErr.message); end
