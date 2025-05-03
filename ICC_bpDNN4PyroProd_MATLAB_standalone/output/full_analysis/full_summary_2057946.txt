@@ -1,7 +1,7 @@
 ===== COMPLETE WORKFLOW SUMMARY =====
-Job ID: 2057909
-Node: ccc0357
-Start time: Sat May  3 18:11:04 CDT 2025
+Job ID: 2057946
+Node: ccc0367
+Start time: Sat May  3 18:44:20 CDT 2025
 Script version: 3.0.0
 
 Workflow steps:
@@ -10,7 +10,7 @@ Workflow steps:
 3. SHAP Analysis
 
 Checking for required files and directories...
-Created MATLAB temporary directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/tmp_matlab_2057909
+Created MATLAB temporary directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/tmp_matlab_2057946
 Loading MATLAB module...
 MATLAB command found at: /sw/apps/matlab/R2024a/bin/matlab
 
@@ -34,10 +34,10 @@ ERROR: MATLAB workflow failed with exit code 1
 ✓ Figure files created: 0 .fig files, 0 .png files
 
 Cleaning up temporary files...
-Removed temporary directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/tmp_matlab_2057909
+Removed temporary directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/tmp_matlab_2057946
 
 ===== COMPLETE WORKFLOW JOB FINISHED =====
-End time: Sat May  3 18:11:44 CDT 2025
+End time: Sat May  3 18:44:59 CDT 2025
 Status: FAILED (MATLAB exit code: 1)
 
 Results locations:
