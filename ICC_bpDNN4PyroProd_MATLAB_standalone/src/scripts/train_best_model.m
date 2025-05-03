@@ -423,15 +423,77 @@ try % Main try block for the whole script
         tr = createMinimalTR(trainError.message, 'Failed in nntrain'); fprintf('Attempting to continue to save results despite nntrain error...\n'); e = trainError;
     end
 
-    %% Evaluate Performance
-    fprintf('\n--- Evaluating final model performance ---\n');
-    trainPerf = NaN; valPerf = NaN; testPerf = NaN;
-    if exist('tr', 'var') && isstruct(tr) && ~isempty(fieldnames(tr))
-        if isfield(tr, 'status') && contains(tr.status, 'Failed', 'IgnoreCase', true), fprintf('Training status in ''tr'' indicates failure: "%s". Performance metrics may be NaN.\n', tr.status); end
-        if isfield(tr, 'best_perf') && isscalar(tr.best_perf) && isnumeric(tr.best_perf), trainPerf = tr.best_perf; fprintf('  Best Training MSE (tr.best_perf):   %.6f\n', trainPerf); else fprintf('  Best Training MSE: Not available in training record (tr.best_perf).\n'); end
-        if isfield(tr, 'best_vperf') && isscalar(tr.best_vperf) && isnumeric(tr.best_vperf) && ~isnan(tr.best_vperf), valPerf = tr.best_vperf; fprintf('  Best Validation MSE (tr.best_vperf): %.6f\n', valPerf); else fprintf('  Best Validation MSE: Not available or not applicable (tr.best_vperf).\n'); end
-        if isfield(tr, 'best_tperf') && isscalar(tr.best_tperf) && isnumeric(tr.best_tperf), testPerf = tr.best_tperf; fprintf('  Best Testing MSE (tr.best_tperf):    %.6f\n', testPerf); else fprintf('  Best Testing MSE: Not available in training record (tr.best_tperf).\n'); end
-    else fprintf('  Training record structure ''tr'' is missing, empty, or invalid. Cannot report performance.\n'); end
+    % %% Evaluate Performance
+    % fprintf('\n--- Evaluating final model performance ---\n');
+    % trainPerf = NaN; valPerf = NaN; testPerf = NaN;
+    % if exist('tr', 'var') && isstruct(tr) && ~isempty(fieldnames(tr))
+    %     if isfield(tr, 'status')
+    %         if iscell(tr.status) && ~isempty(tr.status)
+    %             % take the first element if it is a cell array
+    %             statusStr = tr.status{1};
+    %             if contains(statusStr, 'Failed', 'IgnoreCase', true)
+    %                 fprintf('Training status in ''tr'' indicates failure: "%s". Performance metrics may be NaN.\n', statusStr);
+    %             end
+    %         elseif ischar(tr.status) && contains(tr.status, 'Failed', 'IgnoreCase', true)
+    %             % if it is a string
+    %             fprintf('Training status in ''tr'' indicates failure: "%s". Performance metrics may be NaN.\n', tr.status);
+    %         end
+    %     end
+    %     if isfield(tr, 'status') && contains(tr.status, 'Failed', 'IgnoreCase', true), fprintf('Training status in ''tr'' indicates failure: "%s". Performance metrics may be NaN.\n', tr.status); end
+    %     if isfield(tr, 'best_perf') && isscalar(tr.best_perf) && isnumeric(tr.best_perf), trainPerf = tr.best_perf; fprintf('  Best Training MSE (tr.best_perf):   %.6f\n', trainPerf); else fprintf('  Best Training MSE: Not available in training record (tr.best_perf).\n'); end
+    %     if isfield(tr, 'best_vperf') && isscalar(tr.best_vperf) && isnumeric(tr.best_vperf) && ~isnan(tr.best_vperf), valPerf = tr.best_vperf; fprintf('  Best Validation MSE (tr.best_vperf): %.6f\n', valPerf); else fprintf('  Best Validation MSE: Not available or not applicable (tr.best_vperf).\n'); end
+    %     if isfield(tr, 'best_tperf') && isscalar(tr.best_tperf) && isnumeric(tr.best_tperf), testPerf = tr.best_tperf; fprintf('  Best Testing MSE (tr.best_tperf):    %.6f\n', testPerf); else fprintf('  Best Testing MSE: Not available in training record (tr.best_tperf).\n'); end
+    % elseif 
+    %     fprintf('Training record structure ''tr'' is missing, empty, or invalid. Cannot report performance.\n');
+    % end
+
+%% Evaluate Performance
+fprintf('\n--- Evaluating final model performance ---\n');
+trainPerf = NaN; valPerf = NaN; testPerf = NaN;
+if exist('tr', 'var') && isstruct(tr) && ~isempty(fieldnames(tr))
+    if isfield(tr, 'status')
+        if iscell(tr.status) && ~isempty(tr.status)
+            % take the first element if it is a cell array
+            statusStr = tr.status{1};
+            if contains(statusStr, 'Failed', 'IgnoreCase', true)
+                fprintf('Training status in ''tr'' indicates failure: "%s". Performance metrics may be NaN.\n', statusStr);
+            end
+        elseif ischar(tr.status) && contains(tr.status, 'Failed', 'IgnoreCase', true)
+            % if it is a string
+            fprintf('Training status in ''tr'' indicates failure: "%s". Performance metrics may be NaN.\n', tr.status);
+        end
+    end
+    
+    % Check performance metrics
+    % if isfield(tr, 'best_perf') && isscalar(tr.best_perf) && isnumeric(tr.best_perf) && isfinite(tr.best_perf) && ~isnan(tr.best_perf)
+    %     trainPerf = tr.best_perf; 
+    %     fprintf('  Best Training MSE (tr.best_perf):   %.6f\n', trainPerf); 
+    % else 
+    %     fprintf('  Best Training MSE: Not available in training record (tr.best_perf).\n'); 
+    % end
+    if isfield(tr, 'best_perf') && isscalar(tr.best_perf) && isnumeric(tr.best_perf) && isfinite(tr.best_perf) && ~isnan(tr.best_perf)
+        trainPerf = tr.best_perf;
+        fprintf('  Best Training MSE (tr.best_perf):   %.6f\n', trainPerf);
+    else
+        fprintf('  Best Training MSE: Not available, NaN, or Inf in training record (tr.best_perf).\n');
+    end
+
+    if isfield(tr, 'best_vperf') && isscalar(tr.best_vperf) && isnumeric(tr.best_vperf) && ~isnan(tr.best_vperf) && isfinite(tr.best_vperf)
+        valPerf = tr.best_vperf; 
+        fprintf('  Best Validation MSE (tr.best_vperf): %.6f\n', valPerf); 
+    else 
+        fprintf('  Best Validation MSE: Not available or not applicable (tr.best_vperf).\n'); 
+    end
+    
+    if isfield(tr, 'best_tperf') && isscalar(tr.best_tperf) && isnumeric(tr.best_tperf) && ~isnan(tr.best_tperf) && isfinite(tr.best_tperf)
+        testPerf = tr.best_tperf; 
+        fprintf('  Best Testing MSE (tr.best_tperf):    %.6f\n', testPerf); 
+    else 
+        fprintf('  Best Testing MSE: Not available in training record (tr.best_tperf).\n'); 
+    end
+else
+    fprintf('Training record structure ''tr'' is missing, empty, or invalid. Cannot report performance.\n');
+end
 
     %% Save the Trained Model and Results
     fprintf('\n--- Saving trained model and results ---\n');
@@ -445,7 +507,14 @@ try % Main try block for the whole script
     if ~exist('TS_global','var'), TS_global = TS; end 
 
     params = struct();
-    params.lr = lr; params.mc = mc; params.lr_inc = lr_inc; params.lr_dec = lr_dec; params.hiddenLayer = hiddenLayer; params.hiddenTF = hiddenTF; params.outputTF = outputTF;
+    % params.lr = lr; params.mc = mc; params.lr_inc = lr_inc; params.lr_dec = lr_dec; params.hiddenLayer = hiddenLayer; params.hiddenTF = hiddenTF; params.outputTF = outputTF;
+    params.lr = final_initial_lr; 
+    params.mc = final_mc;  
+    params.lr_inc = final_lr_inc; 
+    params.lr_dec = final_lr_dec; 
+    params.hiddenLayer = config_hiddenLayer;
+    params.hiddenTF = final_hiddenTF;
+    params.outputTF = config_outputTF;
     params.strategy = strategy; params.trainRatio = trainRatio; params.valRatio = valRatio; params.testRatio = testRatio;
     if isfield(net, 'trainParam'), params.epochs = net.trainParam.epochs; params.goal = net.trainParam.goal; params.min_grad = net.trainParam.min_grad; params.max_fail = net.trainParam.max_fail; else params.epochs = NaN; end
     params.finalTrainMSE = trainPerf; params.finalValMSE = valPerf; params.finalTestMSE = testPerf;
@@ -528,8 +597,17 @@ trainingSucceeded = false; % Default assumption
 if ~scriptErrorOccurred && trExists
     fprintf('Script finished without catching errors. Training record ''tr'' exists.\n');
     % Check status field first
-    if isfield(tr, 'status') && iscell(tr.status) && ~isempty(tr.status) && contains(tr.status{1}, 'Failed', 'IgnoreCase', true)
-        fprintf('Training status in ''tr'' indicates failure: "%s".\n', strjoin(tr.status,'; '));
+    % if isfield(tr, 'status') && iscell(tr.status) && ~isempty(tr.status) && contains(tr.status{1}, 'Failed', 'IgnoreCase', true)
+    %     fprintf('Training status in ''tr'' indicates failure: "%s".\n', strjoin(tr.status,'; '));
+    if isfield(tr, 'status')
+        if iscell(tr.status) && ~isempty(tr.status)
+            statusStr = tr.status{1};
+            if contains(statusStr, 'Failed', 'IgnoreCase', true)
+                fprintf('Training status in ''tr'' indicates failure: "%s".\n', statusStr);
+            end
+        elseif ischar(tr.status) && contains(tr.status, 'Failed', 'IgnoreCase', true)
+            fprintf('Training status in ''tr'' indicates failure: "%s".\n', tr.status);
+        end
     elseif isfield(tr, 'best_perf') && isscalar(tr.best_perf) && isnumeric(tr.best_perf) && ~isnan(tr.best_perf) && ~isinf(tr.best_perf)
         finalPerformance = tr.best_perf;
         trainingSucceeded = true; % Mark as succeeded only if perf is a valid finite number
