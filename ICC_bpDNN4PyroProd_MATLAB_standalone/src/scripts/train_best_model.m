@@ -301,18 +301,6 @@ try % Main try block for the whole script
         error('CRITICAL dimension mismatch between calculated parameters and final data matrices. Check data loading/processing.');
     end
 
-    % %% Configure Neural Network
-    % fprintf('\n--- Configuring neural network based on best hyperparameters ---\n');
-    % lr = getOrDefault(best_config, 'lr', 0.01, 'Learning Rate (lr)'); mc = getOrDefault(best_config, 'mc', 0.7, 'Momentum (mc)'); hiddenLayer = getOrDefault(best_config, 'hiddenLayer', [10], 'Hidden Layer Structure'); hiddenTF = getOrDefault(best_config, 'hiddenTF', 'tansig', 'Hidden Transfer Function');
-    % if ~isfield(best_config, 'hiddenTF') && isfield(best_config, 'transferFcn'), hiddenTF = getOrDefault(best_config, 'transferFcn', 'tansig', 'Transfer Function (fallback)'); fprintf('INFO: Using ''transferFcn'' field from best_config as hiddenTF.\n'); end
-    % outputTF = getOrDefault(best_config, 'outputTF', 'purelin', 'Output Transfer Function'); lr_inc = getOrDefault(best_config, 'lr_inc', 1.05, 'Learning Rate Increase'); lr_dec = getOrDefault(best_config, 'lr_dec', 0.7, 'Learning Rate Decrease');
-    % if isscalar(hiddenLayer), hiddenLayer = [hiddenLayer]; elseif ~isrow(hiddenLayer), hiddenLayer = hiddenLayer(:)'; end
-    % fprintf('Using Hyperparameters:\n LR=%.4f, MC=%.2f, HiddenLayer=[%s], HiddenTF=%s, OutputTF=%s\n', lr, mc, num2str(hiddenLayer), hiddenTF, outputTF);
-
-    % fprintf('DEBUG: Calling nncreate with numFeatures=%d, hiddenLayer=[%s], numOutputs=%d, hiddenTF=%s, outputTF=%s\n', numFeatures, num2str(hiddenLayer), numOutputs, hiddenTF, outputTF);
-    % net = nncreate(numFeatures, hiddenLayer, numOutputs, hiddenTF, outputTF);
-    % fprintf('DEBUG: nncreate completed. Network structure initialized.\n');
-
     %% Configure Neural Network
     fprintf('\n--- Configuring neural network based on best hyperparameters ---\n');
     % --- Get Hyperparameters from best_config ---
@@ -360,22 +348,6 @@ try % Main try block for the whole script
         error('Failed to create network with nncreate: %s', createErr.message);
     end
 
-    % %% Set Training Parameters
-    % fprintf('\n--- Setting network training parameters ---\n');
-    % net.performFcn = 'mse'; net.divideFcn = 'dividerand';
-    % net.divideParam.trainRatio = trainRatio; net.divideParam.valRatio = valRatio; net.divideParam.testRatio = testRatio;
-    % fprintf('Data division ratios set: Train=%.2f, Val=%.2f, Test=%.2f\n', net.divideParam.trainRatio, net.divideParam.valRatio, net.divideParam.testRatio);
-    % net.trainParam.epochs = 5000; net.trainParam.goal = 1e-8; net.trainParam.min_grad = 1e-10; net.trainParam.max_fail = 25;
-    % net.trainParam.showWindow = false; net.trainParam.showCommandLine = true; net.trainParam.show = 25;
-    % net.trainParam.lr = lr; net.trainParam.mc = mc; net.trainParam.lr_inc = lr_inc; net.trainParam.lr_dec = lr_dec;
-
-    % net.trainParam.lr = 0.01; % override the initial LR
-    % fprintf('INFO: Overriding Initial LR from %.4f to %.4f\n', initial_lr, net.trainParam.lr);
-    % fprintf('INFO: Using Optimized LR_INC = %.4f\n', net.trainParam.lr_inc);
-    % fprintf('INFO: Using Optimized LR_DEC = %.4f\n', net.trainParam.lr_dec);
-
-    % fprintf('Training parameters set: Epochs=%d, Goal=%.e, Initial LR=%.4f, MC=%.2f, LR_INC=%.2f, LR_DEC=%.2f\n', ...
-    %         net.trainParam.epochs, net.trainParam.goal, net.trainParam.lr, net.trainParam.mc, net.trainParam.lr_inc, net.trainParam.lr_dec);
     %% Set Training Parameters in Network Structure
     fprintf('\n--- Setting network training parameters ---\n');
     net.performFcn = 'mse';
@@ -423,77 +395,47 @@ try % Main try block for the whole script
         tr = createMinimalTR(trainError.message, 'Failed in nntrain'); fprintf('Attempting to continue to save results despite nntrain error...\n'); e = trainError;
     end
 
-    % %% Evaluate Performance
-    % fprintf('\n--- Evaluating final model performance ---\n');
-    % trainPerf = NaN; valPerf = NaN; testPerf = NaN;
-    % if exist('tr', 'var') && isstruct(tr) && ~isempty(fieldnames(tr))
-    %     if isfield(tr, 'status')
-    %         if iscell(tr.status) && ~isempty(tr.status)
-    %             % take the first element if it is a cell array
-    %             statusStr = tr.status{1};
-    %             if contains(statusStr, 'Failed', 'IgnoreCase', true)
-    %                 fprintf('Training status in ''tr'' indicates failure: "%s". Performance metrics may be NaN.\n', statusStr);
-    %             end
-    %         elseif ischar(tr.status) && contains(tr.status, 'Failed', 'IgnoreCase', true)
-    %             % if it is a string
-    %             fprintf('Training status in ''tr'' indicates failure: "%s". Performance metrics may be NaN.\n', tr.status);
-    %         end
-    %     end
-    %     if isfield(tr, 'status') && contains(tr.status, 'Failed', 'IgnoreCase', true), fprintf('Training status in ''tr'' indicates failure: "%s". Performance metrics may be NaN.\n', tr.status); end
-    %     if isfield(tr, 'best_perf') && isscalar(tr.best_perf) && isnumeric(tr.best_perf), trainPerf = tr.best_perf; fprintf('  Best Training MSE (tr.best_perf):   %.6f\n', trainPerf); else fprintf('  Best Training MSE: Not available in training record (tr.best_perf).\n'); end
-    %     if isfield(tr, 'best_vperf') && isscalar(tr.best_vperf) && isnumeric(tr.best_vperf) && ~isnan(tr.best_vperf), valPerf = tr.best_vperf; fprintf('  Best Validation MSE (tr.best_vperf): %.6f\n', valPerf); else fprintf('  Best Validation MSE: Not available or not applicable (tr.best_vperf).\n'); end
-    %     if isfield(tr, 'best_tperf') && isscalar(tr.best_tperf) && isnumeric(tr.best_tperf), testPerf = tr.best_tperf; fprintf('  Best Testing MSE (tr.best_tperf):    %.6f\n', testPerf); else fprintf('  Best Testing MSE: Not available in training record (tr.best_tperf).\n'); end
-    % elseif 
-    %     fprintf('Training record structure ''tr'' is missing, empty, or invalid. Cannot report performance.\n');
-    % end
-
-%% Evaluate Performance
-fprintf('\n--- Evaluating final model performance ---\n');
-trainPerf = NaN; valPerf = NaN; testPerf = NaN;
-if exist('tr', 'var') && isstruct(tr) && ~isempty(fieldnames(tr))
-    if isfield(tr, 'status')
-        if iscell(tr.status) && ~isempty(tr.status)
-            % take the first element if it is a cell array
-            statusStr = tr.status{1};
-            if contains(statusStr, 'Failed', 'IgnoreCase', true)
-                fprintf('Training status in ''tr'' indicates failure: "%s". Performance metrics may be NaN.\n', statusStr);
+    %% Evaluate Performance
+    fprintf('\n--- Evaluating final model performance ---\n');
+    trainPerf = NaN; valPerf = NaN; testPerf = NaN;
+    if exist('tr', 'var') && isstruct(tr) && ~isempty(fieldnames(tr))
+        if isfield(tr, 'status')
+            if iscell(tr.status) && ~isempty(tr.status)
+                % take the first element if it is a cell array
+                statusStr = tr.status{1};
+                if contains(statusStr, 'Failed', 'IgnoreCase', true)
+                    fprintf('Training status in ''tr'' indicates failure: "%s". Performance metrics may be NaN.\n', statusStr);
+                end
+            elseif ischar(tr.status) && contains(tr.status, 'Failed', 'IgnoreCase', true)
+                % if it is a string
+                fprintf('Training status in ''tr'' indicates failure: "%s". Performance metrics may be NaN.\n', tr.status);
             end
-        elseif ischar(tr.status) && contains(tr.status, 'Failed', 'IgnoreCase', true)
-            % if it is a string
-            fprintf('Training status in ''tr'' indicates failure: "%s". Performance metrics may be NaN.\n', tr.status);
         end
-    end
-    
-    % Check performance metrics
-    % if isfield(tr, 'best_perf') && isscalar(tr.best_perf) && isnumeric(tr.best_perf) && isfinite(tr.best_perf) && ~isnan(tr.best_perf)
-    %     trainPerf = tr.best_perf; 
-    %     fprintf('  Best Training MSE (tr.best_perf):   %.6f\n', trainPerf); 
-    % else 
-    %     fprintf('  Best Training MSE: Not available in training record (tr.best_perf).\n'); 
-    % end
-    if isfield(tr, 'best_perf') && isscalar(tr.best_perf) && isnumeric(tr.best_perf) && isfinite(tr.best_perf) && ~isnan(tr.best_perf)
-        trainPerf = tr.best_perf;
-        fprintf('  Best Training MSE (tr.best_perf):   %.6f\n', trainPerf);
-    else
-        fprintf('  Best Training MSE: Not available, NaN, or Inf in training record (tr.best_perf).\n');
-    end
+        
+        % Check performance metrics
+        if isfield(tr, 'best_perf') && isscalar(tr.best_perf) && isnumeric(tr.best_perf) && isfinite(tr.best_perf) && ~isnan(tr.best_perf)
+            trainPerf = tr.best_perf;
+            fprintf('  Best Training MSE (tr.best_perf):   %.6f\n', trainPerf);
+        else
+            fprintf('  Best Training MSE: Not available, NaN, or Inf in training record (tr.best_perf).\n');
+        end
 
-    if isfield(tr, 'best_vperf') && isscalar(tr.best_vperf) && isnumeric(tr.best_vperf) && ~isnan(tr.best_vperf) && isfinite(tr.best_vperf)
-        valPerf = tr.best_vperf; 
-        fprintf('  Best Validation MSE (tr.best_vperf): %.6f\n', valPerf); 
-    else 
-        fprintf('  Best Validation MSE: Not available or not applicable (tr.best_vperf).\n'); 
+        if isfield(tr, 'best_vperf') && isscalar(tr.best_vperf) && isnumeric(tr.best_vperf) && ~isnan(tr.best_vperf) && isfinite(tr.best_vperf)
+            valPerf = tr.best_vperf; 
+            fprintf('  Best Validation MSE (tr.best_vperf): %.6f\n', valPerf); 
+        else 
+            fprintf('  Best Validation MSE: Not available or not applicable (tr.best_vperf).\n'); 
+        end
+        
+        if isfield(tr, 'best_tperf') && isscalar(tr.best_tperf) && isnumeric(tr.best_tperf) && ~isnan(tr.best_tperf) && isfinite(tr.best_tperf)
+            testPerf = tr.best_tperf; 
+            fprintf('  Best Testing MSE (tr.best_tperf):    %.6f\n', testPerf); 
+        else 
+            fprintf('  Best Testing MSE: Not available in training record (tr.best_tperf).\n'); 
+        end
+    else
+        fprintf('Training record structure ''tr'' is missing, empty, or invalid. Cannot report performance.\n');
     end
-    
-    if isfield(tr, 'best_tperf') && isscalar(tr.best_tperf) && isnumeric(tr.best_tperf) && ~isnan(tr.best_tperf) && isfinite(tr.best_tperf)
-        testPerf = tr.best_tperf; 
-        fprintf('  Best Testing MSE (tr.best_tperf):    %.6f\n', testPerf); 
-    else 
-        fprintf('  Best Testing MSE: Not available in training record (tr.best_tperf).\n'); 
-    end
-else
-    fprintf('Training record structure ''tr'' is missing, empty, or invalid. Cannot report performance.\n');
-end
 
     %% Save the Trained Model and Results
     fprintf('\n--- Saving trained model and results ---\n');
@@ -534,6 +476,29 @@ end
     if isfield(tr, 'best_vperf') && ~isnan(tr.best_vperf), trainResults.best_vperf = tr.best_vperf; end
     if isfield(tr, 'best_tperf') && ~isnan(tr.best_tperf), trainResults.best_tperf = tr.best_tperf; end
     if isfield(tr, 'status'), trainResults.status = tr.status; end
+    
+    % Add neuronsInLayers directly to trainResults for complete_workflow.m to use
+    % This avoids the need to access net.layers which doesn't exist (it's net.layer)
+    if isfield(net, 'layer') && ~isempty(net.layer)
+        try
+            % Extract neuron counts from each layer and store them
+            neuronsInLayers = cell(1, length(net.layer));
+            for i = 1:length(net.layer)
+                if isfield(net.layer{i}, 'size') && ~isempty(net.layer{i}.size)
+                    neuronsInLayers{i} = net.layer{i}.size;
+                else
+                    neuronsInLayers{i} = 0; % Default if size not found
+                end
+            end
+            trainResults.neuronsInLayers = neuronsInLayers;
+        catch layer_err
+            fprintf('Warning: Could not extract layer neurons: %s\n', layer_err.message);
+            trainResults.neuronsInLayers = {0}; % Default fallback
+        end
+    else
+        trainResults.neuronsInLayers = {0}; % Default if no layers
+    end
+    
     fprintf('Created trainResults structure for model validation.\n');
 
     fprintf('Saving final results to .mat files...\n');
@@ -570,6 +535,27 @@ catch e % Catch block for the main script try
             trainResults_emergency.status = ['Failed: ' e.identifier];
             trainResults_emergency.error_message = e.message;
             
+            % Add neuronsInLayers to emergency trainResults structure
+            if isfield(net, 'layer') && ~isempty(net.layer)
+                try
+                    % Extract neuron counts from each layer
+                    neuronsInLayers_emergency = cell(1, length(net.layer));
+                    for i = 1:length(net.layer)
+                        if isfield(net.layer{i}, 'size') && ~isempty(net.layer{i}.size)
+                            neuronsInLayers_emergency{i} = net.layer{i}.size;
+                        else
+                            neuronsInLayers_emergency{i} = 0; % Default if size not found
+                        end
+                    end
+                    trainResults_emergency.neuronsInLayers = neuronsInLayers_emergency;
+                catch layer_err
+                    fprintf('Warning: Could not extract layer neurons for emergency save: %s\n', layer_err.message);
+                    trainResults_emergency.neuronsInLayers = {0}; % Default fallback
+                end
+            else
+                trainResults_emergency.neuronsInLayers = {0}; % Default if no layers
+            end
+            
             if exist('numFeatures','var'), params.numFeatures = numFeatures; else params.numFeatures = NaN; end; if exist('numOutputs','var'), params.numOutputs = numOutputs; else params.numOutputs = NaN; end
             if exist('numSamples','var'), params.numSamples = numSamples; else params.numSamples = NaN; end; if exist('FeedType_size','var'), params.FeedType_size = FeedType_size; else params.FeedType_size = NaN; end
             failedModelFile = fullfile(bestModelDir, 'best_model_FAILED.mat');
@@ -581,28 +567,6 @@ end % End main try-catch block
 
 
 %% --- Completion Marker Logic ---
-% finalPerformance = NaN;
-% fprintf('\n--- Checking final results for completion marker ---\n');
-% scriptSucceeded = isempty(e); trExistsAndValid = exist('tr', 'var') && isstruct(tr) && ~isempty(fieldnames(tr)); trainingSucceeded = false;
-% if scriptSucceeded && trExistsAndValid
-%     fprintf('Script finished without catching errors. Training record ''tr'' exists.\n');
-%     if isfield(tr, 'status') && contains(tr.status, 'Failed', 'IgnoreCase', true), fprintf('Training status in ''tr'' indicates failure: "%s".\n', tr.status);
-%     elseif isfield(tr, 'best_perf') && isscalar(tr.best_perf) && isnumeric(tr.best_perf) && ~isnan(tr.best_perf), finalPerformance = tr.best_perf; fprintf('Final training performance (best_perf) from ''tr'': %.6f\n', finalPerformance); trainingSucceeded = true;
-%     else fprintf('Warning: tr.best_perf field missing, empty, or invalid in final ''tr''. Assuming failure for marker.\n'); end
-% else fprintf('Script finished with errors or final training record ''tr'' is invalid/missing.\n'); if ~isempty(e), fprintf('Error caught: %s\n', e.message); end; end
-% if ~exist('bestModelDir','var') || isempty(bestModelDir), try scriptPath = mfilename('fullpath'); scriptDir = fileparts(scriptPath); rootDir = fileparts(fileparts(scriptDir)); catch, rootDir = pwd; end; resultsDir = fullfile(rootDir, 'results'); bestModelDir = fullfile(resultsDir, 'best_model'); end
-% resultPath = fullfile(bestModelDir, 'best_model.mat'); metadata = struct('finalPerformance', finalPerformance);
-% if ~isempty(e), metadata.status = 'Failed'; metadata.error_message = e.message; metadata.error_identifier = e.identifier; else metadata.status = 'Completed'; if ~trainingSucceeded, metadata.status = 'CompletedWithTrainingIssue'; metadata.warning = 'Script completed, but training record analysis suggests issues.'; end; end
-% fprintf('Metadata for completion marker:\n'); disp(metadata); diary off;
-% if exist('create_completion_marker', 'file') == 2
-%     fprintf('Attempting to create completion marker...\n');
-%     try
-%         if scriptSucceeded && trainingSucceeded && exist(resultPath, 'file'), marker_status = 'training'; marker_path = resultPath; fprintf('Creating SUCCESS marker for: %s\n', marker_path);
-%         else marker_status = 'training_failed'; failedPath = fullfile(bestModelDir, 'best_model_FAILED.mat'); if exist(failedPath,'file'), marker_path = failedPath; else marker_path = resultPath; end; fprintf('Creating FAILED marker, referencing: %s\n', marker_path); end
-%         create_completion_marker(marker_status, marker_path, metadata); fprintf('✓ Completion marker created (Status: %s).\n', marker_status);
-%     catch markerErr, fprintf('ERROR creating completion marker: %s\n', markerErr.message); end
-% else fprintf('Note: create_completion_marker function not found. Skipping marker creation.\n'); end
-%% --- Completion Marker Logic ---
 finalPerformance = NaN; % Initialize
 fprintf('\n--- Checking final results for completion marker ---\n');
 scriptErrorOccurred = ~isempty(e); % Check if an error was caught by the main try-catch
@@ -613,8 +577,6 @@ trainingSucceeded = false; % Default assumption
 if ~scriptErrorOccurred && trExists
     fprintf('Script finished without catching errors. Training record ''tr'' exists.\n');
     % Check status field first
-    % if isfield(tr, 'status') && iscell(tr.status) && ~isempty(tr.status) && contains(tr.status{1}, 'Failed', 'IgnoreCase', true)
-    %     fprintf('Training status in ''tr'' indicates failure: "%s".\n', strjoin(tr.status,'; '));
     if isfield(tr, 'status')
         if iscell(tr.status) && ~isempty(tr.status)
             statusStr = tr.status{1};
