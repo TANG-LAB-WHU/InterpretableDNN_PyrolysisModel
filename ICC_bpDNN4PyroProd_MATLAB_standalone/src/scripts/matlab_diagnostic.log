@@ -198,3 +198,43 @@ Swap:              0           0           0
 Looking for deprecated function calls...
 
 === Diagnostic Complete ===
+==== MATLAB Diagnostic ====
+Root directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/src/scripts
+
+=== Directory Structure ===
+Directory /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/src/scripts/src/model exists: 0
+Directory /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/src/scripts/src/scripts exists: 0
+Directory /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/src/scripts/src/visualization exists: 0
+Directory /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/src/scripts/src/shap exists: 0
+Directory /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/src/scripts/results/analysis/full/data exists: 0
+Directory /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/src/scripts/results/analysis/full/figures exists: 0
+
+=== Key Files ===
+File src/scripts/run_analysis.m exists: 0
+File src/model/bpDNN4PyroProd.m exists: 0
+File data/processed/CopyrolysisFeedstock.mat exists: 0
+File data/raw/RawInputData.xlsx exists: 0
+
+=== Path Analysis ===
+Checking for path conflicts...
+Checking for run_analysis.m:
+  Found at: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/src/scripts/run_analysis.m
+Checking for calc_shap_values.m:
+  Found at: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/src/scripts/calc_shap_values.m
+  Found at: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/src/shap/calc_shap_values.m
+Checking for plot_shap_results.m:
+  Found at: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/src/visualization/plot_shap_results.m
+
+=== Memory Analysis ===
+Memory information not available on this platform.
+Platform: GLNXA64, MATLAB Version: 24.1.0.2537033 (R2024a)
+System memory information (from Linux free command):
+               total        used        free      shared  buff/cache   available
+Mem:             503         109         265           6         139         394
+Swap:              0           0           0
+
+
+=== Script Compatibility ===
+Looking for deprecated function calls...
+
+=== Diagnostic Complete ===
