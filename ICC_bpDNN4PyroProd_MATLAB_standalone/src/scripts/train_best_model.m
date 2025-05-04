@@ -490,100 +490,25 @@ try % Main try block for the whole script
                     neuronsInLayers{i} = 0; % Default if size not found
                 end
             end
-            % Add the field in multiple formats for maximum compatibility
             trainResults.neuronsInLayers = neuronsInLayers;
+            
+            % Add an actual 'layers' field with the same content to maintain compatibility
+            % with any code that might be looking for this field name
             trainResults.layers = neuronsInLayers;
-            trainResults.layer = neuronsInLayers; % Singular version
-            trainResults.Layers = neuronsInLayers; % Capitalized version
-            
-            % Also add as a numeric array if possible (for scripts expecting non-cell array)
-            try
-                trainResults.layersArray = cell2mat(neuronsInLayers);
-            catch
-                fprintf('Warning: Could not convert neuronsInLayers to numeric array.\n');
-            end
-            
-            % Debug output to verify fields
-            fprintf('DEBUG: trainResults fields set with layer information:\n');
-            layerFields = {'neuronsInLayers', 'layers', 'layer', 'Layers'};
-            for j = 1:length(layerFields)
-                if isfield(trainResults, layerFields{j})
-                    fprintf('  - %s is present\n', layerFields{j});
-                else
-                    fprintf('  - %s is MISSING\n', layerFields{j});
-                end
-            end
-            
         catch layer_err
             fprintf('Warning: Could not extract layer neurons: %s\n', layer_err.message);
-            % Add default values in multiple formats
             trainResults.neuronsInLayers = {0}; % Default fallback
             trainResults.layers = {0}; % Also set the layers field for compatibility
-            trainResults.layer = {0}; % Singular version
-            trainResults.Layers = {0}; % Capitalized version
-            trainResults.layersArray = 0; % Numeric version
         end
     else
-        % Add default values in multiple formats
         trainResults.neuronsInLayers = {0}; % Default if no layers
         trainResults.layers = {0}; % Also set the layers field for compatibility
-        trainResults.layer = {0}; % Singular version
-        trainResults.Layers = {0}; % Capitalized version
-        trainResults.layersArray = 0; % Numeric version
     end
     
     fprintf('Created trainResults structure for model validation.\n');
 
-    % Add debug information about trainResults structure
-    debugFileName = fullfile(fileparts(mfilename('fullpath')), 'trainResults_debug.txt');
-    fid = fopen(debugFileName, 'w');
-    if fid > 0
-        fprintf(fid, '===== trainResults Structure Debug Info =====\n');
-        fprintf(fid, 'Generated at: %s\n\n', datestr(now));
-        
-        % List all fields
-        fprintf(fid, '--- Fields in trainResults structure ---\n');
-        fieldNames = fieldnames(trainResults);
-        for i = 1:length(fieldNames)
-            fprintf(fid, 'Field #%d: %s\n', i, fieldNames{i});
-            if strcmp(fieldNames{i}, 'layers') || strcmp(fieldNames{i}, 'layer') || ...
-               strcmp(fieldNames{i}, 'Layers') || strcmp(fieldNames{i}, 'neuronsInLayers')
-                % For layer fields, show more info
-                try
-                    fieldValue = trainResults.(fieldNames{i});
-                    fprintf(fid, '  Type: %s\n', class(fieldValue));
-                    fprintf(fid, '  Size: %s\n', mat2str(size(fieldValue)));
-                    if iscell(fieldValue)
-                        fprintf(fid, '  Contents: Cell array with %d elements\n', length(fieldValue));
-                        for j = 1:min(length(fieldValue), 5) % Show up to 5 elements
-                            fprintf(fid, '    Element %d: %s\n', j, mat2str(fieldValue{j}));
-                        end
-                    else
-                        fprintf(fid, '  Contents: %s\n', mat2str(fieldValue));
-                    end
-                catch debugErr
-                    fprintf(fid, '  Error getting details: %s\n', debugErr.message);
-                end
-            end
-        end
-        
-        fprintf(fid, '\n--- trainResults structure in whos format ---\n');
-        whoStr = evalc('whos(''trainResults'')');
-        fprintf(fid, '%s\n', whoStr);
-        
-        fclose(fid);
-        fprintf('Saved detailed trainResults debug info to: %s\n', debugFileName);
-    else
-        fprintf('Warning: Could not open debug file for writing: %s\n', debugFileName);
-    end
-
     fprintf('Saving final results to .mat files...\n');
     bestModelFile = fullfile(bestModelDir, 'best_model.mat');
-    
-    % Print debug info about structure just before saving
-    fprintf('DEBUG: Field names in trainResults right before saving:\n');
-    disp(fieldnames(trainResults));
-    
     save(bestModelFile, 'net', 'tr', 'trainResults', 'params', 'input_data', 'target_data', 'PS', 'TS', 'PS_global', 'TS_global', 'numFeatures', 'numOutputs', 'numSamples', 'FeedType_size');
     fprintf('Best model results saved to: %s\n', bestModelFile);
 
@@ -630,34 +555,16 @@ catch e % Catch block for the main script try
                     end
                     trainResults_emergency.neuronsInLayers = neuronsInLayers_emergency;
                     
-                    % Add field in multiple formats for maximum compatibility
+                    % Add an actual 'layers' field for compatibility
                     trainResults_emergency.layers = neuronsInLayers_emergency;
-                    trainResults_emergency.layer = neuronsInLayers_emergency; % Singular version
-                    trainResults_emergency.Layers = neuronsInLayers_emergency; % Capitalized version
-                    
-                    % Also add as a numeric array if possible (for scripts expecting non-cell array)
-                    try
-                        trainResults_emergency.layersArray = cell2mat(neuronsInLayers_emergency);
-                    catch
-                        fprintf('Warning: Could not convert neuronsInLayers_emergency to numeric array.\n');
-                        trainResults_emergency.layersArray = 0; % Default numeric value
-                    end
                 catch layer_err
                     fprintf('Warning: Could not extract layer neurons for emergency save: %s\n', layer_err.message);
-                    % Add defaults in all formats for compatibility
                     trainResults_emergency.neuronsInLayers = {0}; % Default fallback
                     trainResults_emergency.layers = {0}; % Also set the layers field for compatibility
-                    trainResults_emergency.layer = {0}; % Singular version
-                    trainResults_emergency.Layers = {0}; % Capitalized version
-                    trainResults_emergency.layersArray = 0; % Numeric version
                 end
             else
-                % Add defaults in all formats for compatibility
                 trainResults_emergency.neuronsInLayers = {0}; % Default if no layers
                 trainResults_emergency.layers = {0}; % Also set the layers field for compatibility
-                trainResults_emergency.layer = {0}; % Singular version
-                trainResults_emergency.Layers = {0}; % Capitalized version
-                trainResults_emergency.layersArray = 0; % Numeric version
             end
             
             if exist('numFeatures','var'), params.numFeatures = numFeatures; else params.numFeatures = NaN; end; if exist('numOutputs','var'), params.numOutputs = numOutputs; else params.numOutputs = NaN; end
