@@ -121,19 +121,19 @@ echo "" | tee -a $SUMMARY_FILE
 # Create the MATLAB workflow script
 MATLAB_SCRIPT="$MATLAB_TEMP_DIR/complete_workflow.m"
 
-cat << EOF > $MATLAB_SCRIPT
+cat << 'EOF' > $MATLAB_SCRIPT
 try
     % Set up environment and logging
-    rootDir = '$PROJECT_DIR';
+    rootDir = '${PROJECT_DIR}';
     srcDir = fullfile(rootDir, 'src');
     scriptDir = fullfile(srcDir, 'scripts');
     addpath(genpath(srcDir));
     
     % Create a diary file for logging
-    diaryFile = fullfile('$PROJECT_DIR/output/full_analysis', 'matlab_log_$SLURM_JOB_ID.txt');
+    diaryFile = fullfile('${PROJECT_DIR}/output/full_analysis', 'matlab_log_${SLURM_JOB_ID}.txt');
     diary(diaryFile);
     fprintf('===== COMPLETE WORKFLOW STARTED =====\n');
-    fprintf('Job ID: $SLURM_JOB_ID\n');
+    fprintf('Job ID: ${SLURM_JOB_ID}\n');
     fprintf('Current directory: %s\n', pwd);
     fprintf('Starting time: %s\n\n', datestr(now));
     
@@ -143,6 +143,63 @@ try
     
     % Track execution time for each step
     totalTimer = tic;
+EOF
+
+# Continue with the rest of the script using proper variable substitution
+cat << 'EOF' >> $MATLAB_SCRIPT
+    
+    % Helper function to safely access layer information from various fields
+    function layerInfo = getLayerInfo(trainedModel)
+        layerInfo = {0}; % Default fallback
+        
+        % First try to get from trainResults in various field names
+        if isfield(trainedModel, 'trainResults')
+            if isfield(trainedModel.trainResults, 'neuronsInLayers')
+                layerInfo = trainedModel.trainResults.neuronsInLayers;
+                return;
+            elseif isfield(trainedModel.trainResults, 'layers')
+                layerInfo = trainedModel.trainResults.layers;
+                return;
+            elseif isfield(trainedModel.trainResults, 'layer')
+                layerInfo = trainedModel.trainResults.layer;
+                return;
+            elseif isfield(trainedModel.trainResults, 'Layers')
+                layerInfo = trainedModel.trainResults.Layers;
+                return;
+            elseif isfield(trainedModel.trainResults, 'layersArray')
+                % Convert numeric array to cell array if needed
+                if isnumeric(trainedModel.trainResults.layersArray)
+                    layerInfo = num2cell(trainedModel.trainResults.layersArray);
+                else
+                    layerInfo = trainedModel.trainResults.layersArray;
+                end
+                return;
+            end
+        end
+        
+        % If not found in trainResults, try to extract from net.layer
+        if isfield(trainedModel, 'net')
+            if isfield(trainedModel.net, 'layer') && ~isempty(trainedModel.net.layer)
+                try
+                    layerInfo = arrayfun(@(i) trainedModel.net.layer{i}.size(1), ...
+                                   1:length(trainedModel.net.layer), 'UniformOutput', false);
+                catch
+                    fprintf('Warning: Error extracting layer sizes from net.layer\n');
+                end
+            elseif isfield(trainedModel.net, 'layers') && ~isempty(trainedModel.net.layers)
+                try
+                    layerInfo = arrayfun(@(i) trainedModel.net.layers{i}.size(1), ...
+                                   1:length(trainedModel.net.layers), 'UniformOutput', false);
+                catch
+                    fprintf('Warning: Error extracting layer sizes from net.layers\n');
+                end
+            end
+        end
+    end
+EOF
+
+# Substitute back in the shell variables here
+cat << EOF >> $MATLAB_SCRIPT
     
     % STEP 1: Hyperparameter Optimization
     if $NEED_OPTIMIZATION
@@ -240,6 +297,9 @@ try
                     error('Trained model missing required fields: %s', strjoin(missingFields, ', '));
                 end
                 
+                % Use helper function to safely get layer information
+                layerInfo = getLayerInfo(trainedModel);
+                
                 fprintf('✓ Trained model created and validated: %s\n', modelFile);
                 
                 % Copy model to the standard location expected by analysis
@@ -251,7 +311,7 @@ try
                 metadata = struct(...
                     'jobId', '$SLURM_JOB_ID', ...
                     'finalPerformance', trainedModel.trainResults.best_perf, ...
-                    'neuronsInLayers', arrayfun(@(x) x.size(1), trainedModel.net.layers, 'UniformOutput', false) ...
+                    'neuronsInLayers', layerInfo ...
                 );
                 create_completion_marker('training', modelFile, metadata);
                 fprintf('✓ Created transition marker for training step\n');
@@ -303,11 +363,33 @@ try
         % Copy to standard location expected by analysis
         copyfile(bestModelPath, standardModelPath);
         fprintf('  Copied to standard location: %s\n', standardModelPath);
+        modelToUse = standardModelPath;
     else
         % No model fallback - enforce workflow consistency by stopping with error
         error(['No trained model found at standard locations. ' ...
                'Workflow requires a trained model from either optimization+training ' ...
                'or direct training step. Check that previous steps completed successfully.']);
+    end
+    
+    % Verify model has necessary fields before running analysis
+    try
+        analysisModel = load(modelToUse);
+        fprintf('Validating model before analysis...\n');
+        
+        % Check required fields
+        requiredFields = {'net', 'trainResults', 'input_data', 'target_data'};
+        missingFields = setdiff(requiredFields, fieldnames(analysisModel));
+        if ~isempty(missingFields)
+            error('Model missing required fields for analysis: %s', strjoin(missingFields, ', '));
+        end
+        
+        % Get layer information using helper function
+        layerInfo = getLayerInfo(analysisModel);
+        fprintf('  Layer information for analysis: %s\n', mat2str(layerInfo));
+        
+        fprintf('✓ Model validated for analysis\n');
+    catch modelErr
+        error('Model validation for analysis failed: %s', modelErr.message);
     end
     
     fprintf('Running run_analysis.m...\n');
