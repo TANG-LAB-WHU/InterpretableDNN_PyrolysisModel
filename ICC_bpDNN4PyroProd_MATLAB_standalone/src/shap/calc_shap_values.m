@@ -144,7 +144,7 @@ function [shap_values, feature_names, X, target_names] = calc_shap_values(model,
                 parpool('local');
             end
         catch ME
-            warning('Error creating parallel pool: %s. Continuing without parallel processing.', ME.message);
+            warning('%s', ['Error creating parallel pool: ' ME.message ' Continuing without parallel processing.']);
             options.parallel = false;
         end
     end
@@ -206,9 +206,211 @@ function [shap_values, feature_names, X, target_names] = calc_shap_values(model,
 end
 
 function pred = predict_target(model, X, target_idx)
-    % Predict for a specific target
-    preds = nnpredict(model, X);
-    pred = preds(:, target_idx);
+    % Predict for a specific target with robust handling of different model types
+    
+    % Check if X needs transposing (expected format is samples × features)
+    if size(X, 2) == 1 && size(X, 1) > 1
+        % X is likely a column vector when it should be a row vector
+        X = X';
+    end
+    
+    % Try different prediction methods based on model structure
+    try
+        % First try standard nnpredict if available
+        if exist('nnpredict', 'file') == 2
+            preds = nnpredict(model, X);
+            pred = preds(:, target_idx);
+            return;
+        end
+        
+        % Check if it's a MATLAB neural network object
+        if isobject(model) && ismethod(model, 'sim')
+            preds = sim(model, X')'; % MATLAB expects features × samples, then transpose result
+            pred = preds(:, target_idx);
+            return;
+        end
+        
+        % Check for custom network structure with W and b fields
+        if isstruct(model) && isfield(model, 'W') && isfield(model, 'b')
+            % Perform forward pass
+            preds = forward_pass_wb(model, X);
+            pred = preds(:, target_idx);
+            return;
+        end
+        
+        % Check for network with weight and bias fields
+        if isstruct(model) && isfield(model, 'weight') && isfield(model, 'bias')
+            preds = forward_pass_weight_bias(model, X);
+            pred = preds(:, target_idx);
+            return;
+        end
+        
+        % Check for layer-based network structure
+        if isstruct(model) && isfield(model, 'layer')
+            preds = forward_pass_layer(model, X);
+            pred = preds(:, target_idx);
+            return;
+        end
+        
+        % Last resort: try a direct call assuming model is a function handle
+        if isa(model, 'function_handle')
+            preds = model(X);
+            pred = preds(:, target_idx);
+            return;
+        end
+        
+        % If we get here, we couldn't identify the model type
+        error('Unrecognized model type. Please implement a custom prediction function.');
+        
+    catch ME
+        % In case of error, provide helpful diagnostic information
+        error('Error in predict_target: %s.\nModel fields: %s', ME.message, ...
+              strjoin(fieldnames(model), ', '));
+    end
+end
+
+% Helper function for W/b style networks
+function preds = forward_pass_wb(model, X)
+    % Perform forward pass for network with W/b structure
+    num_samples = size(X, 1);
+    a = X; % Initial activation is the input
+    
+    for layer_idx = 1:length(model.W)
+        % For each sample, apply the layer transformation
+        z = zeros(num_samples, size(model.b{layer_idx}, 1));
+        
+        for i = 1:num_samples
+            z(i, :) = (model.W{layer_idx} * a(i, :)')' + model.b{layer_idx}';
+        end
+        
+        % Apply activation function
+        if layer_idx < length(model.W) % Hidden layer
+            if isfield(model, 'transferFcn') && length(model.transferFcn) >= layer_idx
+                a = apply_activation(z, model.transferFcn{layer_idx});
+            else
+                a = tanh(z); % Default to tanh for hidden layers
+            end
+        else % Output layer
+            if isfield(model, 'transferFcn') && length(model.transferFcn) >= layer_idx
+                a = apply_activation(z, model.transferFcn{layer_idx});
+            else
+                a = z; % Default to linear for output layer
+            end
+        end
+    end
+    
+    preds = a;
+end
+
+% Helper function for weight/bias style networks
+function preds = forward_pass_weight_bias(model, X)
+    % Perform forward pass for network with weight/bias structure
+    num_samples = size(X, 1);
+    a = X; % Initial activation is the input
+    
+    if iscell(model.weight)
+        num_layers = length(model.weight);
+    else
+        num_layers = size(model.weight, 1);
+    end
+    
+    for layer_idx = 1:num_layers
+        % Get weights and biases for this layer
+        if iscell(model.weight)
+            W = model.weight{layer_idx};
+            b = model.bias{layer_idx};
+        else
+            W = model.weight(layer_idx);
+            b = model.bias(layer_idx);
+        end
+        
+        % Forward propagation
+        z = zeros(num_samples, size(b, 1));
+        for i = 1:num_samples
+            z(i, :) = (W * a(i, :)')' + b';
+        end
+        
+        % Apply activation
+        if layer_idx < num_layers % Hidden layer
+            if isfield(model, 'transferFcn') && length(model.transferFcn) >= layer_idx
+                a = apply_activation(z, model.transferFcn{layer_idx});
+            else
+                a = tanh(z); % Default to tanh for hidden layers
+            end
+        else % Output layer
+            if isfield(model, 'transferFcn') && length(model.transferFcn) >= layer_idx
+                a = apply_activation(z, model.transferFcn{layer_idx});
+            else
+                a = z; % Default to linear for output layer
+            end
+        end
+    end
+    
+    preds = a;
+end
+
+% Helper function for layer-based networks
+function preds = forward_pass_layer(model, X)
+    % Perform forward pass for network with layer structure
+    num_samples = size(X, 1);
+    a = X; % Initial activation is the input
+    
+    for layer_idx = 1:length(model.layer)
+        layer = model.layer{layer_idx};
+        
+        % Get weights and biases
+        if isfield(layer, 'weight') && isfield(layer, 'bias')
+            W = layer.weight;
+            b = layer.bias;
+            
+            % Forward propagation
+            z = zeros(num_samples, size(b, 1));
+            for i = 1:num_samples
+                z(i, :) = (W * a(i, :)')' + b';
+            end
+            
+            % Apply activation
+            if isfield(layer, 'transferFcn')
+                a = apply_activation(z, layer.transferFcn);
+            else
+                if layer_idx < length(model.layer)
+                    a = tanh(z); % Default for hidden layers
+                else
+                    a = z; % Default for output layer
+                end
+            end
+        else
+            error('Layer %d missing weight/bias fields', layer_idx);
+        end
+    end
+    
+    preds = a;
+end
+
+% Helper function to apply activation functions
+function a = apply_activation(z, fcn_name)
+    switch lower(fcn_name)
+        case 'tansig'
+            a = tanh(z);
+        case 'logsig'
+            a = 1./(1 + exp(-z));
+        case 'poslin' % ReLU
+            a = max(0, z);
+        case 'purelin'
+            a = z;
+        case 'softmax'
+            exp_z = exp(z - max(z, [], 2)); % Subtract max for numerical stability
+            a = exp_z ./ sum(exp_z, 2);
+        case 'elliotsig'
+            a = z ./ (1 + abs(z));
+        case 'satlin'
+            a = min(1, max(0, z));
+        case 'radbas'
+            a = exp(-z.^2);
+        otherwise
+            warning('Unknown activation function "%s". Using linear activation.', fcn_name);
+            a = z;
+    end
 end
 
 function shap_values = kernel_shap_sample(predict_fn, x, background, expected_value, num_permutations)
@@ -270,7 +472,7 @@ end
 
 function coalitions = generate_coalitions(num_features, num_samples)
     % Generate a set of coalition samples for SHAP calculation
-    % This is a critical step for Shapley value approximation
+    % This follows recommended sampling strategies from the official SHAP methodology
     
     % Always include empty coalition and full coalition
     empty_coalition = zeros(1, num_features);
@@ -278,7 +480,46 @@ function coalitions = generate_coalitions(num_features, num_samples)
     
     % Generate random coalitions for the remaining samples
     if num_samples > 2
-        random_coalitions = rand(num_samples-2, num_features) > 0.5;
+        % For large feature spaces, we want a more structured sampling approach
+        if num_features > 10 && num_samples > 100
+            % Allocate coalitions array
+            random_coalitions = zeros(num_samples-2, num_features);
+            
+            % First, include some small and large coalitions (recommended by SHAP authors)
+            % as these are more informative for Shapley values
+            num_structured = min(num_samples-2, num_features*2);
+            
+            for i = 1:num_structured/2
+                % Small coalitions (1-3 features active)
+                small_size = randi(3);
+                small_coal = zeros(1, num_features);
+                small_indices = randperm(num_features, small_size);
+                small_coal(small_indices) = 1;
+                
+                % Large coalitions (n-3 to n-1 features active)
+                large_size = num_features - randi(3);
+                large_coal = zeros(1, num_features);
+                large_indices = randperm(num_features, large_size);
+                large_coal(large_indices) = 1;
+                
+                % Store these structured coalitions
+                if i*2-1 <= size(random_coalitions, 1)
+                    random_coalitions(i*2-1, :) = small_coal;
+                end
+                if i*2 <= size(random_coalitions, 1)
+                    random_coalitions(i*2, :) = large_coal;
+                end
+            end
+            
+            % Fill remainder with uniform random coalitions
+            if num_structured < num_samples-2
+                random_coalitions((num_structured+1):end, :) = rand(num_samples-2-num_structured, num_features) > 0.5;
+            end
+        else
+            % For smaller feature spaces, uniform random sampling is adequate
+            random_coalitions = rand(num_samples-2, num_features) > 0.5;
+        end
+        
         coalitions = [empty_coalition; random_coalitions; full_coalition];
     else
         coalitions = [empty_coalition; full_coalition];
