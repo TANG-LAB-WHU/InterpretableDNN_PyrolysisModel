@@ -491,12 +491,18 @@ try % Main try block for the whole script
                 end
             end
             trainResults.neuronsInLayers = neuronsInLayers;
+            
+            % Add an actual 'layers' field with the same content to maintain compatibility
+            % with any code that might be looking for this field name
+            trainResults.layers = neuronsInLayers;
         catch layer_err
             fprintf('Warning: Could not extract layer neurons: %s\n', layer_err.message);
             trainResults.neuronsInLayers = {0}; % Default fallback
+            trainResults.layers = {0}; % Also set the layers field for compatibility
         end
     else
         trainResults.neuronsInLayers = {0}; % Default if no layers
+        trainResults.layers = {0}; % Also set the layers field for compatibility
     end
     
     fprintf('Created trainResults structure for model validation.\n');
@@ -548,12 +554,17 @@ catch e % Catch block for the main script try
                         end
                     end
                     trainResults_emergency.neuronsInLayers = neuronsInLayers_emergency;
+                    
+                    % Add an actual 'layers' field for compatibility
+                    trainResults_emergency.layers = neuronsInLayers_emergency;
                 catch layer_err
                     fprintf('Warning: Could not extract layer neurons for emergency save: %s\n', layer_err.message);
                     trainResults_emergency.neuronsInLayers = {0}; % Default fallback
+                    trainResults_emergency.layers = {0}; % Also set the layers field for compatibility
                 end
             else
                 trainResults_emergency.neuronsInLayers = {0}; % Default if no layers
+                trainResults_emergency.layers = {0}; % Also set the layers field for compatibility
             end
             
             if exist('numFeatures','var'), params.numFeatures = numFeatures; else params.numFeatures = NaN; end; if exist('numOutputs','var'), params.numOutputs = numOutputs; else params.numOutputs = NaN; end
