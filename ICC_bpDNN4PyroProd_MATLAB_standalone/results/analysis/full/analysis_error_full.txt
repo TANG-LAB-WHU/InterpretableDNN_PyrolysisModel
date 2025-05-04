@@ -1,0 +1,6 @@
+Analysis failed at 03-May-2025 20:53:24
+Error message: Model data is missing required fields. Cannot proceed with analysis.
+Stack trace:
+  Function: run_analysis, Line: 600, File: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/src/scripts/run_analysis.m
+  Function: complete_workflow, Line: 192, File: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/tmp_matlab_2058688/complete_workflow.m
+  Function: run, Line: 112, File: /sw/apps/matlab/R2024a/toolbox/matlab/lang/run.m

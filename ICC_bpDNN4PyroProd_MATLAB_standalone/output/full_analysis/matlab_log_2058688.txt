@@ -1,7 +1,7 @@
 ===== COMPLETE WORKFLOW STARTED =====
-Job ID: 2058115
-Current directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/tmp_matlab_2058115
-Starting time: 03-May-2025 19:23:16
+Job ID: 2058688
+Current directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/tmp_matlab_2058688
+Starting time: 03-May-2025 20:52:56
 
 Changed to scripts directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/src/scripts
 
