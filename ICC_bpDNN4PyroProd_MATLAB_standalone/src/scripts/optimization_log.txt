@@ -16528,3 +16528,3309 @@ Hidden Transfer Function: poslin
 Output Transfer Function: purelin
 
 Total execution time: 0.14 minutes (0.00 hours)
+Optimization started at: 04-May-2025 17:06:20
+Model directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/src/model
+Using default optimization directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/optimization
+Checking data files...
+Feedstock file (/projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/data/processed/CopyrolysisFeedstock.mat): Exists
+Raw data file (/projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/data/raw/RawInputData.xlsx): Exists
+Reading RawInputData.xlsx to determine sample count and data dimensions
+Sample count determined from RawInputData.xlsx: 859 samples
+Detected 3 target variable columns (starting from column 14)
+Loaded CopyrolysisFeedstock.mat to determine feature count
+FeedType_size determined to be: 98
+Using 209 features for neural network input
+Using 3 outputs for neural network targets
+Creating hyperparameter optimization configuration with 209 features, 859 samples, and 3 outputs
+Hyperparameter Grid Information:
+- Learning rates: 6 options
+- Momentum coefficients: 5 options
+- Hidden layer structures: 12 options
+- Transfer functions: 3 options
+Total combinations to evaluate: 1080
+
+FULL OPTIMIZATION MODE: Testing all 1080 configurations
+
+Starting optimization loop...
+
+--- Configuration 1/1080 ---
+Config #1 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [10], Transfer: tansig
+NEW BEST CONFIGURATION (MSE = 0.190887)
+Saving best configuration to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/optimization/best_model.mat
+Best configuration saved successfully
+
+--- Configuration 2/1080 ---
+Config #2 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 3/1080 ---
+Config #3 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [10], Transfer: poslin
+NEW BEST CONFIGURATION (MSE = 0.024848)
+Saving best configuration to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/optimization/best_model.mat
+Best configuration saved successfully
+
+--- Configuration 4/1080 ---
+Config #4 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 5/1080 ---
+Config #5 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 6/1080 ---
+Config #6 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 7/1080 ---
+Config #7 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [30], Transfer: tansig
+NEW BEST CONFIGURATION (MSE = 0.022001)
+Saving best configuration to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/optimization/best_model.mat
+Best configuration saved successfully
+
+--- Configuration 8/1080 ---
+Config #8 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 9/1080 ---
+Config #9 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 10/1080 ---
+Config #10 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 11/1080 ---
+Config #11 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 12/1080 ---
+Config #12 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 13/1080 ---
+Config #13 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 14/1080 ---
+Config #14 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 15/1080 ---
+Config #15 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 16/1080 ---
+Config #16 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [30  30], Transfer: tansig
+NEW BEST CONFIGURATION (MSE = 0.008911)
+Saving best configuration to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/optimization/best_model.mat
+Best configuration saved successfully
+
+--- Configuration 17/1080 ---
+Config #17 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 18/1080 ---
+Config #18 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 19/1080 ---
+Config #19 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 20/1080 ---
+Config #20 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 21/1080 ---
+Config #21 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 22/1080 ---
+Config #22 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 23/1080 ---
+Config #23 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [20  20  20], Transfer: logsig
+NEW BEST CONFIGURATION (MSE = 0.005974)
+Saving best configuration to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/optimization/best_model.mat
+Best configuration saved successfully
+
+--- Configuration 24/1080 ---
+Config #24 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 25/1080 ---
+Config #25 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 26/1080 ---
+Config #26 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 27/1080 ---
+Config #27 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 28/1080 ---
+Config #28 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 29/1080 ---
+Config #29 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 30/1080 ---
+Config #30 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 31/1080 ---
+Config #31 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 32/1080 ---
+Config #32 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 33/1080 ---
+Config #33 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 34/1080 ---
+Config #34 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 35/1080 ---
+Config #35 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 36/1080 ---
+Config #36 - LR: 0.0100, Momentum: 0.70, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 37/1080 ---
+Config #37 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 38/1080 ---
+Config #38 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 39/1080 ---
+Config #39 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 40/1080 ---
+Config #40 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 41/1080 ---
+Config #41 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 42/1080 ---
+Config #42 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 43/1080 ---
+Config #43 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 44/1080 ---
+Config #44 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 45/1080 ---
+Config #45 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 46/1080 ---
+Config #46 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 47/1080 ---
+Config #47 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 48/1080 ---
+Config #48 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 49/1080 ---
+Config #49 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 50/1080 ---
+Config #50 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 51/1080 ---
+Config #51 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 52/1080 ---
+Config #52 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 53/1080 ---
+Config #53 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 54/1080 ---
+Config #54 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 55/1080 ---
+Config #55 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 56/1080 ---
+Config #56 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 57/1080 ---
+Config #57 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 58/1080 ---
+Config #58 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 59/1080 ---
+Config #59 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 60/1080 ---
+Config #60 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 61/1080 ---
+Config #61 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 62/1080 ---
+Config #62 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 63/1080 ---
+Config #63 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 64/1080 ---
+Config #64 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 65/1080 ---
+Config #65 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 66/1080 ---
+Config #66 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 67/1080 ---
+Config #67 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 68/1080 ---
+Config #68 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 69/1080 ---
+Config #69 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 70/1080 ---
+Config #70 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 71/1080 ---
+Config #71 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 72/1080 ---
+Config #72 - LR: 0.0100, Momentum: 0.80, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 73/1080 ---
+Config #73 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 74/1080 ---
+Config #74 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 75/1080 ---
+Config #75 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 76/1080 ---
+Config #76 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 77/1080 ---
+Config #77 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 78/1080 ---
+Config #78 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 79/1080 ---
+Config #79 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 80/1080 ---
+Config #80 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 81/1080 ---
+Config #81 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 82/1080 ---
+Config #82 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 83/1080 ---
+Config #83 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 84/1080 ---
+Config #84 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 85/1080 ---
+Config #85 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 86/1080 ---
+Config #86 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 87/1080 ---
+Config #87 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 88/1080 ---
+Config #88 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 89/1080 ---
+Config #89 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 90/1080 ---
+Config #90 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 91/1080 ---
+Config #91 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 92/1080 ---
+Config #92 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 93/1080 ---
+Config #93 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 94/1080 ---
+Config #94 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 95/1080 ---
+Config #95 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 96/1080 ---
+Config #96 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 97/1080 ---
+Config #97 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 98/1080 ---
+Config #98 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 99/1080 ---
+Config #99 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 100/1080 ---
+Config #100 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 101/1080 ---
+Config #101 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 102/1080 ---
+Config #102 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 103/1080 ---
+Config #103 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 104/1080 ---
+Config #104 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 105/1080 ---
+Config #105 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [30  20  10], Transfer: poslin
+NEW BEST CONFIGURATION (MSE = 0.000634)
+Saving best configuration to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/optimization/best_model.mat
+Best configuration saved successfully
+
+--- Configuration 106/1080 ---
+Config #106 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 107/1080 ---
+Config #107 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 108/1080 ---
+Config #108 - LR: 0.0100, Momentum: 0.90, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 109/1080 ---
+Config #109 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 110/1080 ---
+Config #110 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 111/1080 ---
+Config #111 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 112/1080 ---
+Config #112 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 113/1080 ---
+Config #113 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 114/1080 ---
+Config #114 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 115/1080 ---
+Config #115 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 116/1080 ---
+Config #116 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 117/1080 ---
+Config #117 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 118/1080 ---
+Config #118 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 119/1080 ---
+Config #119 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 120/1080 ---
+Config #120 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 121/1080 ---
+Config #121 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 122/1080 ---
+Config #122 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 123/1080 ---
+Config #123 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 124/1080 ---
+Config #124 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 125/1080 ---
+Config #125 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 126/1080 ---
+Config #126 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 127/1080 ---
+Config #127 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 128/1080 ---
+Config #128 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 129/1080 ---
+Config #129 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 130/1080 ---
+Config #130 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 131/1080 ---
+Config #131 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 132/1080 ---
+Config #132 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 133/1080 ---
+Config #133 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 134/1080 ---
+Config #134 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 135/1080 ---
+Config #135 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 136/1080 ---
+Config #136 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 137/1080 ---
+Config #137 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 138/1080 ---
+Config #138 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 139/1080 ---
+Config #139 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 140/1080 ---
+Config #140 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 141/1080 ---
+Config #141 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 142/1080 ---
+Config #142 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 143/1080 ---
+Config #143 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 144/1080 ---
+Config #144 - LR: 0.0100, Momentum: 0.95, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 145/1080 ---
+Config #145 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 146/1080 ---
+Config #146 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 147/1080 ---
+Config #147 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 148/1080 ---
+Config #148 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 149/1080 ---
+Config #149 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 150/1080 ---
+Config #150 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 151/1080 ---
+Config #151 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 152/1080 ---
+Config #152 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 153/1080 ---
+Config #153 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 154/1080 ---
+Config #154 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 155/1080 ---
+Config #155 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 156/1080 ---
+Config #156 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 157/1080 ---
+Config #157 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 158/1080 ---
+Config #158 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 159/1080 ---
+Config #159 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 160/1080 ---
+Config #160 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 161/1080 ---
+Config #161 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 162/1080 ---
+Config #162 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 163/1080 ---
+Config #163 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 164/1080 ---
+Config #164 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 165/1080 ---
+Config #165 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 166/1080 ---
+Config #166 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 167/1080 ---
+Config #167 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 168/1080 ---
+Config #168 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 169/1080 ---
+Config #169 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 170/1080 ---
+Config #170 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 171/1080 ---
+Config #171 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 172/1080 ---
+Config #172 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 173/1080 ---
+Config #173 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 174/1080 ---
+Config #174 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 175/1080 ---
+Config #175 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 176/1080 ---
+Config #176 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 177/1080 ---
+Config #177 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 178/1080 ---
+Config #178 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 179/1080 ---
+Config #179 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 180/1080 ---
+Config #180 - LR: 0.0100, Momentum: 99.00, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 181/1080 ---
+Config #181 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 182/1080 ---
+Config #182 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 183/1080 ---
+Config #183 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 184/1080 ---
+Config #184 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 185/1080 ---
+Config #185 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [20], Transfer: logsig
+NEW BEST CONFIGURATION (MSE = 0.000550)
+Saving best configuration to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/optimization/best_model.mat
+Best configuration saved successfully
+
+--- Configuration 186/1080 ---
+Config #186 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 187/1080 ---
+Config #187 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 188/1080 ---
+Config #188 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 189/1080 ---
+Config #189 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 190/1080 ---
+Config #190 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 191/1080 ---
+Config #191 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 192/1080 ---
+Config #192 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 193/1080 ---
+Config #193 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 194/1080 ---
+Config #194 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 195/1080 ---
+Config #195 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 196/1080 ---
+Config #196 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 197/1080 ---
+Config #197 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 198/1080 ---
+Config #198 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 199/1080 ---
+Config #199 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 200/1080 ---
+Config #200 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 201/1080 ---
+Config #201 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 202/1080 ---
+Config #202 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 203/1080 ---
+Config #203 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 204/1080 ---
+Config #204 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 205/1080 ---
+Config #205 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 206/1080 ---
+Config #206 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 207/1080 ---
+Config #207 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 208/1080 ---
+Config #208 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 209/1080 ---
+Config #209 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 210/1080 ---
+Config #210 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 211/1080 ---
+Config #211 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 212/1080 ---
+Config #212 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 213/1080 ---
+Config #213 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 214/1080 ---
+Config #214 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 215/1080 ---
+Config #215 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 216/1080 ---
+Config #216 - LR: 0.0500, Momentum: 0.70, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 217/1080 ---
+Config #217 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 218/1080 ---
+Config #218 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 219/1080 ---
+Config #219 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 220/1080 ---
+Config #220 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 221/1080 ---
+Config #221 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 222/1080 ---
+Config #222 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 223/1080 ---
+Config #223 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 224/1080 ---
+Config #224 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 225/1080 ---
+Config #225 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 226/1080 ---
+Config #226 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 227/1080 ---
+Config #227 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 228/1080 ---
+Config #228 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 229/1080 ---
+Config #229 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 230/1080 ---
+Config #230 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 231/1080 ---
+Config #231 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 232/1080 ---
+Config #232 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 233/1080 ---
+Config #233 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 234/1080 ---
+Config #234 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 235/1080 ---
+Config #235 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 236/1080 ---
+Config #236 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 237/1080 ---
+Config #237 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 238/1080 ---
+Config #238 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 239/1080 ---
+Config #239 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 240/1080 ---
+Config #240 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 241/1080 ---
+Config #241 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 242/1080 ---
+Config #242 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 243/1080 ---
+Config #243 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 244/1080 ---
+Config #244 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 245/1080 ---
+Config #245 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 246/1080 ---
+Config #246 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 247/1080 ---
+Config #247 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 248/1080 ---
+Config #248 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 249/1080 ---
+Config #249 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 250/1080 ---
+Config #250 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 251/1080 ---
+Config #251 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 252/1080 ---
+Config #252 - LR: 0.0500, Momentum: 0.80, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 253/1080 ---
+Config #253 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 254/1080 ---
+Config #254 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 255/1080 ---
+Config #255 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 256/1080 ---
+Config #256 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 257/1080 ---
+Config #257 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 258/1080 ---
+Config #258 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 259/1080 ---
+Config #259 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 260/1080 ---
+Config #260 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 261/1080 ---
+Config #261 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 262/1080 ---
+Config #262 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 263/1080 ---
+Config #263 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 264/1080 ---
+Config #264 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 265/1080 ---
+Config #265 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 266/1080 ---
+Config #266 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 267/1080 ---
+Config #267 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 268/1080 ---
+Config #268 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 269/1080 ---
+Config #269 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 270/1080 ---
+Config #270 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 271/1080 ---
+Config #271 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 272/1080 ---
+Config #272 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 273/1080 ---
+Config #273 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 274/1080 ---
+Config #274 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 275/1080 ---
+Config #275 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 276/1080 ---
+Config #276 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 277/1080 ---
+Config #277 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 278/1080 ---
+Config #278 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 279/1080 ---
+Config #279 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 280/1080 ---
+Config #280 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 281/1080 ---
+Config #281 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 282/1080 ---
+Config #282 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 283/1080 ---
+Config #283 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 284/1080 ---
+Config #284 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 285/1080 ---
+Config #285 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 286/1080 ---
+Config #286 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 287/1080 ---
+Config #287 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 288/1080 ---
+Config #288 - LR: 0.0500, Momentum: 0.90, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 289/1080 ---
+Config #289 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 290/1080 ---
+Config #290 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 291/1080 ---
+Config #291 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 292/1080 ---
+Config #292 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 293/1080 ---
+Config #293 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 294/1080 ---
+Config #294 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 295/1080 ---
+Config #295 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 296/1080 ---
+Config #296 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 297/1080 ---
+Config #297 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 298/1080 ---
+Config #298 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 299/1080 ---
+Config #299 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 300/1080 ---
+Config #300 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 301/1080 ---
+Config #301 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 302/1080 ---
+Config #302 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 303/1080 ---
+Config #303 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 304/1080 ---
+Config #304 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 305/1080 ---
+Config #305 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 306/1080 ---
+Config #306 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 307/1080 ---
+Config #307 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 308/1080 ---
+Config #308 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 309/1080 ---
+Config #309 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 310/1080 ---
+Config #310 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 311/1080 ---
+Config #311 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 312/1080 ---
+Config #312 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 313/1080 ---
+Config #313 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 314/1080 ---
+Config #314 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 315/1080 ---
+Config #315 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 316/1080 ---
+Config #316 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 317/1080 ---
+Config #317 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 318/1080 ---
+Config #318 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 319/1080 ---
+Config #319 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 320/1080 ---
+Config #320 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 321/1080 ---
+Config #321 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 322/1080 ---
+Config #322 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 323/1080 ---
+Config #323 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 324/1080 ---
+Config #324 - LR: 0.0500, Momentum: 0.95, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 325/1080 ---
+Config #325 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 326/1080 ---
+Config #326 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 327/1080 ---
+Config #327 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 328/1080 ---
+Config #328 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 329/1080 ---
+Config #329 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 330/1080 ---
+Config #330 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 331/1080 ---
+Config #331 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 332/1080 ---
+Config #332 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 333/1080 ---
+Config #333 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 334/1080 ---
+Config #334 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 335/1080 ---
+Config #335 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 336/1080 ---
+Config #336 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 337/1080 ---
+Config #337 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 338/1080 ---
+Config #338 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 339/1080 ---
+Config #339 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 340/1080 ---
+Config #340 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 341/1080 ---
+Config #341 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 342/1080 ---
+Config #342 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 343/1080 ---
+Config #343 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 344/1080 ---
+Config #344 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 345/1080 ---
+Config #345 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 346/1080 ---
+Config #346 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 347/1080 ---
+Config #347 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 348/1080 ---
+Config #348 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 349/1080 ---
+Config #349 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 350/1080 ---
+Config #350 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 351/1080 ---
+Config #351 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 352/1080 ---
+Config #352 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 353/1080 ---
+Config #353 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 354/1080 ---
+Config #354 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 355/1080 ---
+Config #355 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 356/1080 ---
+Config #356 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 357/1080 ---
+Config #357 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 358/1080 ---
+Config #358 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 359/1080 ---
+Config #359 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 360/1080 ---
+Config #360 - LR: 0.0500, Momentum: 99.00, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 361/1080 ---
+Config #361 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 362/1080 ---
+Config #362 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 363/1080 ---
+Config #363 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 364/1080 ---
+Config #364 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 365/1080 ---
+Config #365 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 366/1080 ---
+Config #366 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 367/1080 ---
+Config #367 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 368/1080 ---
+Config #368 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 369/1080 ---
+Config #369 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 370/1080 ---
+Config #370 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 371/1080 ---
+Config #371 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 372/1080 ---
+Config #372 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 373/1080 ---
+Config #373 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 374/1080 ---
+Config #374 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 375/1080 ---
+Config #375 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 376/1080 ---
+Config #376 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 377/1080 ---
+Config #377 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 378/1080 ---
+Config #378 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 379/1080 ---
+Config #379 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 380/1080 ---
+Config #380 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 381/1080 ---
+Config #381 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 382/1080 ---
+Config #382 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 383/1080 ---
+Config #383 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 384/1080 ---
+Config #384 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 385/1080 ---
+Config #385 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 386/1080 ---
+Config #386 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 387/1080 ---
+Config #387 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 388/1080 ---
+Config #388 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 389/1080 ---
+Config #389 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 390/1080 ---
+Config #390 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 391/1080 ---
+Config #391 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 392/1080 ---
+Config #392 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 393/1080 ---
+Config #393 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 394/1080 ---
+Config #394 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 395/1080 ---
+Config #395 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 396/1080 ---
+Config #396 - LR: 0.1000, Momentum: 0.70, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 397/1080 ---
+Config #397 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 398/1080 ---
+Config #398 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 399/1080 ---
+Config #399 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 400/1080 ---
+Config #400 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 401/1080 ---
+Config #401 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 402/1080 ---
+Config #402 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 403/1080 ---
+Config #403 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 404/1080 ---
+Config #404 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 405/1080 ---
+Config #405 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 406/1080 ---
+Config #406 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 407/1080 ---
+Config #407 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 408/1080 ---
+Config #408 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 409/1080 ---
+Config #409 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 410/1080 ---
+Config #410 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 411/1080 ---
+Config #411 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 412/1080 ---
+Config #412 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 413/1080 ---
+Config #413 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 414/1080 ---
+Config #414 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 415/1080 ---
+Config #415 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 416/1080 ---
+Config #416 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 417/1080 ---
+Config #417 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 418/1080 ---
+Config #418 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 419/1080 ---
+Config #419 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 420/1080 ---
+Config #420 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 421/1080 ---
+Config #421 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 422/1080 ---
+Config #422 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 423/1080 ---
+Config #423 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 424/1080 ---
+Config #424 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 425/1080 ---
+Config #425 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 426/1080 ---
+Config #426 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 427/1080 ---
+Config #427 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 428/1080 ---
+Config #428 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 429/1080 ---
+Config #429 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 430/1080 ---
+Config #430 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 431/1080 ---
+Config #431 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 432/1080 ---
+Config #432 - LR: 0.1000, Momentum: 0.80, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 433/1080 ---
+Config #433 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 434/1080 ---
+Config #434 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 435/1080 ---
+Config #435 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 436/1080 ---
+Config #436 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 437/1080 ---
+Config #437 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 438/1080 ---
+Config #438 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 439/1080 ---
+Config #439 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 440/1080 ---
+Config #440 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 441/1080 ---
+Config #441 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 442/1080 ---
+Config #442 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 443/1080 ---
+Config #443 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 444/1080 ---
+Config #444 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 445/1080 ---
+Config #445 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 446/1080 ---
+Config #446 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 447/1080 ---
+Config #447 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 448/1080 ---
+Config #448 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 449/1080 ---
+Config #449 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 450/1080 ---
+Config #450 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 451/1080 ---
+Config #451 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 452/1080 ---
+Config #452 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 453/1080 ---
+Config #453 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 454/1080 ---
+Config #454 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 455/1080 ---
+Config #455 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 456/1080 ---
+Config #456 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 457/1080 ---
+Config #457 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 458/1080 ---
+Config #458 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 459/1080 ---
+Config #459 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 460/1080 ---
+Config #460 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 461/1080 ---
+Config #461 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 462/1080 ---
+Config #462 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 463/1080 ---
+Config #463 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 464/1080 ---
+Config #464 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 465/1080 ---
+Config #465 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 466/1080 ---
+Config #466 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 467/1080 ---
+Config #467 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 468/1080 ---
+Config #468 - LR: 0.1000, Momentum: 0.90, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 469/1080 ---
+Config #469 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 470/1080 ---
+Config #470 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 471/1080 ---
+Config #471 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 472/1080 ---
+Config #472 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 473/1080 ---
+Config #473 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 474/1080 ---
+Config #474 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 475/1080 ---
+Config #475 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 476/1080 ---
+Config #476 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 477/1080 ---
+Config #477 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 478/1080 ---
+Config #478 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 479/1080 ---
+Config #479 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 480/1080 ---
+Config #480 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 481/1080 ---
+Config #481 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 482/1080 ---
+Config #482 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 483/1080 ---
+Config #483 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 484/1080 ---
+Config #484 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 485/1080 ---
+Config #485 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 486/1080 ---
+Config #486 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 487/1080 ---
+Config #487 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 488/1080 ---
+Config #488 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 489/1080 ---
+Config #489 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 490/1080 ---
+Config #490 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 491/1080 ---
+Config #491 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 492/1080 ---
+Config #492 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 493/1080 ---
+Config #493 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 494/1080 ---
+Config #494 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 495/1080 ---
+Config #495 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 496/1080 ---
+Config #496 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 497/1080 ---
+Config #497 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 498/1080 ---
+Config #498 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 499/1080 ---
+Config #499 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 500/1080 ---
+Config #500 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 501/1080 ---
+Config #501 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 502/1080 ---
+Config #502 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 503/1080 ---
+Config #503 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 504/1080 ---
+Config #504 - LR: 0.1000, Momentum: 0.95, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 505/1080 ---
+Config #505 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 506/1080 ---
+Config #506 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 507/1080 ---
+Config #507 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 508/1080 ---
+Config #508 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 509/1080 ---
+Config #509 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 510/1080 ---
+Config #510 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 511/1080 ---
+Config #511 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 512/1080 ---
+Config #512 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 513/1080 ---
+Config #513 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 514/1080 ---
+Config #514 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 515/1080 ---
+Config #515 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 516/1080 ---
+Config #516 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 517/1080 ---
+Config #517 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 518/1080 ---
+Config #518 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 519/1080 ---
+Config #519 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 520/1080 ---
+Config #520 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 521/1080 ---
+Config #521 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 522/1080 ---
+Config #522 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 523/1080 ---
+Config #523 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 524/1080 ---
+Config #524 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 525/1080 ---
+Config #525 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 526/1080 ---
+Config #526 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 527/1080 ---
+Config #527 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 528/1080 ---
+Config #528 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 529/1080 ---
+Config #529 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 530/1080 ---
+Config #530 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 531/1080 ---
+Config #531 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 532/1080 ---
+Config #532 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 533/1080 ---
+Config #533 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 534/1080 ---
+Config #534 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 535/1080 ---
+Config #535 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 536/1080 ---
+Config #536 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 537/1080 ---
+Config #537 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 538/1080 ---
+Config #538 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 539/1080 ---
+Config #539 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 540/1080 ---
+Config #540 - LR: 0.1000, Momentum: 99.00, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 541/1080 ---
+Config #541 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 542/1080 ---
+Config #542 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 543/1080 ---
+Config #543 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 544/1080 ---
+Config #544 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 545/1080 ---
+Config #545 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 546/1080 ---
+Config #546 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [20], Transfer: poslin
+NEW BEST CONFIGURATION (MSE = 0.000052)
+Saving best configuration to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/optimization/best_model.mat
+Best configuration saved successfully
+
+--- Configuration 547/1080 ---
+Config #547 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 548/1080 ---
+Config #548 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 549/1080 ---
+Config #549 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 550/1080 ---
+Config #550 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 551/1080 ---
+Config #551 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 552/1080 ---
+Config #552 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 553/1080 ---
+Config #553 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 554/1080 ---
+Config #554 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 555/1080 ---
+Config #555 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 556/1080 ---
+Config #556 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 557/1080 ---
+Config #557 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 558/1080 ---
+Config #558 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 559/1080 ---
+Config #559 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 560/1080 ---
+Config #560 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 561/1080 ---
+Config #561 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 562/1080 ---
+Config #562 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 563/1080 ---
+Config #563 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 564/1080 ---
+Config #564 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 565/1080 ---
+Config #565 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 566/1080 ---
+Config #566 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 567/1080 ---
+Config #567 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 568/1080 ---
+Config #568 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 569/1080 ---
+Config #569 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 570/1080 ---
+Config #570 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 571/1080 ---
+Config #571 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 572/1080 ---
+Config #572 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 573/1080 ---
+Config #573 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 574/1080 ---
+Config #574 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 575/1080 ---
+Config #575 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 576/1080 ---
+Config #576 - LR: 0.2000, Momentum: 0.70, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 577/1080 ---
+Config #577 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 578/1080 ---
+Config #578 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 579/1080 ---
+Config #579 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 580/1080 ---
+Config #580 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 581/1080 ---
+Config #581 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 582/1080 ---
+Config #582 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 583/1080 ---
+Config #583 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 584/1080 ---
+Config #584 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 585/1080 ---
+Config #585 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 586/1080 ---
+Config #586 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 587/1080 ---
+Config #587 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 588/1080 ---
+Config #588 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 589/1080 ---
+Config #589 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 590/1080 ---
+Config #590 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 591/1080 ---
+Config #591 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 592/1080 ---
+Config #592 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 593/1080 ---
+Config #593 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 594/1080 ---
+Config #594 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 595/1080 ---
+Config #595 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 596/1080 ---
+Config #596 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 597/1080 ---
+Config #597 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 598/1080 ---
+Config #598 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 599/1080 ---
+Config #599 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 600/1080 ---
+Config #600 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 601/1080 ---
+Config #601 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 602/1080 ---
+Config #602 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 603/1080 ---
+Config #603 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 604/1080 ---
+Config #604 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 605/1080 ---
+Config #605 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 606/1080 ---
+Config #606 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 607/1080 ---
+Config #607 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 608/1080 ---
+Config #608 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 609/1080 ---
+Config #609 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 610/1080 ---
+Config #610 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 611/1080 ---
+Config #611 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 612/1080 ---
+Config #612 - LR: 0.2000, Momentum: 0.80, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 613/1080 ---
+Config #613 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 614/1080 ---
+Config #614 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 615/1080 ---
+Config #615 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 616/1080 ---
+Config #616 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 617/1080 ---
+Config #617 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 618/1080 ---
+Config #618 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 619/1080 ---
+Config #619 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 620/1080 ---
+Config #620 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 621/1080 ---
+Config #621 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 622/1080 ---
+Config #622 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 623/1080 ---
+Config #623 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 624/1080 ---
+Config #624 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 625/1080 ---
+Config #625 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 626/1080 ---
+Config #626 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 627/1080 ---
+Config #627 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 628/1080 ---
+Config #628 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 629/1080 ---
+Config #629 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 630/1080 ---
+Config #630 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 631/1080 ---
+Config #631 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 632/1080 ---
+Config #632 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 633/1080 ---
+Config #633 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 634/1080 ---
+Config #634 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 635/1080 ---
+Config #635 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 636/1080 ---
+Config #636 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 637/1080 ---
+Config #637 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 638/1080 ---
+Config #638 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 639/1080 ---
+Config #639 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 640/1080 ---
+Config #640 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 641/1080 ---
+Config #641 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 642/1080 ---
+Config #642 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 643/1080 ---
+Config #643 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 644/1080 ---
+Config #644 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 645/1080 ---
+Config #645 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 646/1080 ---
+Config #646 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 647/1080 ---
+Config #647 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 648/1080 ---
+Config #648 - LR: 0.2000, Momentum: 0.90, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 649/1080 ---
+Config #649 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 650/1080 ---
+Config #650 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 651/1080 ---
+Config #651 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 652/1080 ---
+Config #652 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 653/1080 ---
+Config #653 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 654/1080 ---
+Config #654 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 655/1080 ---
+Config #655 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 656/1080 ---
+Config #656 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 657/1080 ---
+Config #657 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 658/1080 ---
+Config #658 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 659/1080 ---
+Config #659 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 660/1080 ---
+Config #660 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 661/1080 ---
+Config #661 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 662/1080 ---
+Config #662 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 663/1080 ---
+Config #663 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 664/1080 ---
+Config #664 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 665/1080 ---
+Config #665 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 666/1080 ---
+Config #666 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 667/1080 ---
+Config #667 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 668/1080 ---
+Config #668 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 669/1080 ---
+Config #669 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 670/1080 ---
+Config #670 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 671/1080 ---
+Config #671 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 672/1080 ---
+Config #672 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 673/1080 ---
+Config #673 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 674/1080 ---
+Config #674 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 675/1080 ---
+Config #675 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 676/1080 ---
+Config #676 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 677/1080 ---
+Config #677 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 678/1080 ---
+Config #678 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 679/1080 ---
+Config #679 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 680/1080 ---
+Config #680 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 681/1080 ---
+Config #681 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 682/1080 ---
+Config #682 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 683/1080 ---
+Config #683 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 684/1080 ---
+Config #684 - LR: 0.2000, Momentum: 0.95, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 685/1080 ---
+Config #685 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 686/1080 ---
+Config #686 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 687/1080 ---
+Config #687 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 688/1080 ---
+Config #688 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 689/1080 ---
+Config #689 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 690/1080 ---
+Config #690 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 691/1080 ---
+Config #691 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 692/1080 ---
+Config #692 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 693/1080 ---
+Config #693 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 694/1080 ---
+Config #694 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 695/1080 ---
+Config #695 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 696/1080 ---
+Config #696 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 697/1080 ---
+Config #697 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 698/1080 ---
+Config #698 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 699/1080 ---
+Config #699 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 700/1080 ---
+Config #700 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 701/1080 ---
+Config #701 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 702/1080 ---
+Config #702 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 703/1080 ---
+Config #703 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 704/1080 ---
+Config #704 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 705/1080 ---
+Config #705 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 706/1080 ---
+Config #706 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 707/1080 ---
+Config #707 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 708/1080 ---
+Config #708 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 709/1080 ---
+Config #709 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 710/1080 ---
+Config #710 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 711/1080 ---
+Config #711 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 712/1080 ---
+Config #712 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 713/1080 ---
+Config #713 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 714/1080 ---
+Config #714 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 715/1080 ---
+Config #715 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 716/1080 ---
+Config #716 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 717/1080 ---
+Config #717 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 718/1080 ---
+Config #718 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 719/1080 ---
+Config #719 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 720/1080 ---
+Config #720 - LR: 0.2000, Momentum: 99.00, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 721/1080 ---
+Config #721 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 722/1080 ---
+Config #722 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 723/1080 ---
+Config #723 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 724/1080 ---
+Config #724 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 725/1080 ---
+Config #725 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 726/1080 ---
+Config #726 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 727/1080 ---
+Config #727 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 728/1080 ---
+Config #728 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 729/1080 ---
+Config #729 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 730/1080 ---
+Config #730 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 731/1080 ---
+Config #731 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 732/1080 ---
+Config #732 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 733/1080 ---
+Config #733 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 734/1080 ---
+Config #734 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 735/1080 ---
+Config #735 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 736/1080 ---
+Config #736 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 737/1080 ---
+Config #737 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 738/1080 ---
+Config #738 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 739/1080 ---
+Config #739 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 740/1080 ---
+Config #740 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 741/1080 ---
+Config #741 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 742/1080 ---
+Config #742 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 743/1080 ---
+Config #743 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 744/1080 ---
+Config #744 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 745/1080 ---
+Config #745 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 746/1080 ---
+Config #746 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 747/1080 ---
+Config #747 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 748/1080 ---
+Config #748 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 749/1080 ---
+Config #749 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 750/1080 ---
+Config #750 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 751/1080 ---
+Config #751 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 752/1080 ---
+Config #752 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 753/1080 ---
+Config #753 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 754/1080 ---
+Config #754 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 755/1080 ---
+Config #755 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 756/1080 ---
+Config #756 - LR: 0.5000, Momentum: 0.70, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 757/1080 ---
+Config #757 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 758/1080 ---
+Config #758 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 759/1080 ---
+Config #759 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 760/1080 ---
+Config #760 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 761/1080 ---
+Config #761 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 762/1080 ---
+Config #762 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 763/1080 ---
+Config #763 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 764/1080 ---
+Config #764 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 765/1080 ---
+Config #765 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 766/1080 ---
+Config #766 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 767/1080 ---
+Config #767 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 768/1080 ---
+Config #768 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 769/1080 ---
+Config #769 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 770/1080 ---
+Config #770 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 771/1080 ---
+Config #771 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 772/1080 ---
+Config #772 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 773/1080 ---
+Config #773 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 774/1080 ---
+Config #774 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 775/1080 ---
+Config #775 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 776/1080 ---
+Config #776 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 777/1080 ---
+Config #777 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 778/1080 ---
+Config #778 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 779/1080 ---
+Config #779 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 780/1080 ---
+Config #780 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 781/1080 ---
+Config #781 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 782/1080 ---
+Config #782 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 783/1080 ---
+Config #783 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 784/1080 ---
+Config #784 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 785/1080 ---
+Config #785 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 786/1080 ---
+Config #786 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 787/1080 ---
+Config #787 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 788/1080 ---
+Config #788 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 789/1080 ---
+Config #789 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 790/1080 ---
+Config #790 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 791/1080 ---
+Config #791 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 792/1080 ---
+Config #792 - LR: 0.5000, Momentum: 0.80, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 793/1080 ---
+Config #793 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 794/1080 ---
+Config #794 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 795/1080 ---
+Config #795 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 796/1080 ---
+Config #796 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 797/1080 ---
+Config #797 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 798/1080 ---
+Config #798 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 799/1080 ---
+Config #799 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 800/1080 ---
+Config #800 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 801/1080 ---
+Config #801 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 802/1080 ---
+Config #802 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 803/1080 ---
+Config #803 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 804/1080 ---
+Config #804 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 805/1080 ---
+Config #805 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 806/1080 ---
+Config #806 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 807/1080 ---
+Config #807 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 808/1080 ---
+Config #808 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 809/1080 ---
+Config #809 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 810/1080 ---
+Config #810 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 811/1080 ---
+Config #811 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 812/1080 ---
+Config #812 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 813/1080 ---
+Config #813 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 814/1080 ---
+Config #814 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 815/1080 ---
+Config #815 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 816/1080 ---
+Config #816 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 817/1080 ---
+Config #817 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 818/1080 ---
+Config #818 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 819/1080 ---
+Config #819 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 820/1080 ---
+Config #820 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 821/1080 ---
+Config #821 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 822/1080 ---
+Config #822 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 823/1080 ---
+Config #823 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 824/1080 ---
+Config #824 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 825/1080 ---
+Config #825 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 826/1080 ---
+Config #826 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 827/1080 ---
+Config #827 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 828/1080 ---
+Config #828 - LR: 0.5000, Momentum: 0.90, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 829/1080 ---
+Config #829 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 830/1080 ---
+Config #830 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 831/1080 ---
+Config #831 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 832/1080 ---
+Config #832 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 833/1080 ---
+Config #833 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 834/1080 ---
+Config #834 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 835/1080 ---
+Config #835 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 836/1080 ---
+Config #836 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 837/1080 ---
+Config #837 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 838/1080 ---
+Config #838 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 839/1080 ---
+Config #839 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 840/1080 ---
+Config #840 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 841/1080 ---
+Config #841 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 842/1080 ---
+Config #842 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 843/1080 ---
+Config #843 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 844/1080 ---
+Config #844 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 845/1080 ---
+Config #845 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 846/1080 ---
+Config #846 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 847/1080 ---
+Config #847 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 848/1080 ---
+Config #848 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 849/1080 ---
+Config #849 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 850/1080 ---
+Config #850 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 851/1080 ---
+Config #851 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 852/1080 ---
+Config #852 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 853/1080 ---
+Config #853 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 854/1080 ---
+Config #854 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 855/1080 ---
+Config #855 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 856/1080 ---
+Config #856 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 857/1080 ---
+Config #857 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 858/1080 ---
+Config #858 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 859/1080 ---
+Config #859 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 860/1080 ---
+Config #860 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 861/1080 ---
+Config #861 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 862/1080 ---
+Config #862 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 863/1080 ---
+Config #863 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 864/1080 ---
+Config #864 - LR: 0.5000, Momentum: 0.95, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 865/1080 ---
+Config #865 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 866/1080 ---
+Config #866 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 867/1080 ---
+Config #867 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 868/1080 ---
+Config #868 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 869/1080 ---
+Config #869 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 870/1080 ---
+Config #870 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 871/1080 ---
+Config #871 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 872/1080 ---
+Config #872 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 873/1080 ---
+Config #873 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 874/1080 ---
+Config #874 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 875/1080 ---
+Config #875 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 876/1080 ---
+Config #876 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 877/1080 ---
+Config #877 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 878/1080 ---
+Config #878 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 879/1080 ---
+Config #879 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 880/1080 ---
+Config #880 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 881/1080 ---
+Config #881 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 882/1080 ---
+Config #882 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 883/1080 ---
+Config #883 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 884/1080 ---
+Config #884 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 885/1080 ---
+Config #885 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 886/1080 ---
+Config #886 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 887/1080 ---
+Config #887 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 888/1080 ---
+Config #888 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 889/1080 ---
+Config #889 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 890/1080 ---
+Config #890 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 891/1080 ---
+Config #891 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 892/1080 ---
+Config #892 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 893/1080 ---
+Config #893 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 894/1080 ---
+Config #894 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 895/1080 ---
+Config #895 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 896/1080 ---
+Config #896 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 897/1080 ---
+Config #897 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 898/1080 ---
+Config #898 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 899/1080 ---
+Config #899 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 900/1080 ---
+Config #900 - LR: 0.5000, Momentum: 99.00, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 901/1080 ---
+Config #901 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 902/1080 ---
+Config #902 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 903/1080 ---
+Config #903 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 904/1080 ---
+Config #904 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 905/1080 ---
+Config #905 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 906/1080 ---
+Config #906 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 907/1080 ---
+Config #907 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 908/1080 ---
+Config #908 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 909/1080 ---
+Config #909 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 910/1080 ---
+Config #910 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 911/1080 ---
+Config #911 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 912/1080 ---
+Config #912 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 913/1080 ---
+Config #913 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 914/1080 ---
+Config #914 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 915/1080 ---
+Config #915 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 916/1080 ---
+Config #916 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 917/1080 ---
+Config #917 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 918/1080 ---
+Config #918 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 919/1080 ---
+Config #919 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 920/1080 ---
+Config #920 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 921/1080 ---
+Config #921 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 922/1080 ---
+Config #922 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 923/1080 ---
+Config #923 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 924/1080 ---
+Config #924 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 925/1080 ---
+Config #925 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 926/1080 ---
+Config #926 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 927/1080 ---
+Config #927 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 928/1080 ---
+Config #928 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 929/1080 ---
+Config #929 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 930/1080 ---
+Config #930 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 931/1080 ---
+Config #931 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 932/1080 ---
+Config #932 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 933/1080 ---
+Config #933 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 934/1080 ---
+Config #934 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 935/1080 ---
+Config #935 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 936/1080 ---
+Config #936 - LR: 0.8000, Momentum: 0.70, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 937/1080 ---
+Config #937 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 938/1080 ---
+Config #938 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 939/1080 ---
+Config #939 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 940/1080 ---
+Config #940 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 941/1080 ---
+Config #941 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 942/1080 ---
+Config #942 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 943/1080 ---
+Config #943 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 944/1080 ---
+Config #944 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 945/1080 ---
+Config #945 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 946/1080 ---
+Config #946 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 947/1080 ---
+Config #947 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 948/1080 ---
+Config #948 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 949/1080 ---
+Config #949 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 950/1080 ---
+Config #950 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 951/1080 ---
+Config #951 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 952/1080 ---
+Config #952 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 953/1080 ---
+Config #953 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 954/1080 ---
+Config #954 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 955/1080 ---
+Config #955 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 956/1080 ---
+Config #956 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 957/1080 ---
+Config #957 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 958/1080 ---
+Config #958 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 959/1080 ---
+Config #959 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 960/1080 ---
+Config #960 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 961/1080 ---
+Config #961 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 962/1080 ---
+Config #962 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 963/1080 ---
+Config #963 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 964/1080 ---
+Config #964 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 965/1080 ---
+Config #965 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 966/1080 ---
+Config #966 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 967/1080 ---
+Config #967 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 968/1080 ---
+Config #968 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 969/1080 ---
+Config #969 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 970/1080 ---
+Config #970 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 971/1080 ---
+Config #971 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 972/1080 ---
+Config #972 - LR: 0.8000, Momentum: 0.80, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 973/1080 ---
+Config #973 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 974/1080 ---
+Config #974 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 975/1080 ---
+Config #975 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 976/1080 ---
+Config #976 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 977/1080 ---
+Config #977 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 978/1080 ---
+Config #978 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 979/1080 ---
+Config #979 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 980/1080 ---
+Config #980 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 981/1080 ---
+Config #981 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 982/1080 ---
+Config #982 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 983/1080 ---
+Config #983 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 984/1080 ---
+Config #984 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 985/1080 ---
+Config #985 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 986/1080 ---
+Config #986 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 987/1080 ---
+Config #987 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 988/1080 ---
+Config #988 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 989/1080 ---
+Config #989 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 990/1080 ---
+Config #990 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 991/1080 ---
+Config #991 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 992/1080 ---
+Config #992 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 993/1080 ---
+Config #993 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 994/1080 ---
+Config #994 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 995/1080 ---
+Config #995 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 996/1080 ---
+Config #996 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 997/1080 ---
+Config #997 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 998/1080 ---
+Config #998 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 999/1080 ---
+Config #999 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 1000/1080 ---
+Config #1000 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 1001/1080 ---
+Config #1001 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 1002/1080 ---
+Config #1002 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 1003/1080 ---
+Config #1003 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 1004/1080 ---
+Config #1004 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 1005/1080 ---
+Config #1005 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 1006/1080 ---
+Config #1006 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 1007/1080 ---
+Config #1007 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 1008/1080 ---
+Config #1008 - LR: 0.8000, Momentum: 0.90, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 1009/1080 ---
+Config #1009 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 1010/1080 ---
+Config #1010 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 1011/1080 ---
+Config #1011 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 1012/1080 ---
+Config #1012 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 1013/1080 ---
+Config #1013 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 1014/1080 ---
+Config #1014 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 1015/1080 ---
+Config #1015 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 1016/1080 ---
+Config #1016 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 1017/1080 ---
+Config #1017 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 1018/1080 ---
+Config #1018 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 1019/1080 ---
+Config #1019 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 1020/1080 ---
+Config #1020 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 1021/1080 ---
+Config #1021 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 1022/1080 ---
+Config #1022 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 1023/1080 ---
+Config #1023 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 1024/1080 ---
+Config #1024 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 1025/1080 ---
+Config #1025 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 1026/1080 ---
+Config #1026 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 1027/1080 ---
+Config #1027 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 1028/1080 ---
+Config #1028 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 1029/1080 ---
+Config #1029 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 1030/1080 ---
+Config #1030 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 1031/1080 ---
+Config #1031 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 1032/1080 ---
+Config #1032 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 1033/1080 ---
+Config #1033 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 1034/1080 ---
+Config #1034 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 1035/1080 ---
+Config #1035 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 1036/1080 ---
+Config #1036 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 1037/1080 ---
+Config #1037 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 1038/1080 ---
+Config #1038 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 1039/1080 ---
+Config #1039 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 1040/1080 ---
+Config #1040 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 1041/1080 ---
+Config #1041 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 1042/1080 ---
+Config #1042 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 1043/1080 ---
+Config #1043 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 1044/1080 ---
+Config #1044 - LR: 0.8000, Momentum: 0.95, Hidden Layer: [10  20  30], Transfer: poslin
+
+--- Configuration 1045/1080 ---
+Config #1045 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [10], Transfer: tansig
+
+--- Configuration 1046/1080 ---
+Config #1046 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [10], Transfer: logsig
+
+--- Configuration 1047/1080 ---
+Config #1047 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [10], Transfer: poslin
+
+--- Configuration 1048/1080 ---
+Config #1048 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [20], Transfer: tansig
+
+--- Configuration 1049/1080 ---
+Config #1049 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [20], Transfer: logsig
+
+--- Configuration 1050/1080 ---
+Config #1050 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [20], Transfer: poslin
+
+--- Configuration 1051/1080 ---
+Config #1051 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [30], Transfer: tansig
+
+--- Configuration 1052/1080 ---
+Config #1052 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [30], Transfer: logsig
+
+--- Configuration 1053/1080 ---
+Config #1053 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [30], Transfer: poslin
+
+--- Configuration 1054/1080 ---
+Config #1054 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [10  10], Transfer: tansig
+
+--- Configuration 1055/1080 ---
+Config #1055 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [10  10], Transfer: logsig
+
+--- Configuration 1056/1080 ---
+Config #1056 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [10  10], Transfer: poslin
+
+--- Configuration 1057/1080 ---
+Config #1057 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [20  20], Transfer: tansig
+
+--- Configuration 1058/1080 ---
+Config #1058 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [20  20], Transfer: logsig
+
+--- Configuration 1059/1080 ---
+Config #1059 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [20  20], Transfer: poslin
+
+--- Configuration 1060/1080 ---
+Config #1060 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [30  30], Transfer: tansig
+
+--- Configuration 1061/1080 ---
+Config #1061 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [30  30], Transfer: logsig
+
+--- Configuration 1062/1080 ---
+Config #1062 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [30  30], Transfer: poslin
+
+--- Configuration 1063/1080 ---
+Config #1063 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [10  10  10], Transfer: tansig
+
+--- Configuration 1064/1080 ---
+Config #1064 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [10  10  10], Transfer: logsig
+
+--- Configuration 1065/1080 ---
+Config #1065 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [10  10  10], Transfer: poslin
+
+--- Configuration 1066/1080 ---
+Config #1066 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [20  20  20], Transfer: tansig
+
+--- Configuration 1067/1080 ---
+Config #1067 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [20  20  20], Transfer: logsig
+
+--- Configuration 1068/1080 ---
+Config #1068 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [20  20  20], Transfer: poslin
+
+--- Configuration 1069/1080 ---
+Config #1069 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [30  15], Transfer: tansig
+
+--- Configuration 1070/1080 ---
+Config #1070 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [30  15], Transfer: logsig
+
+--- Configuration 1071/1080 ---
+Config #1071 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [30  15], Transfer: poslin
+
+--- Configuration 1072/1080 ---
+Config #1072 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [15  30], Transfer: tansig
+
+--- Configuration 1073/1080 ---
+Config #1073 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [15  30], Transfer: logsig
+
+--- Configuration 1074/1080 ---
+Config #1074 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [15  30], Transfer: poslin
+
+--- Configuration 1075/1080 ---
+Config #1075 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [30  20  10], Transfer: tansig
+
+--- Configuration 1076/1080 ---
+Config #1076 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [30  20  10], Transfer: logsig
+
+--- Configuration 1077/1080 ---
+Config #1077 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [30  20  10], Transfer: poslin
+
+--- Configuration 1078/1080 ---
+Config #1078 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [10  20  30], Transfer: tansig
+
+--- Configuration 1079/1080 ---
+Config #1079 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [10  20  30], Transfer: logsig
+
+--- Configuration 1080/1080 ---
+Config #1080 - LR: 0.8000, Momentum: 99.00, Hidden Layer: [10  20  30], Transfer: poslin
+
+=== OPTIMIZATION COMPLETE ===
+Total configurations tested: 1080
+Best configuration (#546): Test MSE = 0.000052
+
+Best Configuration Details:
+Training Strategy: TT
+Training Ratio: 0.70
+Validation Ratio: 0.00
+Learning Rate: 0.2000
+Momentum: 0.70
+Learning Rate Increase: 1.05
+Learning Rate Decrease: 0.70
+Hidden Layer Structure: [20]
+Hidden Transfer Function: poslin
+Output Transfer Function: purelin
+
+Total execution time: 0.14 minutes (0.00 hours)
