@@ -1,0 +1,2 @@
+df: /boot: No such file or directory
+slurmstepd: error: *** JOB 2066724 ON ccc0288 CANCELLED AT 2025-05-04T15:56:12 DUE TO TIME LIMIT ***

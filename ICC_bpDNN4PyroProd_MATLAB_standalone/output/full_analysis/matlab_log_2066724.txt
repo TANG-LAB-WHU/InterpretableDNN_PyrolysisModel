@@ -1,0 +1,11 @@
+===== COMPLETE WORKFLOW STARTED =====
+Job ID: 2066724
+Current directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/tmp_matlab_2066724
+Starting time: 04-May-2025 15:55:14
+
+Changed to scripts directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/src/scripts
+
+===== STEP 1: HYPERPARAMETER OPTIMIZATION =====
+DEBUG: About to execute step1Timer = tic
+DEBUG: step1Timer defined? 1
+Running optimize_hyperparameters.m...
