@@ -250,9 +250,20 @@ try
                 % Create completion marker using the create_completion_marker function
                 metadata = struct(...
                     'jobId', '$SLURM_JOB_ID', ...
-                    'finalPerformance', trainedModel.trainResults.best_perf, ...
-                    'neuronsInLayers', eval('try trainedModel.trainResults.neuronsInLayers; catch; arrayfun(@(x) x.size(1), trainedModel.net.layers, ''UniformOutput'', false); end') ...
+                    'finalPerformance', trainedModel.trainResults.best_perf ...
                 );
+                
+                % Safely add neuronsInLayers field based on which structure is available
+                if isfield(trainedModel, 'trainResults') && isfield(trainedModel.trainResults, 'neuronsInLayers')
+                    metadata.neuronsInLayers = trainedModel.trainResults.neuronsInLayers;
+                elseif isfield(trainedModel, 'net') && isfield(trainedModel.net, 'layers')
+                    % Extract from net.layers structure
+                    metadata.neuronsInLayers = arrayfun(@(x) x.size(1), trainedModel.net.layers, 'UniformOutput', false);
+                else
+                    % Default fallback if structure is unknown
+                    metadata.neuronsInLayers = {8};  % Assume single hidden layer with 8 neurons as fallback
+                end
+                
                 create_completion_marker('training', modelFile, metadata);
                 fprintf('✓ Created transition marker for training step\n');
             catch ME
