@@ -166,6 +166,27 @@ end
 [numFeatures, numSamples] = size(input);
 [numOutputs, ~] = size(target);
 
+% Check if dimensions look suspicious (more features than samples, or more outputs than samples)
+if numFeatures > numSamples || numOutputs > numSamples
+    fprintf('WARNING: Suspicious dimensions detected - more features/outputs than samples\n');
+    fprintf('Current dimensions: features=%d, samples=%d, outputs=%d\n', numFeatures, numSamples, numOutputs);
+    
+    if numFeatures == numOutputs && numFeatures > numSamples
+        % This suggests that features and samples dimensions are swapped
+        fprintf('CORRECTION: Detected likely dimension swap (features/samples)\n');
+        
+        % Swap dimensions
+        input = input';
+        target = target';
+        
+        % Get corrected dimensions
+        [numFeatures, numSamples] = size(input);
+        [numOutputs, ~] = size(target);
+        
+        fprintf('After correction: features=%d, samples=%d, outputs=%d\n', numFeatures, numSamples, numOutputs);
+    end
+end
+
 fprintf('Using %d features, %d samples, and %d outputs for SHAP analysis\n', numFeatures, numSamples, numOutputs);
 
 % Try to read feature names from RawInputData.xlsx with improved error handling for ICC cluster
