@@ -1,5 +1,0 @@
-Workflow failed at 03-May-2025 21:36:35
-Error message: Failed to validate trained model: Error: Illegal use of reserved keyword "try".
-Stack trace:
-  Function: complete_workflow, Line: 135, File: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/tmp_matlab_2058773/complete_workflow.m
-  Function: run, Line: 112, File: /sw/apps/matlab/R2024a/toolbox/matlab/lang/run.m
