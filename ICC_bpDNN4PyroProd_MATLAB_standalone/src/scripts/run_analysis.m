@@ -585,6 +585,18 @@ try
     
     fprintf('Loaded model from: %s\n', modelFileUsed);
     
+    % Check field mapping for alternative field names common in different model formats
+    % Map input_data to input and target_data to target if needed
+    if ~isfield(modelData, 'input') && isfield(modelData, 'input_data')
+        fprintf('Found input_data field, mapping to input\n');
+        modelData.input = modelData.input_data;
+    end
+    
+    if ~isfield(modelData, 'target') && isfield(modelData, 'target_data')
+        fprintf('Found target_data field, mapping to target\n');
+        modelData.target = modelData.target_data;
+    end
+
     % Check that required fields exist in modelData
     required_fields = {'input', 'target', 'net'};
     missing_fields = false;
