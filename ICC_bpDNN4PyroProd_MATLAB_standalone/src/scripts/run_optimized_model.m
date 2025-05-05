@@ -514,24 +514,24 @@ try
             % Call calc_shap_values.m to compute SHAP values
             fprintf('Calculating SHAP values...\n');
             
-            % Check if calc_shap_values.m exists
-            calc_shap_script = fullfile(scriptDir, 'calc_shap_values.m');
-            if ~exist(calc_shap_script, 'file')
-                error('calc_shap_values.m not found at %s', calc_shap_script);
+            % Check if run_shap_calculations.m exists
+            run_shap_script = fullfile(scriptDir, 'run_shap_calculations.m');
+            if ~exist(run_shap_script, 'file')
+                error('run_shap_calculations.m not found at %s', run_shap_script);
             end
             
-            % Set up variables needed by calc_shap_values.m
+            % Set up variables needed by run_shap_calculations.m
             useAllSamples = true;  % Use all available samples
             useAllFeatures = true; % Use all features
             
             % Run the SHAP calculation script
             try
-                run(calc_shap_script);
+                run(run_shap_script);
                 
                 % Check if SHAP values were generated
                 resultFile = fullfile(dataDir, 'shap_results.mat');
                 if ~exist(resultFile, 'file')
-                    error('calc_shap_values.m did not generate shap_results.mat');
+                    error('run_shap_calculations.m did not generate shap_results.mat');
                 else
                     fprintf('SHAP calculation completed successfully.\n');
                     fprintf('SHAP results saved to: %s\n', resultFile);

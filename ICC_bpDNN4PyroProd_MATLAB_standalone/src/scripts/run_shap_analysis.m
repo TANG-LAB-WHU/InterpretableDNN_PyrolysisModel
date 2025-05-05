@@ -141,14 +141,14 @@ function run_shap_analysis(model_file, output_dir, shap_options)
         shap_options.verbose = true;
     end
     
-    % Add path to calc_shap_values function
+    % Add path to SHAP function
     addpath(fullfile('..', 'shap'));
     
     % Calculate SHAP values
     fprintf('Calculating SHAP values\n');
     try
         [shap_values, feature_names, X, target_names] = ...
-            calc_shap_values(model, X_data, target_names, feature_names, shap_options);
+            shap_kernel_function(model, X_data, target_names, feature_names, shap_options);
     catch ME
         error('Error in SHAP calculation: %s', ME.message);
     end

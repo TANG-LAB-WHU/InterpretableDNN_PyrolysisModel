@@ -668,23 +668,33 @@ try
     
     % Run appropriate SHAP calculation for the model
     % First try to use the dedicated script if available
-    if exist(fullfile(rootDir, 'src', 'shap', 'calc_shap_values.m'), 'file') 
+    if exist(fullfile(rootDir, 'src', 'shap', 'shap_kernel_function.m'), 'file') 
         try
             fprintf('Using advanced SHAP calculation from dedicated module.\n');
             addpath(fullfile(rootDir, 'src', 'shap'));  % Ensure path is added
-            [shapValues, ~, ~, ~] = calc_shap_values(net, X', targetNames, featureNames);
+            
+            % Create default options structure if not already defined
+            if ~exist('shapOptions', 'var')
+                shapOptions = struct();
+                shapOptions.num_background = min(100, size(X, 2));
+                shapOptions.parallel = true;
+                shapOptions.verbose = true;
+            end
+            
+            % Call the function with the new name
+            [shapValues, ~, ~, ~] = shap_kernel_function(net, X', targetNames, featureNames, shapOptions);
             fprintf('SHAP calculation completed successfully using dedicated module.\n');
         catch shap_err
             fprintf('Error in dedicated SHAP module: %s\nFalling back to basic calculation.\n', shap_err.message);
             % Fall back to the built-in calculation
             cd(scriptDir);
-            calc_shap_values;
+            run_shap_calculations;
         end
     else
         % Use the script version if the function isn't available
         fprintf('Using built-in SHAP calculation.\n');
         cd(scriptDir);
-        calc_shap_values;
+        run_shap_calculations;
     end
     
     % Make sure shapValues exists in workspace after calculation
