@@ -1,13 +1,13 @@
 ===== COMPLETE PYROLYSIS MODEL WORKFLOW STARTED =====
-Job ID: 2067209
-Running on node: ccc0288
-Start time: Sun May  4 19:57:14 CDT 2025
+Job ID: 2068099
+Running on node: ccc0356
+Start time: Sun May  4 21:17:34 CDT 2025
 Script version: 3.0.0 (Complete workflow implementation)
 
 Project directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone
 
 Checking for required files and directories...
-Created MATLAB temporary directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/tmp_matlab_2067209
+Created MATLAB temporary directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/tmp_matlab_2068099
 Loading MATLAB module...
 MATLAB command found at: /sw/apps/matlab/R2024a/bin/matlab
 
@@ -32,9 +32,9 @@ To get started, type doc.
 For product information, visit www.mathworks.com.
  
 ===== COMPLETE WORKFLOW STARTED =====
-Job ID: 2067209
-Current directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/tmp_matlab_2067209
-Starting time: 04-May-2025 19:57:26
+Job ID: 2068099
+Current directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/tmp_matlab_2068099
+Starting time: 04-May-2025 21:17:44
 
 Changed to scripts directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/src/scripts
 
@@ -42,7 +42,7 @@ Changed to scripts directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bp
 DEBUG: About to execute step1Timer = tic
 DEBUG: step1Timer defined? 1
 Running optimize_hyperparameters.m...
-Optimization started at: 04-May-2025 19:57:26
+Optimization started at: 04-May-2025 21:17:44
 Model directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/src/model
 Using default optimization directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/optimization
 Checking data files...
@@ -3347,7 +3347,7 @@ Hidden Layer Structure: [20]
 Hidden Transfer Function: poslin
 Output Transfer Function: purelin
 
-Total execution time: 0.14 minutes (0.00 hours)
+Total execution time: 0.13 minutes (0.00 hours)
 ✓ Created completion marker for optimization step at: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/markers/optimization_complete.mat
 Hyperparameter optimization completed.
 ✓ Optimization results created and validated: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/optimization/best_model.mat
@@ -3371,13 +3371,13 @@ Hyperparameter optimization completed.
 ✓ Created transition marker for optimization step
 DEBUG: Verification complete. About to execute toc(step1Timer)
 DEBUG: step1Timer still defined? 1
-Optimization time: 8.84 seconds (0.15 minutes)
+Optimization time: 7.82 seconds (0.13 minutes)
 
 ===== STEP 2: BEST MODEL TRAINING =====
 Running train_best_model.m...
 ===== BEST MODEL TRAINING STARTED =====
 Starting train_best_model.m
-Script execution started at: 04-May-2025 19:57:35
+Script execution started at: 04-May-2025 21:17:52
 ======================================
 
 --- Setting up directories and paths ---
@@ -3776,7 +3776,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 50/5000 (1.0%), TrainMSE: 0.176409, TestMSE: 0.184682 (Best: 0.183604), Grad: 0.986569, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 50/5000 (1.0%), TrainMSE: 0.176409, TestMSE: 0.184682 (Best: 0.183604), Grad: 0.986569, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -3927,7 +3927,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 75/5000 (1.5%), TrainMSE: 0.176971, TestMSE: 0.185245 (Best: 0.183604), Grad: 0.986487, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 75/5000 (1.5%), TrainMSE: 0.176971, TestMSE: 0.185245 (Best: 0.183604), Grad: 0.986487, LR: 1.0000e-02, Time: 0.10 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -4078,7 +4078,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 100/5000 (2.0%), TrainMSE: 0.177538, TestMSE: 0.185814 (Best: 0.183604), Grad: 0.986391, LR: 1.0000e-02, Time: 0.09 s
+Epoch: 100/5000 (2.0%), TrainMSE: 0.177538, TestMSE: 0.185814 (Best: 0.183604), Grad: 0.986391, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -4229,7 +4229,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 125/5000 (2.5%), TrainMSE: 0.178111, TestMSE: 0.186388 (Best: 0.183604), Grad: 0.986283, LR: 1.0000e-02, Time: 0.11 s
+Epoch: 125/5000 (2.5%), TrainMSE: 0.178111, TestMSE: 0.186388 (Best: 0.183604), Grad: 0.986283, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -4380,7 +4380,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 150/5000 (3.0%), TrainMSE: 0.178690, TestMSE: 0.186969 (Best: 0.183604), Grad: 0.986160, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 150/5000 (3.0%), TrainMSE: 0.178690, TestMSE: 0.186969 (Best: 0.183604), Grad: 0.986160, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -4531,7 +4531,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 175/5000 (3.5%), TrainMSE: 0.179276, TestMSE: 0.187556 (Best: 0.183604), Grad: 0.986024, LR: 1.0000e-02, Time: 0.13 s
+Epoch: 175/5000 (3.5%), TrainMSE: 0.179276, TestMSE: 0.187556 (Best: 0.183604), Grad: 0.986024, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -4682,7 +4682,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 200/5000 (4.0%), TrainMSE: 0.179868, TestMSE: 0.188150 (Best: 0.183604), Grad: 0.985874, LR: 1.0000e-02, Time: 0.13 s
+Epoch: 200/5000 (4.0%), TrainMSE: 0.179868, TestMSE: 0.188150 (Best: 0.183604), Grad: 0.985874, LR: 1.0000e-02, Time: 0.10 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -4833,7 +4833,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 225/5000 (4.5%), TrainMSE: 0.180467, TestMSE: 0.188750 (Best: 0.183604), Grad: 0.985710, LR: 1.0000e-02, Time: 0.13 s
+Epoch: 225/5000 (4.5%), TrainMSE: 0.180467, TestMSE: 0.188750 (Best: 0.183604), Grad: 0.985710, LR: 1.0000e-02, Time: 0.10 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -4984,7 +4984,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 250/5000 (5.0%), TrainMSE: 0.181073, TestMSE: 0.189358 (Best: 0.183604), Grad: 0.985531, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 250/5000 (5.0%), TrainMSE: 0.181073, TestMSE: 0.189358 (Best: 0.183604), Grad: 0.985531, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -5135,7 +5135,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 275/5000 (5.5%), TrainMSE: 0.181686, TestMSE: 0.189973 (Best: 0.183604), Grad: 0.985338, LR: 1.0000e-02, Time: 0.09 s
+Epoch: 275/5000 (5.5%), TrainMSE: 0.181686, TestMSE: 0.189973 (Best: 0.183604), Grad: 0.985338, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -5588,7 +5588,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 350/5000 (7.0%), TrainMSE: 0.183576, TestMSE: 0.191867 (Best: 0.183604), Grad: 0.984665, LR: 1.0000e-02, Time: 0.11 s
+Epoch: 350/5000 (7.0%), TrainMSE: 0.183576, TestMSE: 0.191867 (Best: 0.183604), Grad: 0.984665, LR: 1.0000e-02, Time: 0.06 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -5739,7 +5739,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 375/5000 (7.5%), TrainMSE: 0.184223, TestMSE: 0.192516 (Best: 0.183604), Grad: 0.984409, LR: 1.0000e-02, Time: 0.05 s
+Epoch: 375/5000 (7.5%), TrainMSE: 0.184223, TestMSE: 0.192516 (Best: 0.183604), Grad: 0.984409, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -5890,7 +5890,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 400/5000 (8.0%), TrainMSE: 0.184879, TestMSE: 0.193174 (Best: 0.183604), Grad: 0.984136, LR: 1.0000e-02, Time: 0.10 s
+Epoch: 400/5000 (8.0%), TrainMSE: 0.184879, TestMSE: 0.193174 (Best: 0.183604), Grad: 0.984136, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -6041,7 +6041,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 425/5000 (8.5%), TrainMSE: 0.185545, TestMSE: 0.193841 (Best: 0.183604), Grad: 0.983846, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 425/5000 (8.5%), TrainMSE: 0.185545, TestMSE: 0.193841 (Best: 0.183604), Grad: 0.983846, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -6192,7 +6192,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 450/5000 (9.0%), TrainMSE: 0.186221, TestMSE: 0.194519 (Best: 0.183604), Grad: 0.983539, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 450/5000 (9.0%), TrainMSE: 0.186221, TestMSE: 0.194519 (Best: 0.183604), Grad: 0.983539, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -6343,7 +6343,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 475/5000 (9.5%), TrainMSE: 0.186907, TestMSE: 0.195207 (Best: 0.183604), Grad: 0.983214, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 475/5000 (9.5%), TrainMSE: 0.186907, TestMSE: 0.195207 (Best: 0.183604), Grad: 0.983214, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -6494,7 +6494,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 500/5000 (10.0%), TrainMSE: 0.187605, TestMSE: 0.195907 (Best: 0.183604), Grad: 0.982871, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 500/5000 (10.0%), TrainMSE: 0.187605, TestMSE: 0.195907 (Best: 0.183604), Grad: 0.982871, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -6645,7 +6645,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 525/5000 (10.5%), TrainMSE: 0.188314, TestMSE: 0.196617 (Best: 0.183604), Grad: 0.982509, LR: 1.0000e-02, Time: 0.09 s
+Epoch: 525/5000 (10.5%), TrainMSE: 0.188314, TestMSE: 0.196617 (Best: 0.183604), Grad: 0.982509, LR: 1.0000e-02, Time: 0.10 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -6796,7 +6796,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 550/5000 (11.0%), TrainMSE: 0.189034, TestMSE: 0.197340 (Best: 0.183604), Grad: 0.982128, LR: 1.0000e-02, Time: 0.12 s
+Epoch: 550/5000 (11.0%), TrainMSE: 0.189034, TestMSE: 0.197340 (Best: 0.183604), Grad: 0.982128, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -6947,7 +6947,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 575/5000 (11.5%), TrainMSE: 0.189768, TestMSE: 0.198075 (Best: 0.183604), Grad: 0.981727, LR: 1.0000e-02, Time: 0.11 s
+Epoch: 575/5000 (11.5%), TrainMSE: 0.189768, TestMSE: 0.198075 (Best: 0.183604), Grad: 0.981727, LR: 1.0000e-02, Time: 0.06 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -7098,7 +7098,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 600/5000 (12.0%), TrainMSE: 0.190514, TestMSE: 0.198823 (Best: 0.183604), Grad: 0.981306, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 600/5000 (12.0%), TrainMSE: 0.190514, TestMSE: 0.198823 (Best: 0.183604), Grad: 0.981306, LR: 1.0000e-02, Time: 0.10 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -7249,7 +7249,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 625/5000 (12.5%), TrainMSE: 0.191274, TestMSE: 0.199585 (Best: 0.183604), Grad: 0.980864, LR: 1.0000e-02, Time: 0.05 s
+Epoch: 625/5000 (12.5%), TrainMSE: 0.191274, TestMSE: 0.199585 (Best: 0.183604), Grad: 0.980864, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -7551,7 +7551,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 675/5000 (13.5%), TrainMSE: 0.192836, TestMSE: 0.201151 (Best: 0.183604), Grad: 0.979915, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 675/5000 (13.5%), TrainMSE: 0.192836, TestMSE: 0.201151 (Best: 0.183604), Grad: 0.979915, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -7702,7 +7702,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 700/5000 (14.0%), TrainMSE: 0.193640, TestMSE: 0.201957 (Best: 0.183604), Grad: 0.979407, LR: 1.0000e-02, Time: 0.12 s
+Epoch: 700/5000 (14.0%), TrainMSE: 0.193640, TestMSE: 0.201957 (Best: 0.183604), Grad: 0.979407, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -7853,7 +7853,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 725/5000 (14.5%), TrainMSE: 0.194460, TestMSE: 0.202778 (Best: 0.183604), Grad: 0.978876, LR: 1.0000e-02, Time: 0.05 s
+Epoch: 725/5000 (14.5%), TrainMSE: 0.194460, TestMSE: 0.202778 (Best: 0.183604), Grad: 0.978876, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -8004,7 +8004,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 750/5000 (15.0%), TrainMSE: 0.195296, TestMSE: 0.203617 (Best: 0.183604), Grad: 0.978320, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 750/5000 (15.0%), TrainMSE: 0.195296, TestMSE: 0.203617 (Best: 0.183604), Grad: 0.978320, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -8155,7 +8155,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 775/5000 (15.5%), TrainMSE: 0.196150, TestMSE: 0.204473 (Best: 0.183604), Grad: 0.977739, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 775/5000 (15.5%), TrainMSE: 0.196150, TestMSE: 0.204473 (Best: 0.183604), Grad: 0.977739, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -8306,7 +8306,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 800/5000 (16.0%), TrainMSE: 0.197023, TestMSE: 0.205348 (Best: 0.183604), Grad: 0.977133, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 800/5000 (16.0%), TrainMSE: 0.197023, TestMSE: 0.205348 (Best: 0.183604), Grad: 0.977133, LR: 1.0000e-02, Time: 0.10 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -8457,7 +8457,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 825/5000 (16.5%), TrainMSE: 0.197914, TestMSE: 0.206241 (Best: 0.183604), Grad: 0.976501, LR: 1.0000e-02, Time: 0.09 s
+Epoch: 825/5000 (16.5%), TrainMSE: 0.197914, TestMSE: 0.206241 (Best: 0.183604), Grad: 0.976501, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -8759,7 +8759,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 875/5000 (17.5%), TrainMSE: 0.199757, TestMSE: 0.208089 (Best: 0.183604), Grad: 0.975154, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 875/5000 (17.5%), TrainMSE: 0.199757, TestMSE: 0.208089 (Best: 0.183604), Grad: 0.975154, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -8910,7 +8910,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 900/5000 (18.0%), TrainMSE: 0.200711, TestMSE: 0.209045 (Best: 0.183604), Grad: 0.974437, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 900/5000 (18.0%), TrainMSE: 0.200711, TestMSE: 0.209045 (Best: 0.183604), Grad: 0.974437, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -9061,7 +9061,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 925/5000 (18.5%), TrainMSE: 0.201687, TestMSE: 0.210023 (Best: 0.183604), Grad: 0.973690, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 925/5000 (18.5%), TrainMSE: 0.201687, TestMSE: 0.210023 (Best: 0.183604), Grad: 0.973690, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -9212,7 +9212,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 950/5000 (19.0%), TrainMSE: 0.202687, TestMSE: 0.211026 (Best: 0.183604), Grad: 0.972913, LR: 1.0000e-02, Time: 0.05 s
+Epoch: 950/5000 (19.0%), TrainMSE: 0.202687, TestMSE: 0.211026 (Best: 0.183604), Grad: 0.972913, LR: 1.0000e-02, Time: 0.04 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -9514,7 +9514,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1000/5000 (20.0%), TrainMSE: 0.204763, TestMSE: 0.213106 (Best: 0.183604), Grad: 0.971261, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 1000/5000 (20.0%), TrainMSE: 0.204763, TestMSE: 0.213106 (Best: 0.183604), Grad: 0.971261, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -9665,7 +9665,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1025/5000 (20.5%), TrainMSE: 0.205841, TestMSE: 0.214187 (Best: 0.183604), Grad: 0.970385, LR: 1.0000e-02, Time: 0.09 s
+Epoch: 1025/5000 (20.5%), TrainMSE: 0.205841, TestMSE: 0.214187 (Best: 0.183604), Grad: 0.970385, LR: 1.0000e-02, Time: 0.10 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -9816,7 +9816,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1050/5000 (21.0%), TrainMSE: 0.206947, TestMSE: 0.215296 (Best: 0.183604), Grad: 0.969473, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 1050/5000 (21.0%), TrainMSE: 0.206947, TestMSE: 0.215296 (Best: 0.183604), Grad: 0.969473, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -9967,7 +9967,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1075/5000 (21.5%), TrainMSE: 0.208083, TestMSE: 0.216434 (Best: 0.183604), Grad: 0.968525, LR: 1.0000e-02, Time: 0.12 s
+Epoch: 1075/5000 (21.5%), TrainMSE: 0.208083, TestMSE: 0.216434 (Best: 0.183604), Grad: 0.968525, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -10269,7 +10269,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1125/5000 (22.5%), TrainMSE: 0.210449, TestMSE: 0.218807 (Best: 0.183604), Grad: 0.966514, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 1125/5000 (22.5%), TrainMSE: 0.210449, TestMSE: 0.218807 (Best: 0.183604), Grad: 0.966514, LR: 1.0000e-02, Time: 0.10 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -10420,7 +10420,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1150/5000 (23.0%), TrainMSE: 0.211683, TestMSE: 0.220043 (Best: 0.183604), Grad: 0.965449, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 1150/5000 (23.0%), TrainMSE: 0.211683, TestMSE: 0.220043 (Best: 0.183604), Grad: 0.965449, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -10571,7 +10571,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1175/5000 (23.5%), TrainMSE: 0.212952, TestMSE: 0.221316 (Best: 0.183604), Grad: 0.964341, LR: 1.0000e-02, Time: 0.12 s
+Epoch: 1175/5000 (23.5%), TrainMSE: 0.212952, TestMSE: 0.221316 (Best: 0.183604), Grad: 0.964341, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -10722,7 +10722,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1200/5000 (24.0%), TrainMSE: 0.214259, TestMSE: 0.222626 (Best: 0.183604), Grad: 0.963191, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 1200/5000 (24.0%), TrainMSE: 0.214259, TestMSE: 0.222626 (Best: 0.183604), Grad: 0.963191, LR: 1.0000e-02, Time: 0.10 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -11326,7 +11326,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1300/5000 (26.0%), TrainMSE: 0.219899, TestMSE: 0.228281 (Best: 0.183604), Grad: 0.958125, LR: 1.0000e-02, Time: 0.05 s
+Epoch: 1300/5000 (26.0%), TrainMSE: 0.219899, TestMSE: 0.228281 (Best: 0.183604), Grad: 0.958125, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -11477,7 +11477,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1325/5000 (26.5%), TrainMSE: 0.221423, TestMSE: 0.229808 (Best: 0.183604), Grad: 0.956734, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 1325/5000 (26.5%), TrainMSE: 0.221423, TestMSE: 0.229808 (Best: 0.183604), Grad: 0.956734, LR: 1.0000e-02, Time: 0.13 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -11628,7 +11628,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1350/5000 (27.0%), TrainMSE: 0.222997, TestMSE: 0.231387 (Best: 0.183604), Grad: 0.955289, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 1350/5000 (27.0%), TrainMSE: 0.222997, TestMSE: 0.231387 (Best: 0.183604), Grad: 0.955289, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -11779,7 +11779,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1375/5000 (27.5%), TrainMSE: 0.224623, TestMSE: 0.233018 (Best: 0.183604), Grad: 0.953789, LR: 1.0000e-02, Time: 0.09 s
+Epoch: 1375/5000 (27.5%), TrainMSE: 0.224623, TestMSE: 0.233018 (Best: 0.183604), Grad: 0.953789, LR: 1.0000e-02, Time: 0.10 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -12081,7 +12081,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1425/5000 (28.5%), TrainMSE: 0.228046, TestMSE: 0.236449 (Best: 0.183604), Grad: 0.950614, LR: 1.0000e-02, Time: 0.09 s
+Epoch: 1425/5000 (28.5%), TrainMSE: 0.228046, TestMSE: 0.236449 (Best: 0.183604), Grad: 0.950614, LR: 1.0000e-02, Time: 0.12 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -12232,7 +12232,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1450/5000 (29.0%), TrainMSE: 0.229848, TestMSE: 0.238256 (Best: 0.183604), Grad: 0.948934, LR: 1.0000e-02, Time: 0.05 s
+Epoch: 1450/5000 (29.0%), TrainMSE: 0.229848, TestMSE: 0.238256 (Best: 0.183604), Grad: 0.948934, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -12383,7 +12383,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1475/5000 (29.5%), TrainMSE: 0.231714, TestMSE: 0.240128 (Best: 0.183604), Grad: 0.947190, LR: 1.0000e-02, Time: 0.10 s
+Epoch: 1475/5000 (29.5%), TrainMSE: 0.231714, TestMSE: 0.240128 (Best: 0.183604), Grad: 0.947190, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -12534,7 +12534,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1500/5000 (30.0%), TrainMSE: 0.233649, TestMSE: 0.242068 (Best: 0.183604), Grad: 0.945380, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 1500/5000 (30.0%), TrainMSE: 0.233649, TestMSE: 0.242068 (Best: 0.183604), Grad: 0.945380, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -12685,7 +12685,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1525/5000 (30.5%), TrainMSE: 0.235656, TestMSE: 0.244080 (Best: 0.183604), Grad: 0.943500, LR: 1.0000e-02, Time: 0.12 s
+Epoch: 1525/5000 (30.5%), TrainMSE: 0.235656, TestMSE: 0.244080 (Best: 0.183604), Grad: 0.943500, LR: 1.0000e-02, Time: 0.10 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -12836,7 +12836,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1550/5000 (31.0%), TrainMSE: 0.237738, TestMSE: 0.246169 (Best: 0.183604), Grad: 0.941548, LR: 1.0000e-02, Time: 0.09 s
+Epoch: 1550/5000 (31.0%), TrainMSE: 0.237738, TestMSE: 0.246169 (Best: 0.183604), Grad: 0.941548, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -12987,7 +12987,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1575/5000 (31.5%), TrainMSE: 0.239901, TestMSE: 0.248337 (Best: 0.183604), Grad: 0.939521, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 1575/5000 (31.5%), TrainMSE: 0.239901, TestMSE: 0.248337 (Best: 0.183604), Grad: 0.939521, LR: 1.0000e-02, Time: 0.10 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -13138,7 +13138,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1600/5000 (32.0%), TrainMSE: 0.242148, TestMSE: 0.250591 (Best: 0.183604), Grad: 0.937417, LR: 1.0000e-02, Time: 0.05 s
+Epoch: 1600/5000 (32.0%), TrainMSE: 0.242148, TestMSE: 0.250591 (Best: 0.183604), Grad: 0.937417, LR: 1.0000e-02, Time: 0.06 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -13289,7 +13289,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1625/5000 (32.5%), TrainMSE: 0.244484, TestMSE: 0.252934 (Best: 0.183604), Grad: 0.935232, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 1625/5000 (32.5%), TrainMSE: 0.244484, TestMSE: 0.252934 (Best: 0.183604), Grad: 0.935232, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -13440,7 +13440,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1650/5000 (33.0%), TrainMSE: 0.246915, TestMSE: 0.255372 (Best: 0.183604), Grad: 0.932963, LR: 1.0000e-02, Time: 0.11 s
+Epoch: 1650/5000 (33.0%), TrainMSE: 0.246915, TestMSE: 0.255372 (Best: 0.183604), Grad: 0.932963, LR: 1.0000e-02, Time: 0.05 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -13591,7 +13591,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1675/5000 (33.5%), TrainMSE: 0.249446, TestMSE: 0.257910 (Best: 0.183604), Grad: 0.930607, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 1675/5000 (33.5%), TrainMSE: 0.249446, TestMSE: 0.257910 (Best: 0.183604), Grad: 0.930607, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -13742,7 +13742,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1700/5000 (34.0%), TrainMSE: 0.252083, TestMSE: 0.260555 (Best: 0.183604), Grad: 0.928160, LR: 1.0000e-02, Time: 0.11 s
+Epoch: 1700/5000 (34.0%), TrainMSE: 0.252083, TestMSE: 0.260555 (Best: 0.183604), Grad: 0.928160, LR: 1.0000e-02, Time: 0.10 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -13893,7 +13893,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1725/5000 (34.5%), TrainMSE: 0.254832, TestMSE: 0.263312 (Best: 0.183604), Grad: 0.925619, LR: 1.0000e-02, Time: 0.11 s
+Epoch: 1725/5000 (34.5%), TrainMSE: 0.254832, TestMSE: 0.263312 (Best: 0.183604), Grad: 0.925619, LR: 1.0000e-02, Time: 0.05 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -14044,7 +14044,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1750/5000 (35.0%), TrainMSE: 0.257699, TestMSE: 0.266188 (Best: 0.183604), Grad: 0.922981, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 1750/5000 (35.0%), TrainMSE: 0.257699, TestMSE: 0.266188 (Best: 0.183604), Grad: 0.922981, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -14195,7 +14195,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1775/5000 (35.5%), TrainMSE: 0.260693, TestMSE: 0.269191 (Best: 0.183604), Grad: 0.920240, LR: 1.0000e-02, Time: 0.09 s
+Epoch: 1775/5000 (35.5%), TrainMSE: 0.260693, TestMSE: 0.269191 (Best: 0.183604), Grad: 0.920240, LR: 1.0000e-02, Time: 0.12 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -14497,7 +14497,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1825/5000 (36.5%), TrainMSE: 0.267090, TestMSE: 0.275607 (Best: 0.183604), Grad: 0.914435, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 1825/5000 (36.5%), TrainMSE: 0.267090, TestMSE: 0.275607 (Best: 0.183604), Grad: 0.914435, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -14648,7 +14648,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1850/5000 (37.0%), TrainMSE: 0.270511, TestMSE: 0.279039 (Best: 0.183604), Grad: 0.911363, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 1850/5000 (37.0%), TrainMSE: 0.270511, TestMSE: 0.279039 (Best: 0.183604), Grad: 0.911363, LR: 1.0000e-02, Time: 0.12 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -14799,7 +14799,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1875/5000 (37.5%), TrainMSE: 0.274092, TestMSE: 0.282631 (Best: 0.183604), Grad: 0.908171, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 1875/5000 (37.5%), TrainMSE: 0.274092, TestMSE: 0.282631 (Best: 0.183604), Grad: 0.908171, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -14950,7 +14950,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1900/5000 (38.0%), TrainMSE: 0.277845, TestMSE: 0.286396 (Best: 0.183604), Grad: 0.904855, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 1900/5000 (38.0%), TrainMSE: 0.277845, TestMSE: 0.286396 (Best: 0.183604), Grad: 0.904855, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -15101,7 +15101,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1925/5000 (38.5%), TrainMSE: 0.281780, TestMSE: 0.290343 (Best: 0.183604), Grad: 0.901409, LR: 1.0000e-02, Time: 0.11 s
+Epoch: 1925/5000 (38.5%), TrainMSE: 0.281780, TestMSE: 0.290343 (Best: 0.183604), Grad: 0.901409, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -15252,7 +15252,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1950/5000 (39.0%), TrainMSE: 0.285909, TestMSE: 0.294486 (Best: 0.183604), Grad: 0.897829, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 1950/5000 (39.0%), TrainMSE: 0.285909, TestMSE: 0.294486 (Best: 0.183604), Grad: 0.897829, LR: 1.0000e-02, Time: 0.10 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -15403,7 +15403,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 1975/5000 (39.5%), TrainMSE: 0.290246, TestMSE: 0.298837 (Best: 0.183604), Grad: 0.894107, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 1975/5000 (39.5%), TrainMSE: 0.290246, TestMSE: 0.298837 (Best: 0.183604), Grad: 0.894107, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -15554,7 +15554,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2000/5000 (40.0%), TrainMSE: 0.294805, TestMSE: 0.303410 (Best: 0.183604), Grad: 0.890239, LR: 1.0000e-02, Time: 0.05 s
+Epoch: 2000/5000 (40.0%), TrainMSE: 0.294805, TestMSE: 0.303410 (Best: 0.183604), Grad: 0.890239, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -15705,7 +15705,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2025/5000 (40.5%), TrainMSE: 0.299600, TestMSE: 0.308221 (Best: 0.183604), Grad: 0.886219, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 2025/5000 (40.5%), TrainMSE: 0.299600, TestMSE: 0.308221 (Best: 0.183604), Grad: 0.886219, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -15856,7 +15856,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2050/5000 (41.0%), TrainMSE: 0.304649, TestMSE: 0.313287 (Best: 0.183604), Grad: 0.882040, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 2050/5000 (41.0%), TrainMSE: 0.304649, TestMSE: 0.313287 (Best: 0.183604), Grad: 0.882040, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -16007,7 +16007,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2075/5000 (41.5%), TrainMSE: 0.309970, TestMSE: 0.318625 (Best: 0.183604), Grad: 0.877696, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 2075/5000 (41.5%), TrainMSE: 0.309970, TestMSE: 0.318625 (Best: 0.183604), Grad: 0.877696, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -16158,7 +16158,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2100/5000 (42.0%), TrainMSE: 0.315582, TestMSE: 0.324256 (Best: 0.183604), Grad: 0.873179, LR: 1.0000e-02, Time: 0.09 s
+Epoch: 2100/5000 (42.0%), TrainMSE: 0.315582, TestMSE: 0.324256 (Best: 0.183604), Grad: 0.873179, LR: 1.0000e-02, Time: 0.10 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -16309,7 +16309,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2125/5000 (42.5%), TrainMSE: 0.321506, TestMSE: 0.330200 (Best: 0.183604), Grad: 0.868483, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 2125/5000 (42.5%), TrainMSE: 0.321506, TestMSE: 0.330200 (Best: 0.183604), Grad: 0.868483, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -16611,7 +16611,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2175/5000 (43.5%), TrainMSE: 0.334385, TestMSE: 0.343123 (Best: 0.183604), Grad: 0.858522, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 2175/5000 (43.5%), TrainMSE: 0.334385, TestMSE: 0.343123 (Best: 0.183604), Grad: 0.858522, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -16762,7 +16762,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2200/5000 (44.0%), TrainMSE: 0.341392, TestMSE: 0.350154 (Best: 0.183604), Grad: 0.853242, LR: 1.0000e-02, Time: 0.05 s
+Epoch: 2200/5000 (44.0%), TrainMSE: 0.341392, TestMSE: 0.350154 (Best: 0.183604), Grad: 0.853242, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -16913,7 +16913,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2225/5000 (44.5%), TrainMSE: 0.348817, TestMSE: 0.357605 (Best: 0.183604), Grad: 0.847751, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 2225/5000 (44.5%), TrainMSE: 0.348817, TestMSE: 0.357605 (Best: 0.183604), Grad: 0.847751, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -17064,7 +17064,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2250/5000 (45.0%), TrainMSE: 0.356693, TestMSE: 0.365508 (Best: 0.183604), Grad: 0.842040, LR: 1.0000e-02, Time: 0.05 s
+Epoch: 2250/5000 (45.0%), TrainMSE: 0.356693, TestMSE: 0.365508 (Best: 0.183604), Grad: 0.842040, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -17215,7 +17215,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2275/5000 (45.5%), TrainMSE: 0.365054, TestMSE: 0.373899 (Best: 0.183604), Grad: 0.836100, LR: 1.0000e-02, Time: 0.10 s
+Epoch: 2275/5000 (45.5%), TrainMSE: 0.365054, TestMSE: 0.373899 (Best: 0.183604), Grad: 0.836100, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -17366,7 +17366,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2300/5000 (46.0%), TrainMSE: 0.373941, TestMSE: 0.382817 (Best: 0.183604), Grad: 0.829923, LR: 1.0000e-02, Time: 0.05 s
+Epoch: 2300/5000 (46.0%), TrainMSE: 0.373941, TestMSE: 0.382817 (Best: 0.183604), Grad: 0.829923, LR: 1.0000e-02, Time: 0.10 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -17517,7 +17517,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2325/5000 (46.5%), TrainMSE: 0.383395, TestMSE: 0.392305 (Best: 0.183604), Grad: 0.823498, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 2325/5000 (46.5%), TrainMSE: 0.383395, TestMSE: 0.392305 (Best: 0.183604), Grad: 0.823498, LR: 1.0000e-02, Time: 0.06 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -17668,7 +17668,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2350/5000 (47.0%), TrainMSE: 0.393463, TestMSE: 0.402409 (Best: 0.183604), Grad: 0.816817, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 2350/5000 (47.0%), TrainMSE: 0.393463, TestMSE: 0.402409 (Best: 0.183604), Grad: 0.816817, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -17819,7 +17819,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2375/5000 (47.5%), TrainMSE: 0.404198, TestMSE: 0.413183 (Best: 0.183604), Grad: 0.809868, LR: 1.0000e-02, Time: 0.09 s
+Epoch: 2375/5000 (47.5%), TrainMSE: 0.404198, TestMSE: 0.413183 (Best: 0.183604), Grad: 0.809868, LR: 1.0000e-02, Time: 0.06 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -17970,7 +17970,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2400/5000 (48.0%), TrainMSE: 0.415655, TestMSE: 0.424682 (Best: 0.183604), Grad: 0.802643, LR: 1.0000e-02, Time: 0.09 s
+Epoch: 2400/5000 (48.0%), TrainMSE: 0.415655, TestMSE: 0.424682 (Best: 0.183604), Grad: 0.802643, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -18121,7 +18121,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2425/5000 (48.5%), TrainMSE: 0.427898, TestMSE: 0.436969 (Best: 0.183604), Grad: 0.795129, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 2425/5000 (48.5%), TrainMSE: 0.427898, TestMSE: 0.436969 (Best: 0.183604), Grad: 0.795129, LR: 1.0000e-02, Time: 0.06 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -18272,7 +18272,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2450/5000 (49.0%), TrainMSE: 0.440993, TestMSE: 0.450112 (Best: 0.183604), Grad: 0.787317, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 2450/5000 (49.0%), TrainMSE: 0.440993, TestMSE: 0.450112 (Best: 0.183604), Grad: 0.787317, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -18423,7 +18423,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2475/5000 (49.5%), TrainMSE: 0.455017, TestMSE: 0.464189 (Best: 0.183604), Grad: 0.779195, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 2475/5000 (49.5%), TrainMSE: 0.455017, TestMSE: 0.464189 (Best: 0.183604), Grad: 0.779195, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -18574,7 +18574,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2500/5000 (50.0%), TrainMSE: 0.470054, TestMSE: 0.479281 (Best: 0.183604), Grad: 0.770752, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 2500/5000 (50.0%), TrainMSE: 0.470054, TestMSE: 0.479281 (Best: 0.183604), Grad: 0.770752, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -18725,7 +18725,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2525/5000 (50.5%), TrainMSE: 0.486195, TestMSE: 0.495483 (Best: 0.183604), Grad: 0.761978, LR: 1.0000e-02, Time: 0.10 s
+Epoch: 2525/5000 (50.5%), TrainMSE: 0.486195, TestMSE: 0.495483 (Best: 0.183604), Grad: 0.761978, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -18876,7 +18876,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2550/5000 (51.0%), TrainMSE: 0.503543, TestMSE: 0.512896 (Best: 0.183604), Grad: 0.752861, LR: 1.0000e-02, Time: 0.10 s
+Epoch: 2550/5000 (51.0%), TrainMSE: 0.503543, TestMSE: 0.512896 (Best: 0.183604), Grad: 0.752861, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -19027,7 +19027,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2575/5000 (51.5%), TrainMSE: 0.522209, TestMSE: 0.531633 (Best: 0.183604), Grad: 0.743390, LR: 1.0000e-02, Time: 0.09 s
+Epoch: 2575/5000 (51.5%), TrainMSE: 0.522209, TestMSE: 0.531633 (Best: 0.183604), Grad: 0.743390, LR: 1.0000e-02, Time: 0.12 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -19178,7 +19178,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2600/5000 (52.0%), TrainMSE: 0.542320, TestMSE: 0.551821 (Best: 0.183604), Grad: 0.733554, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 2600/5000 (52.0%), TrainMSE: 0.542320, TestMSE: 0.551821 (Best: 0.183604), Grad: 0.733554, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -19329,7 +19329,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2625/5000 (52.5%), TrainMSE: 0.564014, TestMSE: 0.573597 (Best: 0.183604), Grad: 0.723342, LR: 1.0000e-02, Time: 0.09 s
+Epoch: 2625/5000 (52.5%), TrainMSE: 0.564014, TestMSE: 0.573597 (Best: 0.183604), Grad: 0.723342, LR: 1.0000e-02, Time: 0.06 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -19480,7 +19480,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2650/5000 (53.0%), TrainMSE: 0.587444, TestMSE: 0.597118 (Best: 0.183604), Grad: 0.712744, LR: 1.0000e-02, Time: 0.13 s
+Epoch: 2650/5000 (53.0%), TrainMSE: 0.587444, TestMSE: 0.597118 (Best: 0.183604), Grad: 0.712744, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -19782,7 +19782,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2700/5000 (54.0%), TrainMSE: 0.640220, TestMSE: 0.650100 (Best: 0.183604), Grad: 0.690346, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 2700/5000 (54.0%), TrainMSE: 0.640220, TestMSE: 0.650100 (Best: 0.183604), Grad: 0.690346, LR: 1.0000e-02, Time: 0.05 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -20084,7 +20084,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2750/5000 (55.0%), TrainMSE: 0.702265, TestMSE: 0.712389 (Best: 0.183604), Grad: 0.666287, LR: 1.0000e-02, Time: 0.13 s
+Epoch: 2750/5000 (55.0%), TrainMSE: 0.702265, TestMSE: 0.712389 (Best: 0.183604), Grad: 0.666287, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -20235,7 +20235,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2775/5000 (55.5%), TrainMSE: 0.737372, TestMSE: 0.747636 (Best: 0.183604), Grad: 0.653614, LR: 1.0000e-02, Time: 0.11 s
+Epoch: 2775/5000 (55.5%), TrainMSE: 0.737372, TestMSE: 0.747636 (Best: 0.183604), Grad: 0.653614, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -20386,7 +20386,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2800/5000 (56.0%), TrainMSE: 0.775585, TestMSE: 0.786002 (Best: 0.183604), Grad: 0.640504, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 2800/5000 (56.0%), TrainMSE: 0.775585, TestMSE: 0.786002 (Best: 0.183604), Grad: 0.640504, LR: 1.0000e-02, Time: 0.05 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -20537,7 +20537,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2825/5000 (56.5%), TrainMSE: 0.817234, TestMSE: 0.827818 (Best: 0.183604), Grad: 0.626952, LR: 1.0000e-02, Time: 0.05 s
+Epoch: 2825/5000 (56.5%), TrainMSE: 0.817234, TestMSE: 0.827818 (Best: 0.183604), Grad: 0.626952, LR: 1.0000e-02, Time: 0.06 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -20688,7 +20688,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2850/5000 (57.0%), TrainMSE: 0.862685, TestMSE: 0.873454 (Best: 0.183604), Grad: 0.612956, LR: 1.0000e-02, Time: 0.12 s
+Epoch: 2850/5000 (57.0%), TrainMSE: 0.862685, TestMSE: 0.873454 (Best: 0.183604), Grad: 0.612956, LR: 1.0000e-02, Time: 0.06 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -20839,7 +20839,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2875/5000 (57.5%), TrainMSE: 0.912351, TestMSE: 0.923322 (Best: 0.183604), Grad: 0.598515, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 2875/5000 (57.5%), TrainMSE: 0.912351, TestMSE: 0.923322 (Best: 0.183604), Grad: 0.598515, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -20990,7 +20990,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2900/5000 (58.0%), TrainMSE: 0.966693, TestMSE: 0.977886 (Best: 0.183604), Grad: 0.583629, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 2900/5000 (58.0%), TrainMSE: 0.966693, TestMSE: 0.977886 (Best: 0.183604), Grad: 0.583629, LR: 1.0000e-02, Time: 0.06 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -21141,7 +21141,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2925/5000 (58.5%), TrainMSE: 1.026225, TestMSE: 1.037664 (Best: 0.183604), Grad: 0.568303, LR: 1.0000e-02, Time: 0.09 s
+Epoch: 2925/5000 (58.5%), TrainMSE: 1.026225, TestMSE: 1.037664 (Best: 0.183604), Grad: 0.568303, LR: 1.0000e-02, Time: 0.05 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -21292,7 +21292,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2950/5000 (59.0%), TrainMSE: 1.091527, TestMSE: 1.103237 (Best: 0.183604), Grad: 0.552544, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 2950/5000 (59.0%), TrainMSE: 1.091527, TestMSE: 1.103237 (Best: 0.183604), Grad: 0.552544, LR: 1.0000e-02, Time: 0.12 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -21443,7 +21443,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 2975/5000 (59.5%), TrainMSE: 1.163246, TestMSE: 1.175255 (Best: 0.183604), Grad: 0.536362, LR: 1.0000e-02, Time: 0.11 s
+Epoch: 2975/5000 (59.5%), TrainMSE: 1.163246, TestMSE: 1.175255 (Best: 0.183604), Grad: 0.536362, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -21594,7 +21594,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3000/5000 (60.0%), TrainMSE: 1.242108, TestMSE: 1.254448 (Best: 0.183604), Grad: 0.519769, LR: 1.0000e-02, Time: 0.10 s
+Epoch: 3000/5000 (60.0%), TrainMSE: 1.242108, TestMSE: 1.254448 (Best: 0.183604), Grad: 0.519769, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -21745,7 +21745,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3025/5000 (60.5%), TrainMSE: 1.328928, TestMSE: 1.341633 (Best: 0.183604), Grad: 0.502783, LR: 1.0000e-02, Time: 0.10 s
+Epoch: 3025/5000 (60.5%), TrainMSE: 1.328928, TestMSE: 1.341633 (Best: 0.183604), Grad: 0.502783, LR: 1.0000e-02, Time: 0.12 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -21896,7 +21896,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3050/5000 (61.0%), TrainMSE: 1.424619, TestMSE: 1.437730 (Best: 0.183604), Grad: 0.485422, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 3050/5000 (61.0%), TrainMSE: 1.424619, TestMSE: 1.437730 (Best: 0.183604), Grad: 0.485422, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -22047,7 +22047,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3075/5000 (61.5%), TrainMSE: 1.530207, TestMSE: 1.543768 (Best: 0.183604), Grad: 0.467711, LR: 1.0000e-02, Time: 0.15 s
+Epoch: 3075/5000 (61.5%), TrainMSE: 1.530207, TestMSE: 1.543768 (Best: 0.183604), Grad: 0.467711, LR: 1.0000e-02, Time: 0.06 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -22198,7 +22198,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3100/5000 (62.0%), TrainMSE: 1.646845, TestMSE: 1.660906 (Best: 0.183604), Grad: 0.449676, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 3100/5000 (62.0%), TrainMSE: 1.646845, TestMSE: 1.660906 (Best: 0.183604), Grad: 0.449676, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -22349,7 +22349,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3125/5000 (62.5%), TrainMSE: 1.775827, TestMSE: 1.790443 (Best: 0.183604), Grad: 0.431346, LR: 1.0000e-02, Time: 0.13 s
+Epoch: 3125/5000 (62.5%), TrainMSE: 1.775827, TestMSE: 1.790443 (Best: 0.183604), Grad: 0.431346, LR: 1.0000e-02, Time: 0.04 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -22500,7 +22500,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3150/5000 (63.0%), TrainMSE: 1.918608, TestMSE: 1.933843 (Best: 0.183604), Grad: 0.412753, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 3150/5000 (63.0%), TrainMSE: 1.918608, TestMSE: 1.933843 (Best: 0.183604), Grad: 0.412753, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -22651,7 +22651,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3175/5000 (63.5%), TrainMSE: 2.076827, TestMSE: 2.092750 (Best: 0.183604), Grad: 0.393931, LR: 1.0000e-02, Time: 0.09 s
+Epoch: 3175/5000 (63.5%), TrainMSE: 2.076827, TestMSE: 2.092750 (Best: 0.183604), Grad: 0.393931, LR: 1.0000e-02, Time: 0.05 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -22802,7 +22802,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3200/5000 (64.0%), TrainMSE: 2.252326, TestMSE: 2.269017 (Best: 0.183604), Grad: 0.374916, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 3200/5000 (64.0%), TrainMSE: 2.252326, TestMSE: 2.269017 (Best: 0.183604), Grad: 0.374916, LR: 1.0000e-02, Time: 0.10 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -22953,7 +22953,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3225/5000 (64.5%), TrainMSE: 2.447180, TestMSE: 2.464728 (Best: 0.183604), Grad: 0.355747, LR: 1.0000e-02, Time: 0.11 s
+Epoch: 3225/5000 (64.5%), TrainMSE: 2.447180, TestMSE: 2.464728 (Best: 0.183604), Grad: 0.355747, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -23104,7 +23104,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3250/5000 (65.0%), TrainMSE: 2.663725, TestMSE: 2.682229 (Best: 0.183604), Grad: 0.336468, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 3250/5000 (65.0%), TrainMSE: 2.663725, TestMSE: 2.682229 (Best: 0.183604), Grad: 0.336468, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -23406,7 +23406,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3300/5000 (66.0%), TrainMSE: 3.172712, TestMSE: 3.193479 (Best: 0.183604), Grad: 0.297777, LR: 1.0000e-02, Time: 0.10 s
+Epoch: 3300/5000 (66.0%), TrainMSE: 3.172712, TestMSE: 3.193479 (Best: 0.183604), Grad: 0.297777, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -23557,7 +23557,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3325/5000 (66.5%), TrainMSE: 3.471406, TestMSE: 3.493509 (Best: 0.183604), Grad: 0.278489, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 3325/5000 (66.5%), TrainMSE: 3.471406, TestMSE: 3.493509 (Best: 0.183604), Grad: 0.278489, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -23708,7 +23708,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3350/5000 (67.0%), TrainMSE: 3.804358, TestMSE: 3.827952 (Best: 0.183604), Grad: 0.259342, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 3350/5000 (67.0%), TrainMSE: 3.804358, TestMSE: 3.827952 (Best: 0.183604), Grad: 0.259342, LR: 1.0000e-02, Time: 0.12 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -23859,7 +23859,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3375/5000 (67.5%), TrainMSE: 4.175670, TestMSE: 4.200929 (Best: 0.183604), Grad: 0.240433, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 3375/5000 (67.5%), TrainMSE: 4.175670, TestMSE: 4.200929 (Best: 0.183604), Grad: 0.240433, LR: 1.0000e-02, Time: 0.10 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -24010,7 +24010,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3400/5000 (68.0%), TrainMSE: 4.589888, TestMSE: 4.617004 (Best: 0.183604), Grad: 0.221876, LR: 1.0000e-02, Time: 0.05 s
+Epoch: 3400/5000 (68.0%), TrainMSE: 4.589888, TestMSE: 4.617004 (Best: 0.183604), Grad: 0.221876, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -24161,7 +24161,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3425/5000 (68.5%), TrainMSE: 5.052024, TestMSE: 5.081210 (Best: 0.183604), Grad: 0.203798, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 3425/5000 (68.5%), TrainMSE: 5.052024, TestMSE: 5.081210 (Best: 0.183604), Grad: 0.203798, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -24312,7 +24312,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3450/5000 (69.0%), TrainMSE: 5.567590, TestMSE: 5.599079 (Best: 0.183604), Grad: 0.186336, LR: 1.0000e-02, Time: 0.05 s
+Epoch: 3450/5000 (69.0%), TrainMSE: 5.567590, TestMSE: 5.599079 (Best: 0.183604), Grad: 0.186336, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -24463,7 +24463,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3475/5000 (69.5%), TrainMSE: 6.142632, TestMSE: 6.176680 (Best: 0.183604), Grad: 0.169623, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 3475/5000 (69.5%), TrainMSE: 6.142632, TestMSE: 6.176680 (Best: 0.183604), Grad: 0.169623, LR: 1.0000e-02, Time: 0.13 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -24614,7 +24614,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3500/5000 (70.0%), TrainMSE: 6.783780, TestMSE: 6.820667 (Best: 0.183604), Grad: 0.153784, LR: 1.0000e-02, Time: 0.05 s
+Epoch: 3500/5000 (70.0%), TrainMSE: 6.783780, TestMSE: 6.820667 (Best: 0.183604), Grad: 0.153784, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -24765,7 +24765,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3525/5000 (70.5%), TrainMSE: 7.498306, TestMSE: 7.538343 (Best: 0.183604), Grad: 0.138921, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 3525/5000 (70.5%), TrainMSE: 7.498306, TestMSE: 7.538343 (Best: 0.183604), Grad: 0.138921, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -24916,7 +24916,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3550/5000 (71.0%), TrainMSE: 8.294212, TestMSE: 8.337739 (Best: 0.183604), Grad: 0.125105, LR: 1.0000e-02, Time: 0.05 s
+Epoch: 3550/5000 (71.0%), TrainMSE: 8.294212, TestMSE: 8.337739 (Best: 0.183604), Grad: 0.125105, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -25067,7 +25067,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3575/5000 (71.5%), TrainMSE: 9.180321, TestMSE: 9.227714 (Best: 0.183604), Grad: 0.112374, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 3575/5000 (71.5%), TrainMSE: 9.180321, TestMSE: 9.227714 (Best: 0.183604), Grad: 0.112374, LR: 1.0000e-02, Time: 0.15 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -25218,7 +25218,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3600/5000 (72.0%), TrainMSE: 10.166386, TestMSE: 10.218063 (Best: 0.183604), Grad: 0.100735, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 3600/5000 (72.0%), TrainMSE: 10.166386, TestMSE: 10.218063 (Best: 0.183604), Grad: 0.100735, LR: 1.0000e-02, Time: 0.10 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -25369,7 +25369,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3625/5000 (72.5%), TrainMSE: 11.263220, TestMSE: 11.319643 (Best: 0.183604), Grad: 0.090163, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 3625/5000 (72.5%), TrainMSE: 11.263220, TestMSE: 11.319643 (Best: 0.183604), Grad: 0.090163, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -25520,7 +25520,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3650/5000 (73.0%), TrainMSE: 12.482822, TestMSE: 12.544504 (Best: 0.183604), Grad: 0.080612, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 3650/5000 (73.0%), TrainMSE: 12.482822, TestMSE: 12.544504 (Best: 0.183604), Grad: 0.080612, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -25671,7 +25671,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3675/5000 (73.5%), TrainMSE: 13.838523, TestMSE: 13.906033 (Best: 0.183604), Grad: 0.072021, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 3675/5000 (73.5%), TrainMSE: 13.838523, TestMSE: 13.906033 (Best: 0.183604), Grad: 0.072021, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -25822,7 +25822,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3700/5000 (74.0%), TrainMSE: 15.345142, TestMSE: 15.419113 (Best: 0.183604), Grad: 0.064318, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 3700/5000 (74.0%), TrainMSE: 15.345142, TestMSE: 15.419113 (Best: 0.183604), Grad: 0.064318, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -25973,7 +25973,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3725/5000 (74.5%), TrainMSE: 17.019150, TestMSE: 17.100286 (Best: 0.183604), Grad: 0.057427, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 3725/5000 (74.5%), TrainMSE: 17.019150, TestMSE: 17.100286 (Best: 0.183604), Grad: 0.057427, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -26124,7 +26124,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3750/5000 (75.0%), TrainMSE: 18.878862, TestMSE: 18.967942 (Best: 0.183604), Grad: 0.051274, LR: 1.0000e-02, Time: 0.16 s
+Epoch: 3750/5000 (75.0%), TrainMSE: 18.878862, TestMSE: 18.967942 (Best: 0.183604), Grad: 0.051274, LR: 1.0000e-02, Time: 0.05 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -26275,7 +26275,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3775/5000 (75.5%), TrainMSE: 20.944629, TestMSE: 21.042523 (Best: 0.183604), Grad: 0.045785, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 3775/5000 (75.5%), TrainMSE: 20.944629, TestMSE: 21.042523 (Best: 0.183604), Grad: 0.045785, LR: 1.0000e-02, Time: 0.06 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -26426,7 +26426,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3800/5000 (76.0%), TrainMSE: 23.239072, TestMSE: 23.346742 (Best: 0.183604), Grad: 0.040892, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 3800/5000 (76.0%), TrainMSE: 23.239072, TestMSE: 23.346742 (Best: 0.183604), Grad: 0.040892, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -26577,7 +26577,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3825/5000 (76.5%), TrainMSE: 25.787322, TestMSE: 25.905838 (Best: 0.183604), Grad: 0.036531, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 3825/5000 (76.5%), TrainMSE: 25.787322, TestMSE: 25.905838 (Best: 0.183604), Grad: 0.036531, LR: 1.0000e-02, Time: 0.12 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -26728,7 +26728,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3850/5000 (77.0%), TrainMSE: 28.617298, TestMSE: 28.747848 (Best: 0.183604), Grad: 0.032646, LR: 1.0000e-02, Time: 0.10 s
+Epoch: 3850/5000 (77.0%), TrainMSE: 28.617298, TestMSE: 28.747848 (Best: 0.183604), Grad: 0.032646, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -27030,7 +27030,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3900/5000 (78.0%), TrainMSE: 35.249919, TestMSE: 35.408640 (Best: 0.183604), Grad: 0.026096, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 3900/5000 (78.0%), TrainMSE: 35.249919, TestMSE: 35.408640 (Best: 0.183604), Grad: 0.026096, LR: 1.0000e-02, Time: 0.12 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -27181,7 +27181,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3925/5000 (78.5%), TrainMSE: 39.125267, TestMSE: 39.300431 (Best: 0.183604), Grad: 0.023343, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 3925/5000 (78.5%), TrainMSE: 39.125267, TestMSE: 39.300431 (Best: 0.183604), Grad: 0.023343, LR: 1.0000e-02, Time: 0.13 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -27483,7 +27483,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 3975/5000 (79.5%), TrainMSE: 48.206937, TestMSE: 48.420601 (Best: 0.183604), Grad: 0.018698, LR: 1.0000e-02, Time: 0.04 s
+Epoch: 3975/5000 (79.5%), TrainMSE: 48.206937, TestMSE: 48.420601 (Best: 0.183604), Grad: 0.018698, LR: 1.0000e-02, Time: 0.13 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -27634,7 +27634,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4000/5000 (80.0%), TrainMSE: 53.512833, TestMSE: 53.748973 (Best: 0.183604), Grad: 0.016742, LR: 1.0000e-02, Time: 0.09 s
+Epoch: 4000/5000 (80.0%), TrainMSE: 53.512833, TestMSE: 53.748973 (Best: 0.183604), Grad: 0.016742, LR: 1.0000e-02, Time: 0.10 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -27785,7 +27785,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4025/5000 (80.5%), TrainMSE: 59.404413, TestMSE: 59.665498 (Best: 0.183604), Grad: 0.014995, LR: 1.0000e-02, Time: 0.11 s
+Epoch: 4025/5000 (80.5%), TrainMSE: 59.404413, TestMSE: 59.665498 (Best: 0.183604), Grad: 0.014995, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -27936,7 +27936,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4050/5000 (81.0%), TrainMSE: 65.946280, TestMSE: 66.235050 (Best: 0.183604), Grad: 0.013435, LR: 1.0000e-02, Time: 0.11 s
+Epoch: 4050/5000 (81.0%), TrainMSE: 65.946280, TestMSE: 66.235050 (Best: 0.183604), Grad: 0.013435, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -28389,7 +28389,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4125/5000 (82.5%), TrainMSE: 90.231416, TestMSE: 90.622876 (Best: 0.183604), Grad: 0.009677, LR: 1.0000e-02, Time: 0.10 s
+Epoch: 4125/5000 (82.5%), TrainMSE: 90.231416, TestMSE: 90.622876 (Best: 0.183604), Grad: 0.009677, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -28540,7 +28540,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4150/5000 (83.0%), TrainMSE: 100.175426, TestMSE: 100.608904 (Best: 0.183604), Grad: 0.008679, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 4150/5000 (83.0%), TrainMSE: 100.175426, TestMSE: 100.608904 (Best: 0.183604), Grad: 0.008679, LR: 1.0000e-02, Time: 0.04 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -28993,7 +28993,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4225/5000 (84.5%), TrainMSE: 137.089364, TestMSE: 137.678716 (Best: 0.183604), Grad: 0.006269, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 4225/5000 (84.5%), TrainMSE: 137.089364, TestMSE: 137.678716 (Best: 0.183604), Grad: 0.006269, LR: 1.0000e-02, Time: 0.06 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -29144,7 +29144,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4250/5000 (85.0%), TrainMSE: 152.204257, TestMSE: 152.857397 (Best: 0.183604), Grad: 0.005627, LR: 1.0000e-02, Time: 0.09 s
+Epoch: 4250/5000 (85.0%), TrainMSE: 152.204257, TestMSE: 152.857397 (Best: 0.183604), Grad: 0.005627, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -29597,7 +29597,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4325/5000 (86.5%), TrainMSE: 208.312927, TestMSE: 209.202722 (Best: 0.183604), Grad: 0.004074, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 4325/5000 (86.5%), TrainMSE: 208.312927, TestMSE: 209.202722 (Best: 0.183604), Grad: 0.004074, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -29748,7 +29748,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4350/5000 (87.0%), TrainMSE: 231.287220, TestMSE: 232.273870 (Best: 0.183604), Grad: 0.003659, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 4350/5000 (87.0%), TrainMSE: 231.287220, TestMSE: 232.273870 (Best: 0.183604), Grad: 0.003659, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -29899,7 +29899,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4375/5000 (87.5%), TrainMSE: 256.796660, TestMSE: 257.890827 (Best: 0.183604), Grad: 0.003287, LR: 1.0000e-02, Time: 0.08 s
+Epoch: 4375/5000 (87.5%), TrainMSE: 256.796660, TestMSE: 257.890827 (Best: 0.183604), Grad: 0.003287, LR: 1.0000e-02, Time: 0.06 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -30050,7 +30050,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4400/5000 (88.0%), TrainMSE: 285.120986, TestMSE: 286.334509 (Best: 0.183604), Grad: 0.002953, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 4400/5000 (88.0%), TrainMSE: 285.120986, TestMSE: 286.334509 (Best: 0.183604), Grad: 0.002953, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -30201,7 +30201,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4425/5000 (88.5%), TrainMSE: 316.570804, TestMSE: 317.916824 (Best: 0.183604), Grad: 0.002653, LR: 1.0000e-02, Time: 0.12 s
+Epoch: 4425/5000 (88.5%), TrainMSE: 316.570804, TestMSE: 317.916824 (Best: 0.183604), Grad: 0.002653, LR: 1.0000e-02, Time: 0.06 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -30352,7 +30352,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4450/5000 (89.0%), TrainMSE: 351.490995, TestMSE: 352.984104 (Best: 0.183604), Grad: 0.002384, LR: 1.0000e-02, Time: 0.15 s
+Epoch: 4450/5000 (89.0%), TrainMSE: 351.490995, TestMSE: 352.984104 (Best: 0.183604), Grad: 0.002384, LR: 1.0000e-02, Time: 0.05 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -30503,7 +30503,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4475/5000 (89.5%), TrainMSE: 390.264496, TestMSE: 391.920893 (Best: 0.183604), Grad: 0.002143, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 4475/5000 (89.5%), TrainMSE: 390.264496, TestMSE: 391.920893 (Best: 0.183604), Grad: 0.002143, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -30654,7 +30654,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4500/5000 (90.0%), TrainMSE: 433.316500, TestMSE: 435.154171 (Best: 0.183604), Grad: 0.001926, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 4500/5000 (90.0%), TrainMSE: 433.316500, TestMSE: 435.154171 (Best: 0.183604), Grad: 0.001926, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -30805,7 +30805,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4525/5000 (90.5%), TrainMSE: 481.119119, TestMSE: 483.158031 (Best: 0.183604), Grad: 0.001732, LR: 1.0000e-02, Time: 0.12 s
+Epoch: 4525/5000 (90.5%), TrainMSE: 481.119119, TestMSE: 483.158031 (Best: 0.183604), Grad: 0.001732, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -30956,7 +30956,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4550/5000 (91.0%), TrainMSE: 534.196559, TestMSE: 536.458882 (Best: 0.183604), Grad: 0.001557, LR: 1.0000e-02, Time: 0.11 s
+Epoch: 4550/5000 (91.0%), TrainMSE: 534.196559, TestMSE: 536.458882 (Best: 0.183604), Grad: 0.001557, LR: 1.0000e-02, Time: 0.06 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -31258,7 +31258,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4600/5000 (92.0%), TrainMSE: 658.568336, TestMSE: 661.354034 (Best: 0.183604), Grad: 0.001259, LR: 1.0000e-02, Time: 0.09 s
+Epoch: 4600/5000 (92.0%), TrainMSE: 658.568336, TestMSE: 661.354034 (Best: 0.183604), Grad: 0.001259, LR: 1.0000e-02, Time: 0.13 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -31560,7 +31560,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4650/5000 (93.0%), TrainMSE: 811.902269, TestMSE: 815.333034 (Best: 0.183604), Grad: 0.001018, LR: 1.0000e-02, Time: 0.09 s
+Epoch: 4650/5000 (93.0%), TrainMSE: 811.902269, TestMSE: 815.333034 (Best: 0.183604), Grad: 0.001018, LR: 1.0000e-02, Time: 0.11 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -31862,7 +31862,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4700/5000 (94.0%), TrainMSE: 1000.942681, TestMSE: 1005.168522 (Best: 0.183604), Grad: 0.000823, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 4700/5000 (94.0%), TrainMSE: 1000.942681, TestMSE: 1005.168522 (Best: 0.183604), Grad: 0.000823, LR: 1.0000e-02, Time: 0.08 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -32013,7 +32013,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4725/5000 (94.5%), TrainMSE: 1111.380399, TestMSE: 1116.070644 (Best: 0.183604), Grad: 0.000741, LR: 1.0000e-02, Time: 0.05 s
+Epoch: 4725/5000 (94.5%), TrainMSE: 1111.380399, TestMSE: 1116.070644 (Best: 0.183604), Grad: 0.000741, LR: 1.0000e-02, Time: 0.10 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -32315,7 +32315,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4775/5000 (95.5%), TrainMSE: 1370.159483, TestMSE: 1375.937740 (Best: 0.183604), Grad: 0.000599, LR: 1.0000e-02, Time: 0.05 s
+Epoch: 4775/5000 (95.5%), TrainMSE: 1370.159483, TestMSE: 1375.937740 (Best: 0.183604), Grad: 0.000599, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -32617,7 +32617,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4825/5000 (96.5%), TrainMSE: 1689.199742, TestMSE: 1696.319102 (Best: 0.183604), Grad: 0.000485, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 4825/5000 (96.5%), TrainMSE: 1689.199742, TestMSE: 1696.319102 (Best: 0.183604), Grad: 0.000485, LR: 1.0000e-02, Time: 0.09 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -32768,7 +32768,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4850/5000 (97.0%), TrainMSE: 1875.583570, TestMSE: 1883.486297 (Best: 0.183604), Grad: 0.000437, LR: 1.0000e-02, Time: 0.06 s
+Epoch: 4850/5000 (97.0%), TrainMSE: 1875.583570, TestMSE: 1883.486297 (Best: 0.183604), Grad: 0.000437, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -32919,7 +32919,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4875/5000 (97.5%), TrainMSE: 2082.534021, TestMSE: 2091.306481 (Best: 0.183604), Grad: 0.000393, LR: 1.0000e-02, Time: 0.05 s
+Epoch: 4875/5000 (97.5%), TrainMSE: 2082.534021, TestMSE: 2091.306481 (Best: 0.183604), Grad: 0.000393, LR: 1.0000e-02, Time: 0.06 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -33070,7 +33070,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4900/5000 (98.0%), TrainMSE: 2312.320531, TestMSE: 2322.058613 (Best: 0.183604), Grad: 0.000354, LR: 1.0000e-02, Time: 0.07 s
+Epoch: 4900/5000 (98.0%), TrainMSE: 2312.320531, TestMSE: 2322.058613 (Best: 0.183604), Grad: 0.000354, LR: 1.0000e-02, Time: 0.06 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -33372,7 +33372,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4950/5000 (99.0%), TrainMSE: 2850.759204, TestMSE: 2862.759678 (Best: 0.183604), Grad: 0.000286, LR: 1.0000e-02, Time: 0.05 s
+Epoch: 4950/5000 (99.0%), TrainMSE: 2850.759204, TestMSE: 2862.759678 (Best: 0.183604), Grad: 0.000286, LR: 1.0000e-02, Time: 0.04 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -33523,7 +33523,7 @@ DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 258]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 258]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 258]
-Epoch: 4975/5000 (99.5%), TrainMSE: 3165.315926, TestMSE: 3178.637952 (Best: 0.183604), Grad: 0.000258, LR: 1.0000e-02, Time: 0.09 s
+Epoch: 4975/5000 (99.5%), TrainMSE: 3165.315926, TestMSE: 3178.637952 (Best: 0.183604), Grad: 0.000258, LR: 1.0000e-02, Time: 0.07 s
 DEBUG nnff (Layer 1): Size Wb = [20, 210], Size X = [210, 601]
 DEBUG nnff (Output Layer 2): Size Wb = [3, 21], Size X = [21, 601]
 DEBUG nnff: Returning outLayer{Nl} size = [3, 601]
@@ -33714,7 +33714,7 @@ Saving final results to .mat files...
 Best model results saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/best_model/best_model.mat
 Training model copy saved to: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/training/trained_model.mat
 
-Total execution time for train_best_model: 13.91 seconds (0.23 minutes)
+Total execution time for train_best_model: 14.30 seconds (0.24 minutes)
 
 Train best model script finished.
 
@@ -33737,13 +33737,13 @@ Best model training completed.
 ✓ Copied model to standard location for analysis: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/training/trained_model.mat
 ✓ Created completion marker for training step at: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/best_model/markers/training_complete.mat
 ✓ Created transition marker for training step
-Training time: 14.04 seconds (0.23 minutes)
+Training time: 14.41 seconds (0.24 minutes)
 
 ===== STEP 3: SHAP ANALYSIS =====
 ✓ Using model at standard location: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/training/trained_model.mat
 Running run_analysis.m...
 Using model path provided by workflow: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/results/training/trained_model.mat
-Logging to run_analysis_log.txt started at 04-May-2025 19:57:49
+Logging to run_analysis_log.txt started at 04-May-2025 21:18:07
 Root directory: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone
 Added to path: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/src/shap
 Added to path: /projects/illinois/eng/cee/siqi/MATLAB_Jobs_new4bpDNN/ICC_bpDNN4PyroProd_MATLAB_standalone/src/scripts
@@ -33795,7 +33795,7 @@ Memory information not available on this platform.
 Platform: GLNXA64, MATLAB Version: 24.1.0.2537033 (R2024a)
 System memory information (from Linux free command):
                total        used        free      shared  buff/cache   available
-Mem:             503          25         153           7         334         477
+Mem:             503          69         346           6          97         434
 Swap:              0           0           0
 
 
@@ -33845,3 +33845,19 @@ Beginning SHAP calculation for 859 samples...
 Processing sample 1/859
 Launching updater executable
 Processing sample 5/859
+Processing sample 10/859
+Processing sample 15/859
+Processing sample 20/859
+Processing sample 25/859
+Processing sample 30/859
+Processing sample 35/859
+Processing sample 40/859
+Processing sample 45/859
+Processing sample 50/859
+Processing sample 55/859
+Processing sample 60/859
+Processing sample 65/859
+Processing sample 70/859
+Processing sample 75/859
+Processing sample 80/859
+Processing sample 85/859
