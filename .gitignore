@@ -1,0 +1,55 @@
+# Note: Comprehensive datasets and environmental analysis results related to the bpDNN model are temporarily 
+# excluded from this public repository to maintain the integrity of the peer-review process and ensure 
+# priority of publication. All supporting data will be fully released upon the publication of the associated 
+# research article. In the interim, access for academic verification purposes is available upon reasonable 
+# request to the authors.
+
+### DATA AND BINARIES ###
+*.xlsx
+*.mat
+*.fig
+*.tar.gz
+*.zip
+*.png
+*.svg
+*.tif
+*.pdf
+*.ai
+*.eps
+*_plot.eps
+
+### OUTPUT AND RESULTS ###
+*.err
+*.out
+figures/
+results/
+logs/
+
+### SCRIPTS AND EXECUTABLES ###
+*.sh
+*.opju
+*.docx
+
+### PYTHON ENVIRONMENT ###
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+build/
+dist/
+*.egg-info/
+
+### IDE AND OS SPECIFIC ###
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*~
+
+
+*_data.csv
