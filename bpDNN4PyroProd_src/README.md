@@ -1,4 +1,4 @@
-# GPM_SHAP: Neural Networks and SHAP Analysis for Pyrolysis Models
+# bpDNN4PyroProd: Neural Networks and SHAP Analysis for Pyrolysis Models
 
 This project provides a MATLAB implementation for training and analyzing neural network models for pyrolysis product prediction with interpretability analysis using SHAP (SHapley Additive exPlanations) values.
 
@@ -9,7 +9,7 @@ This project establishes a framework for analyzing how different features impact
 ## Project Structure
 
 ```
-GPM_SHAP_FinalVersion/
+bpDNN4PyroProd_src/
 +-- data/                  # Input data directory
 |   +-- raw/               # Raw input data files
 |   +-- processed/         # Preprocessed data
@@ -56,14 +56,18 @@ GPM_SHAP_FinalVersion/
 |   |   +-- nntrain.m         # Neural network training
 |   |   +-- nnupdatefigure.m  # Training visualization
 |   |
-|   +-- scripts/           # Analysis and utility scripts
-|   |   +-- run_analysis.m            # Main analysis script
-|   |   +-- debug_run_analysis.m      # Ultra-fast debug version (20 epochs)
-|   |   +-- optimize_hyperparameters.m # Hyperparameter optimization
-|   |   +-- train_best_model.m        # Train model with best hyperparameters
 |   |   +-- calc_shap_values.m        # SHAP value calculation
+|   |   +-- check_paths.m             # Path verification utility
+|   |   +-- check_temp_files.m        # Temporary file management
+|   |   +-- debug_run_analysis.m      # Ultra-fast debug version (20 epochs)
+|   |   +-- diagnostic.m              # System diagnostics
 |   |   +-- export_shap_to_excel.m    # Export SHAP values to Excel
+|   |   +-- optimize_hyperparameters.m # Hyperparameter optimization
+|   |   +-- quick_test.m              # Rapid functionality testing
+|   |   +-- run_analysis.m            # Main analysis script
 |   |   +-- script4PDP.m              # PDP script
+|   |   +-- simple_debug.m            # Simplified debugging script
+|   |   +-- train_best_model.m        # Train model with best hyperparameters
 |   |
 |   +-- visualization/     # Plotting and visualization scripts
 |       +-- plot_shap_results.m           # SHAP results plotting
@@ -82,45 +86,54 @@ GPM_SHAP_FinalVersion/
 The project follows this workflow:
 
 1. **Hyperparameter Optimization**:
+
    ```matlab
    cd src/scripts
    optimize_hyperparameters
    ```
+
    This searches through combinations of hyperparameters including:
+
    - Learning rate and momentum
    - Learning rate increase/decrease factors
    - Network architectures (hidden layer structure)
    - Transfer functions (for hidden and output layers)
    - Training data division strategy (TT or TVT)
    - Data partition ratios
-   
-   Results are saved to `results/optimization/` with the best configuration in `best_model.mat`.
 
+   Results are saved to `results/optimization/` with the best configuration in `best_model.mat`.
 2. **Best Model Training**:
+
    ```matlab
    cd src/scripts
    train_best_model
    ```
+
    Using the optimal hyperparameters, this trains a full model with all epochs and saves it to:
+
    - `results/best_model/best_model.mat` (primary location)
    - `results/training/trained_model.mat` (copy for analysis scripts)
-
 3. **Full Analysis**:
+
    ```matlab
    cd src/scripts
    run_analysis
    ```
+
    This script:
+
    - Automatically checks for and uses the best trained model if available
    - Performs SHAP analysis on the model to explain predictions
    - Saves results to `results/analysis/full/`
-
 4. **Debug Mode** (Ultra-fast testing):
+
    ```matlab
    cd src/scripts
    debug_run_analysis
    ```
+
    Similar to full analysis but with significantly fewer epochs (20 instead of 6000) for ultra-fast execution:
+
    - Runs comprehensive diagnostics and logs detailed information
    - Creates a detailed execution log in `debug_run_analysis_log.txt`
    - Performs integrity checks on all output files
@@ -142,6 +155,7 @@ sbatch run_debug_analysis.sh
 ```
 
 Features:
+
 - Allocates 8 cores for faster debugging
 - Sets a 2-hour time limit
 - Automatically creates all required directories
@@ -159,6 +173,7 @@ sbatch run_full_analysis.sh
 ```
 
 Features:
+
 - Allocates 16 cores for full parallel processing
 - Sets a 24-hour time limit
 - Automatically creates all required directories
@@ -172,27 +187,28 @@ Both scripts include detailed logging and error handling, making them suitable f
 
 Results are organized into distinct directories:
 
-1. **Optimization Results**: 
+1. **Optimization Results**:
+
    - Located in `results/optimization/`
    - `config_XXXX/` folders contain individual configuration results
    - `best_model.mat` contains the best configuration
    - `best_configuration.txt` provides a human-readable summary
-
 2. **Best Model Results**:
+
    - Located in `results/best_model/`
    - Contains the model trained with optimal hyperparameters
    - Includes training visualizations in `Figures/`
+3. **Training Results**:
 
-3. **Training Results**: 
    - Located in `results/training/` (full mode) or `results/debug/` (debug mode)
    - Includes model checkpoints and training visualizations
-
 4. **SHAP Analysis Results**:
+
    - Full mode: `results/analysis/full/`
    - Debug mode: `results/analysis/debug/`
    - Each includes `data/` for SHAP values and `figures/` for visualizations
-
 5. **Output Logs**:
+
    - Debug mode: `output/debug_analysis/`
    - Full mode: `output/full_analysis/`
    - Contains detailed execution logs and error information
@@ -200,6 +216,7 @@ Results are organized into distinct directories:
 ## Hyperparameter Optimization
 
 The hyperparameter optimization process tests multiple combinations of:
+
 - Learning rate (lr)
 - Momentum coefficient (mc)
 - Learning rate increase factor (lr_inc)
@@ -214,7 +231,6 @@ The best configuration is automatically saved and can be used for full model tra
 ### Training Strategies
 
 - **TVT (Training-Validation-Testing)**: Data is divided into three sets - training data used for model learning, validation data used for early stopping and hyperparameter selection, and testing data for final performance evaluation.
-
 - **TT (Training-Testing)**: Data is divided into just two sets - training data used for model learning and testing data for performance evaluation. This strategy is useful when you want to maximize the amount of data used for training while still having a test set for evaluation.
 
 ### Transfer Functions
@@ -222,6 +238,7 @@ The best configuration is automatically saved and can be used for full model tra
 The system supports a wide range of transfer functions for both hidden and output layers:
 
 **Hidden Layer Options:**
+
 - `logsig` - Logarithmic sigmoid: f(x) = 1/(1+e^(-x)), range [0,1]
 - `tansig` - Hyperbolic tangent sigmoid: f(x) = 2/(1+e^(-2x))-1, range [-1,1]
 - `poslin` - Positive linear (ReLU): f(x) = max(0,x)
@@ -230,6 +247,7 @@ The system supports a wide range of transfer functions for both hidden and outpu
 - `elliotsig` - Elliott sigmoid: f(x) = x/(1+|x|), computationally efficient
 
 **Output Layer Options:**
+
 - `purelin` - Pure linear: f(x) = x, unbounded output
 - `tansig` - Hyperbolic tangent sigmoid: bounded output [-1,1]
 - `logsig` - Logarithmic sigmoid: bounded output [0,1]
@@ -241,27 +259,36 @@ Different combinations work best for different problems. For regression problems
 ## Core Files Description
 
 1. **Neural Network Model Files**:
+
    - `bpDNN4PyroProd.m`: Main neural network model implementation
    - `nntrain.m`: Neural network training function
    - `nnpredict.m`: Prediction function
    - `nnff.m`: Feed-forward function
    - `nnbp.m`: Backpropagation implementation with adaptive learning rate
-
 2. **Optimization and Training Scripts**:
+
    - `optimize_hyperparameters.m`: Systematically tests different hyperparameter combinations
    - `train_best_model.m`: Trains a full model with the best hyperparameters found
-
 3. **Analysis Scripts**:
+
    - `run_analysis.m`: Main script for complete analysis pipeline
    - `debug_run_analysis.m`: Ultra-fast debugging with diagnostic output and integrity checks
    - `calc_shap_values.m`: SHAP value calculation
    - `plot_shap_results.m`: Generates various visualization outputs
    - `export_shap_to_excel.m`: Exports SHAP results to Excel
    - `fix_colorbar_style.m`: Unifies colorbar style across all images
+4. **Utility and Diagnostic Scripts**:
+
+   - `check_paths.m`: Verifies that all required data and result paths exist
+   - `check_temp_files.m`: Manages and cleans up temporary worker files from parallel processing
+   - `diagnostic.m`: Performs system-wide diagnostics to ensure correct environment setup
+   - `quick_test.m`: Rapidly tests core functionality to ensure the pipeline is working
+   - `simple_debug.m`: A simplified debugging script for quick troubleshooting
 
 ## Performance Optimization
 
 This implementation leverages MATLAB's parallel computing capabilities for:
+
 - Parallel processing with `parfor` loops
 - Efficient matrix operations
 - Selective sampling of background distributions
@@ -281,14 +308,3 @@ This implementation leverages MATLAB's parallel computing capabilities for:
 9. Both TT and TVT training strategies are fully supported with appropriate visualizations
 10. The workflow maintains consistency between all steps and preserves optimization results
 11. Detailed diagnostic logging is available in debug mode to quickly identify any issues
-
-## Running on NCSA ICC
-
-This code is configured to run on the NCSA Illinois Campus Cluster (ICC). The batch scripts are set up to:
-- Load the MATLAB module (version 24.1)
-- Configure appropriate parallel computing settings for the cluster
-- Use SLURM job scheduling parameters
-- Create a dedicated MATLAB temporary directory in scratch space
-- Clean up temporary files after completion
-
-For more details on running MATLAB jobs on the ICC, see the [NCSA ICC MATLAB documentation](https://docs.ncsa.illinois.edu/systems/icc/en/latest/user_guide/software.html#matlab).
