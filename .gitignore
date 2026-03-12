@@ -56,10 +56,10 @@ Desktop.ini
 
 *_data.csv
 *.csv
+
 ### SCRIPT BACKUPS AND TEMPORARY COPIES ###
 # Ignore backups and temporary copies of scripts
 generate_blending_strategies*copy*.py
 generate_blending_strategies*backup*.py
 shap_analysis*copy*.py
 shap_analysis*backup*.py
-shap_analysis*backup2.py
