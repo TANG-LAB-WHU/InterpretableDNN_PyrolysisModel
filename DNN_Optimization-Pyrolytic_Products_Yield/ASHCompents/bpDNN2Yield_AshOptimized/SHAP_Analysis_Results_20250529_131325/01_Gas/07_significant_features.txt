@@ -1,0 +1,23 @@
+Top Significant Features for Gas Yield (by SHAP value magnitude):
+======================================================================
+
+1. TargetTemperature/Celsius: 3.416034
+2. Ash_Al2O3: 2.336767
+3. Ash_SiO2: 1.368786
+4. HeatingRate/(K/min): 1.194642
+5. Ash_CaO: 0.972295
+6. Ash_P2O5: 0.964872
+7. Ash_Fe2O3: 0.933501
+8. Location: 0.848122
+9. Ash/%: 0.614609
+10. Ash_K2O: 0.389978
+11. ReactionTime/min: 0.203301
+12. Ash_Na2O: 0.198249
+13. O/%: 0.171038
+14. Ash_MgO: 0.122730
+15. VolatileMatters/%: 0.101077
+16. C/%: 0.092352
+17. FixedCarbon/%: 0.087502
+18. FeedstockType_12: 0.070872
+19. H/%: 0.066344
+20. FeedstockType_40: 0.058547

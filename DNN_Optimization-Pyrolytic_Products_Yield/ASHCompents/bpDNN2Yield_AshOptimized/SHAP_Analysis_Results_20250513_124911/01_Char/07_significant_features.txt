@@ -1,0 +1,23 @@
+Top Significant Features for Char Yield (by SHAP value magnitude):
+======================================================================
+
+1. TargetTemperature/Celsius: 6.693942
+2. Ash_SiO2: 1.928353
+3. HeatingRate/(K/min): 1.767454
+4. Ash_P2O5: 1.145328
+5. Ash/%: 1.082388
+6. Location: 0.995537
+7. ReactionTime/min: 0.934916
+8. Ash_Fe2O3: 0.839688
+9. Ash_Al2O3: 0.831669
+10. Ash_Na2O: 0.695994
+11. Ash_CaO: 0.639890
+12. O/%: 0.621847
+13. VolatileMatters/%: 0.566558
+14. FixedCarbon/%: 0.196420
+15. C/%: 0.186202
+16. Ash_K2O: 0.152267
+17. MixingRatio_40: 0.110689
+18. Ash_MgO: 0.100601
+19. MixingRatio_115: 0.093645
+20. H/%: 0.093239

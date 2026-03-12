@@ -1,0 +1,23 @@
+Top Significant Features for Liquid Yield (by SHAP value magnitude):
+======================================================================
+
+1. TargetTemperature/Celsius: 4.022973
+2. Ash_P2O5: 1.313859
+3. Ash_Al2O3: 1.261706
+4. Ash_Fe2O3: 1.177070
+5. Location: 0.918871
+6. HeatingRate/(K/min): 0.886867
+7. Ash_SiO2: 0.878175
+8. Ash_K2O: 0.773270
+9. O/%: 0.460199
+10. Ash_CaO: 0.389392
+11. VolatileMatters/%: 0.291316
+12. ReactionTime/min: 0.289272
+13. Ash/%: 0.253074
+14. Ash_MgO: 0.185725
+15. FeedstockType_64: 0.141046
+16. Ash_Na2O: 0.139931
+17. FeedstockType_70: 0.137430
+18. FeedstockType_54: 0.136666
+19. MixingRatio_15: 0.127633
+20. ReactorType: 0.127410
