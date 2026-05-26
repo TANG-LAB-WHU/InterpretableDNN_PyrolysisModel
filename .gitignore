@@ -63,3 +63,7 @@ generate_blending_strategies*copy*.py
 generate_blending_strategies*backup*.py
 shap_analysis*copy*.py
 shap_analysis*backup*.py
+
+### PROJECT SPECIFIC EXCLUSIONS ###
+Pyrolysis_Model_Mechanistic_Practice/Figure4_simulatedTGlatest/TG_experiment/
+Pyrolysis_Model_Mechanistic_Practice/Figure4_simulatedTGlatest/SimulatedTG/Methodology_Section.md
