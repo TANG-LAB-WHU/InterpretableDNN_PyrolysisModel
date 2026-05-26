@@ -47,7 +47,7 @@ MR_PREFIX = "MixingRatio_"
 # Default grid for ratio search (start, end, step). Updated via CLI.
 _RATIO_GRID_DEFAULT = (0.05, 0.5, 0.05)  # 5 %–50 % by 5 % steps
 
-# Attempt to import helper utilities from sibling directory (shap_analysis.py)
+# Attempt to import helper utilities from sibling directory (shap_analysis_yield.py)
 # This avoids code duplication and leverages the existing MATLAB-loader helpers.
 try:
     SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -55,7 +55,7 @@ try:
     if PROJECT_ROOT not in os.sys.path:
         os.sys.path.append(PROJECT_ROOT)
 
-    from shap_analysis import (
+    from shap_analysis_yield import (
         load_matlab_data,
         extract_neural_network_data,
         generate_feature_names,
@@ -63,7 +63,7 @@ try:
     )
 except Exception as _imp_err:
     raise ImportError(
-        "Unable to import utilities from shap_analysis.py – ensure the project "
+        "Unable to import utilities from shap_analysis_yield.py – ensure the project "
         "structure is intact. Original error: {}".format(_imp_err)
     )
 

@@ -19,7 +19,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # Import the functions from the main script
-from shap_analysis_latest import (
+from shap_analysis_yield import (
     create_comprehensive_targettemperature_dependence_plots,
     create_target_specific_dependence_plots,
     sanitize_feature_name_for_filename

@@ -16,13 +16,13 @@ import seaborn as sns
 # 5. Visualise uncertainty with violin plots and export CSV of raw predictions
 # -----------------------------------------------------------------------------
 
-# Add project root to PYTHONPATH so we can import shap_analysis utilities
+# Add project root to PYTHONPATH so we can import shap_analysis_yield utilities
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
 if PROJECT_ROOT not in sys.path:
     sys.path.append(PROJECT_ROOT)
 
-from shap_analysis import (
+from shap_analysis_yield import (
     load_matlab_data,
     extract_neural_network_data,
     generate_feature_names,

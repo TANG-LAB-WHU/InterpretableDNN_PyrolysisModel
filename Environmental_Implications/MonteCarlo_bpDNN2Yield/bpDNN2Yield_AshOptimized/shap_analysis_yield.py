@@ -2260,7 +2260,7 @@ def main():
             elif arg in ['-c', '--convert', 'convert']:
                 convert_only = True
             elif arg in ['-h', '--help', 'help']:
-                print("Usage: python shap_analysis_latest.py [matlab_file.mat] [biochar|bioliquid|biogas|all] [-d|--debug] [-c|--convert]")
+                print("Usage: python shap_analysis_yield.py [matlab_file.mat] [biochar|bioliquid|biogas|all] [-d|--debug] [-c|--convert]")
                 print("  matlab_file.mat: Path to MATLAB .mat file (default: bpDNN4PyroProd_modelfiles/Results_trained.mat)")
                 print("  biochar, bioliquid, biogas, all: Target to analyze (default: all)")
                 print("  -d, --debug: Enable debug mode with additional output")
