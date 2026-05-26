@@ -1,0 +1,229 @@
+=== SYSTEM DIAGNOSTICS ===
+Node: n0536
+ulimit -u (nproc): 65536
+ulimit -n (nofile): 65536
+SLURM_JOBID: 2185457
+SLURM_CPUS_PER_TASK: 192
+MATLAB_JSL: /tmp/tangsiqi_matlab_jobs/2185457_jsl
+MATLAB_PREFDIR: /tmp/tangsiqi_matlab_jobs/2185457_pref/R2024a
+==========================
+An unexpected error has occurred.
+To resolve this issue, contact <a href="https://www.mathworks.com/pi_gene_mci_glnxa64">Technical Support</a>.
+The application could not connect to MathWorks.
+For more information on resolving this issue, see <a href="https://www.mathworks.com/pi_ce_mci_glnxa64">this Support Article</a>
+=== PARPOOL SETUP ===
+Pool.AutoCreate disabled globally.
+[2026-05-25 23:31:36] Attempting thread-based parpool with 192 workers (no fallback)...
+Starting parallel pool (parpool) using the 'Threads' profile ...
+Connected to parallel pool with 192 workers.
+[2026-05-25 23:31:53] parpool started successfully with 192 thread workers.
+=== STARTING SIMULATION ===
+=== CORNSTOVER SIMULATION LOG ===
+Started: 25-May-2026 23:31:56
+Script: /scratch/tangsiqi/MATLAB_Calculations/PyrolysisModelManuscript_Figure4_latest_HigherGApopulation/Figure4_simulatedTGlatest/SimulatedTG/CornStover_SimulatedKinetics/cornstover_simulation_with_full_logging
+MATLAB Version: 24.1.0.2537033 (R2024a)
+Current Working Directory: /scratch/tangsiqi/MATLAB_Calculations/PyrolysisModelManuscript_Figure4_latest_HigherGApopulation/Figure4_simulatedTGlatest/SimulatedTG/CornStover_SimulatedKinetics
+Log File: /home/tangsiqi/scratch/MATLAB_Calculations/PyrolysisModelManuscript_Figure4_latest_HigherGApopulation/Figure4_simulatedTGlatest/SimulatedTG/CornStover_SimulatedKinetics/Results_MultipleMode/cornstover_simulation_2026-05-25_23-31-56.log
+Results Directory: /home/tangsiqi/scratch/MATLAB_Calculations/PyrolysisModelManuscript_Figure4_latest_HigherGApopulation/Figure4_simulatedTGlatest/SimulatedTG/CornStover_SimulatedKinetics/Results-MultiMechanism
+Modular architecture with unified GA optimization
+Kinetic integration error calculation enabled
+================================
+
+PCT path verified: 
+Performance mode: ACCURACY (full GA/steps, kinetic error)
+=== LOADING NEURAL NETWORKS ===
+Ea prediction network loaded successfully
+Yield prediction network loaded successfully
+
+=== LOADING EXPERIMENTAL DATA FOR OPTIMIZATION ===
+[Warning: Column headers from the file were modified to make them valid MATLAB
+identifiers before creating variable names for the table. The original column
+headers are saved in the VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as
+table variable names.] 
+Experimental data loaded: 10511 data points
+Temperature range: 24 - 893°C
+Weight range: 25.1 - 100.0%
+Excel data loaded with NumHeaderLines: 89 rows, 259 columns
+Base case data for Ea network: 259 columns available
+All data rows for yield prediction: 89 rows, 259 columns
+
+=== BASE CASE PARAMETERS ===
+Base case target temperature: 20 C
+Temperature range in Excel: 20 C to 900 C
+Heating rate: 10 K/min
+Key features validation:
+  Location: 1035
+  VolatileMatters: 79.49%
+  FixedCarbon: 13.73%
+  Ash: 6.79%
+  C: 41.41%
+  FeedstockType_1: 0.00
+  MixingRatio_1: 0.00
+
+=== FEATURE CONSTRUCTION FOR EA NETWORK ===
+Basic features (cols 1-19): 19 features
+Feedstock+mixing features (cols 24-259, first 236): 236 features
+Total for Ea network: 256 features (19 + 1 + 236)
+
+=== FEATURE CONSTRUCTION FOR YIELD NETWORK ===
+Using ALL 259 features for ALL 89 data rows in yield network
+
+Using 78 conversion levels from 0.010 to 0.999
+
+=== PREPARING EA NETWORK INPUTS ===
+Ea input matrix size: 78 samples x 256 features
+
+=== PREPARING YIELD NETWORK INPUTS ===
+Yield input dimensions: 259 features x 89 samples
+
+=== NEURAL NETWORK PREDICTIONS ===
+Ea prediction successful
+  Range: 60.2 - 149.8 kJ/mol
+  Mean: 88.8 +/- 25.8 kJ/mol
+Yield prediction successful with ALL 259 features for ALL 89 samples
+Temperature analysis for w_inf selection:
+  Temperature range: 20 C to 900 C
+  Highest temperature: 900 C (sample 89)
+  Yield at highest temperature (900 C):
+    Char: 21.57%, Liquid: 20.50%, Gas: 57.40% (Sum: 99.47%)
+  Final yields after validation (from highest temperature 900 C):
+    Char: 21.57% (used as w_inf)
+    Liquid: 20.50%
+    Gas: 57.40%
+
+=== ENHANCED MODULAR ADAPTIVE KINETIC MODEL OPTIMIZATION ===
+Using modular architecture with the following modules:
+  - Core: Main controllers and parameter optimization
+  - GA: Unified genetic algorithm optimization
+  - Models: Complete kinetic model library
+  - Optimization: Advanced optimization algorithms
+  - Evaluation: Kinetic integration error calculation
+  - Utils: Helper functions and configuration
+Temperature constraints from Excel data (ALIGNED WITH DATASET):
+  Start: 293 K (20 C) - Dataset minimum
+  End: 1173 K (900 C) - Dataset maximum
+  Range: 880 K (880 C span)
+
+Starting comprehensive model comparison with experimental data using modular GA optimization...
+Using modular architecture with unified GA optimization and kinetic integration error calculation.
+Single mechanism models use GA optimization only (no parameter combination testing).
+
+=== STARTING MULTI-ONLY MODEL COMPARISON ===
+multiOnlyMode enabled: Single-mechanism models skipped
+Using separated fitness functions for better compatibility
+Single mechanism models use GA optimization only (no parameter combination testing)
+
+Testing multi models against experimental data...
+Starting multi-mechanism optimization from Core module...
+Testing multi-mechanism combinations with GA optimization...
+  Testing series mode...
+    Testing series: 2 mechanisms
+      Completed series: 2 mechanisms - Error: 15.4768%
+      New best: error = 15.4768%
+    Testing series: 3 mechanisms
+      Completed series: 3 mechanisms - Error: 15.4309%
+      New best: error = 15.4309%
+    Testing series: 4 mechanisms
+      Completed series: 4 mechanisms - Error: 15.4048%
+      New best: error = 15.4048%
+    Testing series: 5 mechanisms
+      Completed series: 5 mechanisms - Error: 15.4043%
+      New best: error = 15.4043%
+    Testing series: 6 mechanisms
+      Completed series: 6 mechanisms - Error: 15.4440%
+  Testing parallel mode...
+    Testing parallel: 2 mechanisms
+      Completed parallel: 2 mechanisms - Error: 15.4315%
+    Testing parallel: 3 mechanisms
+      Completed parallel: 3 mechanisms - Error: 26.8577%
+    Testing parallel: 4 mechanisms
+      Completed parallel: 4 mechanisms - Error: 26.8577%
+    Testing parallel: 5 mechanisms
+      Completed parallel: 5 mechanisms - Error: 26.8577%
+    Testing parallel: 6 mechanisms
+      Completed parallel: 6 mechanisms - Error: 26.8577%
+  Testing hybrid mode...
+    Testing hybrid: 2 branches, 1 mechs per branch
+      Completed hybrid: 2 branches, 1 mechs per branch - Error: 15.4200%
+    Testing hybrid: 2 branches, 2 mechs per branch
+      Completed hybrid: 2 branches, 2 mechs per branch - Error: 15.6077%
+    Testing hybrid: 2 branches, 3 mechs per branch
+      Completed hybrid: 2 branches, 3 mechs per branch - Error: 15.4335%
+    Testing hybrid: 3 branches, 1 mechs per branch
+      Completed hybrid: 3 branches, 1 mechs per branch - Error: 26.8577%
+    Testing hybrid: 3 branches, 2 mechs per branch
+      Completed hybrid: 3 branches, 2 mechs per branch - Error: 27.8007%
+    Testing hybrid: 3 branches, 3 mechs per branch
+      Completed hybrid: 3 branches, 3 mechs per branch - Error: 28.6178%
+    Testing hybrid: 4 branches, 1 mechs per branch
+      Completed hybrid: 4 branches, 1 mechs per branch - Error: 26.8577%
+    Testing hybrid: 4 branches, 2 mechs per branch
+      Completed hybrid: 4 branches, 2 mechs per branch - Error: 27.8007%
+    Testing hybrid: 4 branches, 3 mechs per branch
+      Completed hybrid: 4 branches, 3 mechs per branch - Error: 28.6178%
+Multi-mechanism optimization completed. Best error: 15.4043%
+Multi-mechanism optimization completed. Best error: 15.4043%
+
+=== OVERALL BEST MODEL ===
+Category: multi
+Error vs experimental data: 1.54e+01
+
+=== ALL CATEGORY RESULTS ===
+multi: 1.54e+01 [BEST]
+
+=== OPTIMIZATION RESULTS ===
+Best model category: multi
+Best specific model: multi
+Best model parameters: {mode:series, weights:0.97972, mechanisms:cell[5], mechParams:cell[5]}
+Best model error vs experimental data: 1.54e+01
+
+=== GENERATING FINAL TG CURVE ===
+Final error vs experimental data: 15.4043%
+
+=== COMPARING WITH EXPERIMENTAL DATA ===
+
+=== CALCULATING INSTANTANEOUS MECHANISM CONTRIBUTION RATES ===
+Contribution rates successfully calculated and appended to table.
+Saved beautiful mechanism contribution stacked area plot: TG_contribution_plot.png
+
+=== FINAL SUMMARY ===
+TG curve constructed with w_inf as endpoint from neural network
+Neural network predictions:
+  - Activation energies: 88.8 ± 25.8 kJ/mol
+  - Char yield (w_inf): 21.57% (from highest temperature sample)
+  - Temperature range: 24 - 893°C (within Excel range: 20 - 900°C)
+
+Modular GA optimization results:
+  - Best model category: multi
+  - Best specific model: multi
+  - Best model parameters: {mode:series, weights:0.97972, mechanisms:cell[5], mechParams:cell[5]}
+  - Final error vs experimental data: 15.4043%
+  - Using kinetic integration for error calculation
+  - Unified GA optimization for both single and multi-mechanism modes
+  - Single mechanism models use GA optimization only (no parameter combination testing)
+
+Data files generated:
+  - TG_curve_w_inf_endpoint.csv (smooth curve data)
+  - TG_raw_data_w_inf_endpoint.csv (raw optimization data)
+  - TG_simulation_results_w_inf.mat (complete results)
+  - TG_curve_w_inf_endpoint.png (main TG curve plot)
+  - TG_comparison_plot.png (experimental comparison)
+
+=== VALIDATION CHECKS ===
+Temperature range within Excel bounds: true
+Char yield reasonable (10-40%): true
+Weight monotonically decreasing: true
+Endpoint matches neural network w_inf: true
+
+✓ ALL VALIDATION CHECKS PASSED
+✓ TG curve successfully generated with w_inf as endpoint
+✓ Neural network char yield (21.57%) used as final residue
+✓ Modular architecture optimization completed successfully
+
+Execution time: 319.26 seconds
+Results saved to: /home/tangsiqi/scratch/MATLAB_Calculations/PyrolysisModelManuscript_Figure4_latest_HigherGApopulation/Figure4_simulatedTGlatest/SimulatedTG/CornStover_SimulatedKinetics/Results-MultiMechanism
+
+=== SIMULATION COMPLETE ===
+=== SIMULATION FINISHED ===
+Parallel pool using the 'Threads' profile is shutting down.
