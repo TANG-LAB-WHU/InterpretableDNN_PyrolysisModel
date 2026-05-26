@@ -7,8 +7,6 @@ This script offers several strategies to process missing data:
 3. Forward fill / backward fill
 4. Interpolation (linear / polynomial / spline)
 5. Machine-learning based prediction (KNN, MICE)
-
-All interface messages, doc-strings and labels are in English.
 """
 
 import pandas as pd
