@@ -2231,7 +2231,7 @@ def run_shap_analysis(matlab_file, target_idx=None, debug=False):
 def main():
     """Main function to run SHAP analysis"""
     # Default MATLAB file path
-    matlab_file = 'GPM_SHAP_matlab/Results/Training/Results_trained.mat'
+    matlab_file = 'bpDNN4PyroProd_modelfiles/Results_trained.mat'
     
     # Parse command line arguments
     target_idx = None  # Default: analyze all targets

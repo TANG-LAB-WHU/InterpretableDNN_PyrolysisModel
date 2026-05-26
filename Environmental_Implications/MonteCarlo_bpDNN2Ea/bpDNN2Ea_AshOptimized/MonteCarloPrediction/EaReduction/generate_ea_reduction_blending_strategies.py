@@ -531,7 +531,7 @@ def main():
     parser.add_argument(
         "--mat_file",
         type=str,
-        default="../../Results_trained.mat",
+        default="../../bpDNN4Ea_modelfiles/Results_trained.mat",
         help="Path to MATLAB .mat file with trained neural-network (required for --simulate)",
     )
     parser.add_argument(

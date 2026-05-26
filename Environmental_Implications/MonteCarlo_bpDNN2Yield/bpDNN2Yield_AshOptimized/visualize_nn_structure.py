@@ -922,6 +922,7 @@ def main():
     
     # Try different paths to find the Results_trained.mat file
     possible_paths = [
+        os.path.join(script_dir, "bpDNN4PyroProd_modelfiles", "Results_trained.mat"),  # Current directory structure
         os.path.join(script_dir, "GPM_SHAP_matlab", "Results", "Training", "Results_trained.mat"),  # Current directory structure
         os.path.join(os.path.dirname(script_dir), "GPM_SHAP_matlab", "Results", "Training", "Results_trained.mat"),  # One level up
         os.path.join(script_dir, "Results", "Training", "Results_trained.mat"),  # Alternative structure

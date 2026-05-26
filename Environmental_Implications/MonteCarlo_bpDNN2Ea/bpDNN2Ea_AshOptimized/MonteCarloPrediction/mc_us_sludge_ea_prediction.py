@@ -381,7 +381,7 @@ def main() -> None:
     np.random.seed(args.seed)
 
     # Locate the trained .mat model
-    mat_model_path = PROJECT_ROOT / "Results_trained.mat"
+    mat_model_path = PROJECT_ROOT / "bpDNN4Ea_modelfiles" / "Results_trained.mat"
     if not mat_model_path.exists():
         raise FileNotFoundError(f"Expected {mat_model_path} not found.")
 

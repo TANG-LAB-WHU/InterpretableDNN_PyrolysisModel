@@ -1181,7 +1181,7 @@ def run_shap_analysis(matlab_file, debug=False):
 def main():
     """Main function to run SHAP analysis for Ea prediction"""
     # Default MATLAB file path
-    matlab_file = 'Results_trained.mat'
+    matlab_file = 'bpDNN4Ea_modelfiles/Results_trained.mat'
     
     # Parse command line arguments
     debug = False  # Default: debug mode off
