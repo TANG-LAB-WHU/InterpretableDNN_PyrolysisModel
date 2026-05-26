@@ -1,0 +1,87 @@
+function figHandle = nnupdatefigure(net, i, figHandle, option, trainPerf, valPerf, testPerf, gradient, fail)
+% UPDATEFIGURE visualizes the evolution of error, gradient, validation check during learning.
+
+if i == 1
+    return;
+end
+
+interval = 1;
+if 2^(fix(log2(i) + 1))  > 500
+    interval = fix(log2(i));
+end
+
+if option.validation
+    subPlotSize = 3;
+else
+    subPlotSize = 2;
+end
+
+figure(figHandle)
+figHandle.Name = 'BP-based Deeper Neural Network Training Performance';
+% Plot training errors.
+train = subplot(subPlotSize, 1, 1);
+legendStr = {'Training'};
+if option.validation
+    legendStr = [legendStr, {'Validation'}];
+end
+if option.testing
+    legendStr = [legendStr,{'Testing'}];
+end
+ind = 1 : interval: i;
+xplot = ind';
+eplot = trainPerf(ind)';
+if option.validation
+    xplot = [xplot, ind'];
+    eplot = [eplot, valPerf(ind)'];
+end
+if option.testing
+    xplot = [xplot, ind'];
+    eplot = [eplot, testPerf(ind)'];
+end
+line = plot(train, xplot, eplot, 'b-');
+numLine = length(line);
+line(1).Color = 'b'; line(1).LineStyle = '-'; line(1).Marker = 'none'; line(1).LineWidth = 1; % training error curve
+if numLine == 2
+    if option.validation
+        line(numLine).Color = 'g'; line(numLine).LineStyle = '--'; line(numLine).Marker = 'none'; line(numLine).LineWidth = 1; % validation error curve
+    end
+    if option.testing
+        line(numLine).Color = 'r'; line(numLine).LineStyle = '-.'; line(numLine).Marker = 'none'; line(numLine).LineWidth = 1; % testing error curve
+    end
+end
+if numLine == 3
+    if option.validation
+        line(numLine - 1).Color = 'g'; line(numLine - 1).LineStyle = '--'; line(numLine - 1).Marker = 'none'; line(numLine - 1).LineWidth = 1; % validation error curve
+    end
+    if option.testing
+        line(numLine).Color = 'r'; line(numLine).LineStyle = '-.'; line(numLine).Marker = 'none'; line(numLine).LineWidth = 1; % testing error curve
+    end
+end
+train.Title.String = sprintf('Training errors = %3.6f, at epoch %d ', trainPerf(i), i);
+train.XLim = [0, i + 10];
+train.XLabel.String = 'Epochs';
+train.YLabel.String = sprintf('Error (%s)', lower(net.performFcn));
+legend(train, legendStr, 'Location', 'NE');
+
+% Plot gradients.
+grad = subplot(subPlotSize, 1, 2);
+eplot = gradient(ind)';
+plot(grad, xplot, eplot, 'bo', 'MarkerSize', 4);
+grad.Title.String = sprintf('Gradient = %3.6f, at epoch %d ', gradient(i), i);
+grad.XLim = [0, i + 10];
+grad.XLabel.String = 'Epochs';
+grad.YLabel.String = sprintf('Gradient');
+
+% Plot number of succesive iteration of validaton performance fails to decrease.
+if option.validation
+    failchk = subplot(subPlotSize, 1, 3);
+    ind = 1 : 1: i;
+    xplot = ind';
+    eplot = fail(ind)';
+    scatter(failchk, xplot, eplot, 'MarkerFaceColor', 'r');
+    failchk.Title.String = sprintf('Validation Checks = %d, at epoch %d ', fail(i), i);
+    failchk.XLim = [0, i + 10];
+    failchk.XLabel.String = 'Epochs';
+    failchk.YLabel.String = sprintf('Fails');
+end
+drawnow
