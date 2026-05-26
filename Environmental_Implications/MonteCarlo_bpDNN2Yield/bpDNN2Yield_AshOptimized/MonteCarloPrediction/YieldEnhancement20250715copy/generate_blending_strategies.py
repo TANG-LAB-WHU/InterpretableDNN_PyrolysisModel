@@ -472,7 +472,7 @@ def main():
     parser.add_argument(
         "--mat_file",
         type=str,
-        default="../../GPM_SHAP_matlab/Results/Training/Results_trained.mat",
+        default="../../bpDNN4PyroProd_modelfiles/Results_trained.mat",
         help="Path to the MATLAB training .mat file containing the original feature matrix (default: %(default)s)",
     )
     parser.add_argument(

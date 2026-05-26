@@ -451,9 +451,7 @@ def main():
     # .mat model is relative to project structure and should exist
     mat_model_path = os.path.join(
         PROJECT_ROOT,
-        "GPM_SHAP_matlab",
-        "Results",
-        "Training",
+        "bpDNN4PyroProd_modelfiles",
         "Results_trained.mat",
     )
 

@@ -2261,7 +2261,7 @@ def main():
                 convert_only = True
             elif arg in ['-h', '--help', 'help']:
                 print("Usage: python shap_analysis_latest.py [matlab_file.mat] [biochar|bioliquid|biogas|all] [-d|--debug] [-c|--convert]")
-                print("  matlab_file.mat: Path to MATLAB .mat file (default: GPM_SHAP_matlab/Results/Training/Results_trained.mat)")
+                print("  matlab_file.mat: Path to MATLAB .mat file (default: bpDNN4PyroProd_modelfiles/Results_trained.mat)")
                 print("  biochar, bioliquid, biogas, all: Target to analyze (default: all)")
                 print("  -d, --debug: Enable debug mode with additional output")
                 print("  -c, --convert: Only convert existing .npy files to Excel without running analysis")
