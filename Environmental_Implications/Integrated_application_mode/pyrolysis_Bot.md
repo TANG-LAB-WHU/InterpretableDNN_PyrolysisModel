@@ -137,35 +137,4 @@ To ensure the paper is highly commended and selected as a PNAS Cover/Highlight, 
 
 ---
 
-## 5. Phased Implementation Roadmap
 
-```mermaid
-gantt
-    title PyroBot Phased Development Timeline
-    dateFormat  YYYY-MM-DD
-    section Phase 1: Foundation
-    Construct Python API wrappers          :active, 2026-06-01, 2026-06-15
-    Set up LangChain Agentic Core          :active, 2026-06-16, 2026-06-30
-    section Phase 2: Optimization
-    Develop SLSQP/Bayesian Pareto Solver   : 2026-07-01, 2026-07-20
-    Implement Sparsity/Consistency Checks : 2026-07-21, 2026-07-31
-    section Phase 3: Physics-AI
-    Link TG mechanistic simulation module  : 2026-08-01, 2026-08-20
-    Deploy 192-Core WHU HPC framework      : 2026-08-21, 2026-08-31
-    section Phase 4: Output & PNAS
-    Autonomous CSV plotting, AI reporting  : 2026-09-01, 2026-09-15
-    Drafting PNAS manuscript highlight     : 2026-09-16, 2026-09-30
-```
-
-*   **Phase 1: API Wrappers & Agentic Logic Setup (June 2026)**
-    *   Construct structured Python APIs around `shap_analysis_yield.py`, `mc_us_sludge_prediction.py`, and `generate_blending_strategies.py`.
-    *   Implement the LLM agent core using LangChain, allowing semantic queries on the literature feedstock database.
-*   **Phase 2: Pareto Multi-Objective Optimization Sweep (July 2026)**
-    *   Develop the joint multi-objective NLP optimizer to simultaneously maximize Biochar yield, Bioliquid yield, and minimize Apparent Ea.
-    *   Integrate the Sparsity and Physical Consistency filter.
-*   **Phase 3: Physics-AI Integration (August 2026)**
-    *   Link the differential solid-state simulation scripts in `Pyrolysis_Model_Mechanistic_Practice` as an evaluation library.
-    *   Deploy on the WHU HPC cluster using the 192-core thread isolation framework to ensure fast runtimes.
-*   **Phase 4: Output Finalization & PNAS Manuscript Drafting (September 2026)**
-    *   Design the autonomous reporting system to auto-generate publication-ready figures and Origin-ready CSV datasets.
-    *   Compile the results to draft a cover-highlight manuscript for submission to PNAS.
