@@ -10,35 +10,35 @@ Designed for high-performance deployment on the **Wuhan University (WHU) HPC Clu
 
 ```text
 PyroBot/
-├── README.md                              # 📖 Unified User & HPC Cluster execution guide
-├── requirements.txt                       # 📦 Consolidated environment dependencies
-├── config.json                            # ⚙️ Global configurations & chemical safeguards
-├── pyrolysis_Bot.md                      # 🧠 PNAS-level Agentic AI architecture & proposal
+├── README.md                              # Unified User & HPC Cluster execution guide
+├── requirements.txt                       # Consolidated environment dependencies
+├── config.json                            # Global configurations & chemical safeguards
+├── pyrolysis_Bot.md                      # PNAS-level Agentic AI architecture & proposal
 │
-├── data/                                  # 📦 Immutable Data Layer (Read-Only)
+├── data/                                  # Immutable Data Layer (Read-Only)
 │   ├── raw/                               # Raw sewage sludge baselines
 │   └── reference/                         # 118 literature feedstocks compilation
 │
-├── models/                                # 🧠 pre-trained Model Weights Layer
+├── models/                                # pre-trained Model Weights Layer
 │   ├── bpDNN2Ea/                          # activation energy network weights
 │   └── bpDNN2Yield/                       # product yields (Char/Liquid/Gas) weights
 │
-├── core/                                  # 🛠️ Computational Core Engine (Mathematical & Physics ODE Solvers)
+├── core/                                  # Computational Core Engine (Mathematical & Physics ODE Solvers)
 │   ├── missing_value_handler.py           # Missing data imputer
 │   ├── dnn_surrogates.py                  # MATLAB NN loading and vectorized inference APIs
 │   ├── continuous_optimizer.py            # Bounded Brent & SLSQP continuous optimizers
 │   └── tg_differential_simulator.py       # ODE solid-state kinetics virtual TG/DTG curves solver
 │
-├── agent/                                 # 🤖 Orchestration Layer (Autonomous LLM Agent)
+├── agent/                                 # Orchestration Layer (Autonomous LLM Agent)
 │   ├── prompt_templates.py                # System few-shot CoT and feedback loop templates
 │   └── pyrobot_orchestrator.py            # Closed-loop LangChain agent decision logic
 │
-├── slurm_jobs/                            # 📑 HPC Jobs Layer (SLURM Templates)
+├── slurm_jobs/                            # HPC Jobs Layer (SLURM Templates)
 │   ├── run_mc_predictions.sh              # 192-core parallel Monte Carlo baseline scan
 │   ├── run_blending_optimizations.sh      # 192-core dual-scenario recipe optimizers
 │   └── run_pyrobot_agent.sh               # Local Qwen3.6 MoE server & agent bootstrapper
 │
-└── run_pyrobot.py                         # 🚀 Central orchestrator entry CLI / Conversational Chatbot
+└── run_pyrobot.py                         # Central orchestrator entry CLI / Conversational Chatbot
 ```
 
 ---
