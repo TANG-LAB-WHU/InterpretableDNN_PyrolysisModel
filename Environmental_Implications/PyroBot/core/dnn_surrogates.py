@@ -281,7 +281,12 @@ def unscale_outputs(y_pred: np.ndarray, y_train: np.ndarray, target_idx: Optiona
     tgt_min = y_train_arr.min(axis=0)
     tgt_max = y_train_arr.max(axis=0)
     tgt_range = tgt_max - tgt_min
-    tgt_range[tgt_range == 0] = 1.0
+    
+    if np.ndim(tgt_range) == 0:
+        if tgt_range == 0.0:
+            tgt_range = 1.0
+    else:
+        tgt_range[tgt_range == 0.0] = 1.0
     
     # MATLAB network targets normalization is typically [0, 1] or [-1, 1]
     if np.all(tgt_min >= -1e-6) and np.all(tgt_max <= 1.0 + 1e-6):
