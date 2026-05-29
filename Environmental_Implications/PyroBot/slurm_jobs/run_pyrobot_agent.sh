@@ -59,7 +59,7 @@ conda activate pyrolysis_model_dnn || conda activate base
 # -----------------------------------------------------------------------------
 PORT=8000
 HOST="127.0.0.1"
-MODEL_ID="Qwen/Qwen3.6-35B-A3B-Instruct"
+MODEL_ID="Qwen/Qwen3.6-27B-Instruct"
 
 # Check for active CUDA GPUs
 if command -v nvidia-smi &> /dev/null && nvidia-smi &> /dev/null; then
@@ -86,7 +86,7 @@ else
     if command -v llama-cli &> /dev/null || command -v ./llama-cli &> /dev/null; then
         # Serving localized GGUF MoE quantized weights in the background
         # (Assuming GGUF version is downloaded to the project scratch)
-        GGUF_MODEL="/scratch/tangsiqi/shared_models/Qwen3.6-35B-A3B-Instruct-Q4_K_M.gguf"
+        GGUF_MODEL="/scratch/tangsiqi/ai_models/qwen/Qwen3.6-27B/Qwen3.6-27B-Q8_0.gguf"
         if [ -f "$GGUF_MODEL" ]; then
             llama-server \
                 --model "$GGUF_MODEL" \
@@ -117,7 +117,7 @@ if [ "$VLLM_PID" -gt 0 ]; then
         fi
         sleep 5
     done
-    echo "Local Qwen3.6-35B Model Server is online and ready!"
+    echo "Local Qwen3.6-27B Model Server is online and ready!"
     export OPENAI_API_BASE="http://$HOST:$PORT/v1"
     export OPENAI_API_KEY="local-token-pyrobot"
 else
@@ -129,7 +129,7 @@ fi
 # 5. Core Execution: Launch PyroBot Agent Orchestrator
 # -----------------------------------------------------------------------------
 echo "======================================================================="
-echo "Launching Qwen3.6-35B Autonomous Scientific Agent Orchestrator..."
+echo "Launching Qwen3.6-27B Autonomous Scientific Agent Orchestrator..."
 echo "======================================================================="
 
 # Run the agent in non-interactive batch-command mode for this job
