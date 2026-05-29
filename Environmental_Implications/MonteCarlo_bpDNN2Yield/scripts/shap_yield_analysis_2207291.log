@@ -1,0 +1,17 @@
+=======================================================================
+Starting Slurm Job: SHAP_Yield_Analysis (ID: 2207291)
+Node assigned:      n0525
+Submission dir:     /scratch/tangsiqi/Python_Calculations/MonteCarlo_bpDNN2Yield/scripts
+Start time:         Thu May 28 12:25:14 AM CST 2026
+=======================================================================
+Current working directory: /scratch/tangsiqi/Python_Calculations/MonteCarlo_bpDNN2Yield/scripts
+Initializing Anaconda...
+Activating virtual environment: pyrolysis_model_dnn...
+Active Python interpreter: /home/tangsiqi/project/miniconda3/envs/pyrolysis_model_dnn/bin/python
+Python 3.11.15
+NumPy & PyTorch Threading limit is set to: 192
+Allocated CPU cores: 192
+Executing SHAP interpretive attributions for all targets (Char, Liquid, Gas)...
+=======================================================================
+Job finished successfully at: Thu May 28 12:58:44 AM CST 2026
+=======================================================================

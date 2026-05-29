@@ -922,6 +922,7 @@ def main():
     
     # Try different paths to find the Results_trained.mat file
     possible_paths = [
+        os.path.join(os.path.dirname(script_dir), "bpDNN4PyroProd_modelfiles", "Results_trained.mat"),  # Project root folder
         os.path.join(script_dir, "bpDNN4PyroProd_modelfiles", "Results_trained.mat"),  # Current directory structure
         os.path.join(script_dir, "GPM_SHAP_matlab", "Results", "Training", "Results_trained.mat"),  # Current directory structure
         os.path.join(os.path.dirname(script_dir), "GPM_SHAP_matlab", "Results", "Training", "Results_trained.mat"),  # One level up
@@ -951,8 +952,8 @@ def main():
     network_info = load_matlab_network(mat_file, verbose=True)
     
     if network_info and network_info.get('layers'):
-        # Create output directory with robust error handling
-        output_dir = os.path.join(script_dir, "network_visualization")
+        # Create output directory inside central results folder
+        output_dir = os.path.join(os.path.dirname(script_dir), "results", "network_visualization")
         
         try:
             # Create directory with parents if it doesn't exist

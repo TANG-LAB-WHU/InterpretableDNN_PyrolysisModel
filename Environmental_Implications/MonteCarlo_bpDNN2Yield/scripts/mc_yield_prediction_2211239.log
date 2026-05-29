@@ -1,0 +1,35 @@
+=======================================================================
+Starting Slurm Job: MC_Yield_Prediction (ID: 2211239)
+Node assigned:      n0556
+Submission dir:     /scratch/tangsiqi/Python_Calculations/MonteCarlo_bpDNN2Yield/scripts
+Start time:         Thu May 28 09:58:06 AM CST 2026
+=======================================================================
+Current working directory: /scratch/tangsiqi/Python_Calculations/MonteCarlo_bpDNN2Yield/scripts
+Initializing Anaconda...
+Activating virtual environment: pyrolysis_model_dnn...
+Active Python interpreter: /home/tangsiqi/project/miniconda3/envs/pyrolysis_model_dnn/bin/python
+Python 3.11.15
+OMP_NUM_THREADS is set to: 1
+Allocated CPU cores per task: 192
+Running Monte Carlo prediction for 2,000,000 samples...
+Reading parameter ranges …
+Loaded/expanded ranges for 22 features.
+Reading constant feature values …
+Generating 2000000 Monte Carlo samples with 192 core(s) …
+Spawning parallel generators across 192 CPU cores ...
+Loading trained neural network model …
+Loading MATLAB model from: /scratch/tangsiqi/Python_Calculations/MonteCarlo_bpDNN2Yield/bpDNN4PyroProd_modelfiles/Results_trained.mat
+Predicting yields …
+Removing 20214 sample(s) with negative yields ...
+Saved predictions and features CSV → /scratch/tangsiqi/Python_Calculations/MonteCarlo_bpDNN2Yield/results/mc_outputs/mc_us_sludge_predictions.csv
+Saved uncertainty violin plots → /scratch/tangsiqi/Python_Calculations/MonteCarlo_bpDNN2Yield/results/mc_outputs/mc_us_sludge_uncertainty.png (+ .svg)
+
+Summary statistics (percentage yields):
+        Biochar  Bioliquid     Biogas
+mean  36.881527  12.111579  51.348424
+std    4.161536   3.456832   4.041264
+5%    30.797652   5.756027  44.665935
+95%   43.908995  17.267824  57.692168
+=======================================================================
+Job finished successfully at: Thu May 28 10:04:45 AM CST 2026
+=======================================================================

@@ -57,6 +57,10 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+# Suppress noisy third-party logging from matplotlib and fontTools
+logging.getLogger('matplotlib').setLevel(logging.WARNING)
+logging.getLogger('fontTools').setLevel(logging.WARNING)
+
 
 # Helper to print only in debug mode (keeps existing behaviour with minimal edits)
 def dprint(msg: str):
@@ -1219,30 +1223,30 @@ def create_custom_waterfall_plot(expected_value, shap_values, X_test_df, output_
     # Get the feature values for the specific instance
     instance_values = X_test_df.iloc[instance_idx]
     
-    # Create the waterfall plot without title
-    try:
-        # Try with all custom parameters
-        shap.plots._waterfall.waterfall_legacy(
-            expected_value_pct,  # Use properly scaled expected value
-            shap_values_adj[instance_idx] * scale_factor,  # Scale SHAP values to match
-            X_test_df.iloc[instance_idx],
-            max_display=20,  # Display top 20 features as requested
-            show=False,
-            pos_color="#FF0052",  # Bright red for positive values
-            neg_color="#0088FF",  # Bright blue for negative values
-            linewidth=0,  # Remove bar borders
-            alpha=0.8  # Slight transparency for better look
-        )
-    except TypeError as e:
-        dprint(f"Warning: Falling back to standard parameters due to error: {e}")
-        # Fall back to standard parameters if custom ones cause errors
-        shap.plots._waterfall.waterfall_legacy(
-            expected_value_pct,  # Use properly scaled expected value
-            shap_values_adj[instance_idx] * scale_factor,  # Scale SHAP values to match
-            X_test_df.iloc[instance_idx],
-            max_display=20,  # Display top 20 features as requested
-            show=False
-        )
+    # Create the waterfall plot using ONLY standard parameters (guarantees no API errors)
+    shap.plots._waterfall.waterfall_legacy(
+        expected_value_pct,  # Use properly scaled expected value
+        shap_values_adj[instance_idx] * scale_factor,  # Scale SHAP values to match
+        X_test_df.iloc[instance_idx],
+        max_display=20,  # Display top 20 features as requested
+        show=False
+    )
+    
+    # Optimize the plot styling via matplotlib post-processing to avoid SHAP version conflicts
+    import matplotlib.patches as patches
+    ax = plt.gca()
+    for patch in ax.patches:
+        if isinstance(patch, patches.Rectangle):
+            # Check original color to distinguish positive (reddish) vs negative (bluish) bars
+            rgba = patch.get_facecolor()
+            if rgba[0] > rgba[2]:  # More Red than Blue -> Positive contribution
+                patch.set_facecolor("#FF0052")
+            elif rgba[2] > rgba[0]:  # More Blue than Red -> Negative contribution
+                patch.set_facecolor("#0088FF")
+            
+            # Apply other custom styling parameters
+            patch.set_linewidth(0)
+            patch.set_alpha(0.8)
     
     # Get current y-axis labels
     ax = plt.gca()
@@ -1929,9 +1933,13 @@ def run_shap_analysis(matlab_file, target_idx=None, debug=False):
         logger.info("DEBUG MODE ENABLED - Will print detailed debugging information")
     
     # Create a single organized output directory with timestamp
+    from pathlib import Path
+    script_dir = Path(__file__).resolve().parent
+    project_root = script_dir.parent
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    main_output_dir = f'SHAP_Analysis_Results_{timestamp}'
-    os.makedirs(main_output_dir, exist_ok=True)
+    main_output_dir = project_root / "results" / "shap_outputs" / f"SHAP_Analysis_Results_{timestamp}"
+    main_output_dir.mkdir(parents=True, exist_ok=True)
+    main_output_dir = str(main_output_dir)
     logger.info(f"Creating main output directory: {main_output_dir}")
     
     # Check memory usage and warn if high
@@ -2231,7 +2239,10 @@ def run_shap_analysis(matlab_file, target_idx=None, debug=False):
 def main():
     """Main function to run SHAP analysis"""
     # Default MATLAB file path
-    matlab_file = 'bpDNN4PyroProd_modelfiles/Results_trained.mat'
+    from pathlib import Path
+    script_dir = Path(__file__).resolve().parent
+    project_root = script_dir.parent
+    matlab_file = str(project_root / 'bpDNN4PyroProd_modelfiles' / 'Results_trained.mat')
     
     # Parse command line arguments
     target_idx = None  # Default: analyze all targets
@@ -2280,9 +2291,15 @@ def main():
     # If convert_only is set, just convert existing .npy files to Excel
     if convert_only:
         # Find the most recent results directory 
-        result_dirs = [d for d in os.listdir() if d.startswith('SHAP_Analysis_Results_')]
+        from pathlib import Path
+        script_dir = Path(__file__).resolve().parent
+        project_root = script_dir.parent
+        shap_dir = project_root / "results" / "shap_outputs"
+        result_dirs = []
+        if shap_dir.exists():
+            result_dirs = [d for d in os.listdir(shap_dir) if d.startswith('SHAP_Analysis_Results_')]
         if result_dirs:
-            latest_dir = max(result_dirs)
+            latest_dir = os.path.join(str(shap_dir), max(result_dirs))
             logger.info(f"Converting files in the most recent results directory: {latest_dir}")
             
             # Load feature names

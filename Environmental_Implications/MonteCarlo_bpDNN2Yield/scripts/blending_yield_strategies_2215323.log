@@ -1,0 +1,23 @@
+=======================================================================
+Starting Slurm Job: Blending_Yield_Strategies (ID: 2215323)
+Node assigned:      n0524
+Submission dir:     /scratch/tangsiqi/Python_Calculations/MonteCarlo_bpDNN2Yield/scripts
+Start time:         Thu May 28 12:40:38 PM CST 2026
+=======================================================================
+Current working directory: /scratch/tangsiqi/Python_Calculations/MonteCarlo_bpDNN2Yield/scripts
+Initializing Anaconda...
+Activating virtual environment: pyrolysis_model_dnn...
+Active Python interpreter: /home/tangsiqi/project/miniconda3/envs/pyrolysis_model_dnn/bin/python
+Python 3.11.15
+OMP_NUM_THREADS is set to: 1
+Allocated CPU cores per task: 192
+Optimizing blending strategies with continuous mathematical optimization...
+=======================================================================
+Running SCENARIO A: 50% Sludge / 50% Additive (max 25% per additive)
+=======================================================================
+=======================================================================
+Running SCENARIO B: 80% Sludge / 20% Additive (max 10% per additive)
+=======================================================================
+=======================================================================
+Job finished successfully at: Thu May 28 12:47:37 PM CST 2026
+=======================================================================

@@ -59,8 +59,11 @@ def test_dependence_plots():
     print("Creating test data...")
     X_test_df, shap_values, expected_value = create_test_data()
     
-    # Create output directory
-    output_dir = "test_dependence_plots_output"
+    # Create output directory inside central results folder
+    from pathlib import Path
+    script_dir = Path(__file__).resolve().parent
+    project_root = script_dir.parent
+    output_dir = str(project_root / "results" / "test_dependence_plots_output")
     os.makedirs(output_dir, exist_ok=True)
     
     print("Testing create_comprehensive_targettemperature_dependence_plots...")
