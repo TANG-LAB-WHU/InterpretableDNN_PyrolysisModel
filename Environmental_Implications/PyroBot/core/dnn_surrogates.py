@@ -255,6 +255,33 @@ def generate_feature_names(X: np.ndarray) -> list[str]:
     return feature_names
 
 
+def scale_features(X_raw: np.ndarray, X_train: np.ndarray) -> np.ndarray:
+    """Scale raw features exactly to MATLAB [0, 1] bounds."""
+    train_min = X_train.min(axis=0)
+    train_max = X_train.max(axis=0)
+    denom = train_max - train_min
+    denom[denom == 0] = 1.0
+    return np.clip((X_raw - train_min) / denom, 0.0, 1.0)
+
+
+def unscale_outputs(y_pred: np.ndarray, y_train: np.ndarray, target_idx: Optional[int] = None) -> np.ndarray:
+    """Unscale output predictions from network bounds to absolute values."""
+    y_train_arr = np.asarray(y_train, dtype=float)
+    if target_idx is not None:
+        y_train_arr = y_train_arr[:, target_idx] if len(y_train_arr.shape) > 1 else y_train_arr
+        
+    tgt_min = y_train_arr.min(axis=0)
+    tgt_max = y_train_arr.max(axis=0)
+    tgt_range = tgt_max - tgt_min
+    tgt_range[tgt_range == 0] = 1.0
+    
+    # MATLAB network targets normalization is typically [0, 1] or [-1, 1]
+    if np.all(tgt_min >= -1e-6) and np.all(tgt_max <= 1.0 + 1e-6):
+        return y_pred * tgt_range + tgt_min
+    else:
+        return ((y_pred + 1.0) / 2.0) * tgt_range + tgt_min
+
+
 def load_trained_model(mat_path: Path) -> Tuple[
     MatlabNeuralNetworkWrapper,
     list[str],

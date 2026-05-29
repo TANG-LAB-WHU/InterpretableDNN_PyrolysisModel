@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize, minimize_scalar
 
-from .dnn_surrogates import MatlabNeuralNetworkWrapper
+from .dnn_surrogates import MatlabNeuralNetworkWrapper, scale_features, unscale_outputs
 
 # -----------------------------------------------------------------------------
 # Feedstock Database Names Loader
@@ -32,36 +32,6 @@ def load_feedstock_names(reference_xlsx: Path) -> Dict[int, str]:
             6: "Sewage sludge", 8: "Textile dyeing sludge", 14: "Corn stover",
             41: "Walnut shell", 45: "Wheat straw", 70: "Pine wood"
         }
-
-
-# -----------------------------------------------------------------------------
-# Scaling Helpers
-# -----------------------------------------------------------------------------
-def scale_features(X_raw: np.ndarray, X_train: np.ndarray) -> np.ndarray:
-    """Scale raw features exactly to MATLAB [0, 1] bounds."""
-    train_min = X_train.min(axis=0)
-    train_max = X_train.max(axis=0)
-    denom = train_max - train_min
-    denom[denom == 0] = 1.0
-    return np.clip((X_raw - train_min) / denom, 0.0, 1.0)
-
-
-def unscale_outputs(y_pred: np.ndarray, y_train: np.ndarray, target_idx: Optional[int] = None) -> np.ndarray:
-    """Unscale output predictions from network bounds to absolute values."""
-    y_train_arr = np.asarray(y_train, dtype=float)
-    if target_idx is not None:
-        y_train_arr = y_train_arr[:, target_idx] if len(y_train_arr.shape) > 1 else y_train_arr
-        
-    tgt_min = y_train_arr.min(axis=0)
-    tgt_max = y_train_arr.max(axis=0)
-    tgt_range = tgt_max - tgt_min
-    tgt_range[tgt_range == 0] = 1.0
-    
-    # MATLAB network targets normalization is typically [0, 1] or [-1, 1]
-    if np.all(tgt_min >= -1e-6) and np.all(tgt_max <= 1.0 + 1e-6):
-        return y_pred * tgt_range + tgt_min
-    else:
-        return ((y_pred + 1.0) / 2.0) * tgt_range + tgt_min
 
 
 # -----------------------------------------------------------------------------
