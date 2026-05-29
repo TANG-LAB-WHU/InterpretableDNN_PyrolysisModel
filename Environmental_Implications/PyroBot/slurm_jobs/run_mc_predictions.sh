@@ -5,8 +5,8 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=192                # 192-core high-throughput scanning
 #SBATCH --account=tangsiqi
-#SBATCH --output=slurm_jobs/mc_predictions_%j.log
-#SBATCH --error=slurm_jobs/mc_predictions_%j.err
+#SBATCH --output=mc_predictions_%j.log
+#SBATCH --error=mc_predictions_%j.err
 
 #-----------------------------------------------------------------------------#
 # PyroBot: Unified Monte Carlo Prediction Slurm Scheduler (192 Cores)
@@ -89,10 +89,11 @@ python -u run_pyrobot.py \
     --cores $SLURM_CPUS_PER_TASK \
     --out-dir "$OUT_DIR"
 
-# Copy Slurm log and error files to the consolidated output directory at the end
+# Copy Slurm log and error files to the consolidated output directory at the end and clean up originals
 if [ -n "$SLURM_JOB_ID" ]; then
-    cp "slurm_jobs/mc_predictions_${SLURM_JOB_ID}.log" "$OUT_DIR/" 2>/dev/null
-    cp "slurm_jobs/mc_predictions_${SLURM_JOB_ID}.err" "$OUT_DIR/" 2>/dev/null
+    cp "$SLURM_SUBMIT_DIR/mc_predictions_${SLURM_JOB_ID}.log" "$OUT_DIR/" 2>/dev/null
+    cp "$SLURM_SUBMIT_DIR/mc_predictions_${SLURM_JOB_ID}.err" "$OUT_DIR/" 2>/dev/null
+    rm -f "$SLURM_SUBMIT_DIR/mc_predictions_${SLURM_JOB_ID}.log" "$SLURM_SUBMIT_DIR/mc_predictions_${SLURM_JOB_ID}.err" 2>/dev/null
 fi
 
 echo "======================================================================="

@@ -5,8 +5,8 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=192                # Parallel processing for continuous optimizations
 #SBATCH --account=tangsiqi
-#SBATCH --output=slurm_jobs/blending_optimizations_%j.log
-#SBATCH --error=slurm_jobs/blending_optimizations_%j.err
+#SBATCH --output=blending_optimizations_%j.log
+#SBATCH --error=blending_optimizations_%j.err
 
 #-----------------------------------------------------------------------------#
 # PyroBot: Continuous simplex recipe optimizations Slurm Scheduler (192 Cores)
@@ -101,10 +101,11 @@ python -u run_pyrobot.py \
     --cores $SLURM_CPUS_PER_TASK \
     --out-dir "${OUT_DIR}/blending_outputs_20"
 
-# Copy Slurm log and error files to the consolidated output directory at the end
+# Copy Slurm log and error files to the consolidated output directory at the end and clean up originals
 if [ -n "$SLURM_JOB_ID" ]; then
-    cp "slurm_jobs/blending_optimizations_${SLURM_JOB_ID}.log" "$OUT_DIR/" 2>/dev/null
-    cp "slurm_jobs/blending_optimizations_${SLURM_JOB_ID}.err" "$OUT_DIR/" 2>/dev/null
+    cp "$SLURM_SUBMIT_DIR/blending_optimizations_${SLURM_JOB_ID}.log" "$OUT_DIR/" 2>/dev/null
+    cp "$SLURM_SUBMIT_DIR/blending_optimizations_${SLURM_JOB_ID}.err" "$OUT_DIR/" 2>/dev/null
+    rm -f "$SLURM_SUBMIT_DIR/blending_optimizations_${SLURM_JOB_ID}.log" "$SLURM_SUBMIT_DIR/blending_optimizations_${SLURM_JOB_ID}.err" 2>/dev/null
 fi
 
 echo "======================================================================="

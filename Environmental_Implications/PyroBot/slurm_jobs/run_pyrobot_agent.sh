@@ -5,8 +5,8 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=192                # 192 cores allocated for MoE local CPU execution or parallel utilities
 #SBATCH --account=tangsiqi
-#SBATCH --output=slurm_jobs/pyrobot_agent_%j.log
-#SBATCH --error=slurm_jobs/pyrobot_agent_%j.err
+#SBATCH --output=pyrobot_agent_%j.log
+#SBATCH --error=pyrobot_agent_%j.err
 
 #-----------------------------------------------------------------------------#
 # PyroBot: Autonomous Agent (Qwen3.6-35B) Server & Orchestrator Scheduler
@@ -197,10 +197,11 @@ if [ "$SERVER_PID" -gt 0 ]; then
     wait "$SERVER_PID" 2>/dev/null
 fi
 
-# Copy Slurm log and error files to the consolidated output directory at the end
+# Copy Slurm log and error files to the consolidated output directory at the end and clean up originals
 if [ -n "$SLURM_JOB_ID" ]; then
-    cp "slurm_jobs/pyrobot_agent_${SLURM_JOB_ID}.log" "$OUT_DIR/" 2>/dev/null
-    cp "slurm_jobs/pyrobot_agent_${SLURM_JOB_ID}.err" "$OUT_DIR/" 2>/dev/null
+    cp "$SLURM_SUBMIT_DIR/pyrobot_agent_${SLURM_JOB_ID}.log" "$OUT_DIR/" 2>/dev/null
+    cp "$SLURM_SUBMIT_DIR/pyrobot_agent_${SLURM_JOB_ID}.err" "$OUT_DIR/" 2>/dev/null
+    rm -f "$SLURM_SUBMIT_DIR/pyrobot_agent_${SLURM_JOB_ID}.log" "$SLURM_SUBMIT_DIR/pyrobot_agent_${SLURM_JOB_ID}.err" 2>/dev/null
 fi
 
 echo "======================================================================="
