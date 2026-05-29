@@ -1,0 +1,26 @@
+{
+  "system": {
+    "name": "PyroBot",
+    "version": "1.0.0",
+    "description": "Autonomous Agentic AI for Closed-Loop Pyrolysis Inverse Design"
+  },
+  "models": {
+    "qwen_agent_id": "Qwen/Qwen3.6-35B-A3B-Instruct",
+    "ea_surrogate_path": "models/bpDNN2Ea/Results_trained.mat",
+    "yield_surrogate_path": "models/bpDNN2Yield/Results_trained.mat"
+  },
+  "data": {
+    "raw_data_dir": "data/raw",
+    "reference_data_dir": "data/reference"
+  },
+  "simulation_defaults": {
+    "default_heating_rate_kmin": 10.0,
+    "default_reaction_order_n": 1.0,
+    "temperature_start_c": 100.0,
+    "temperature_end_c": 900.0
+  },
+  "safety_thresholds": {
+    "basicity_slagging_limit": 1.2,
+    "runaway_dtg_limit_pct_c": 0.8
+  }
+}

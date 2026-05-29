@@ -1,0 +1,73 @@
+#!/bin/bash
+#SBATCH --job-name=PyroBot_MC_Predictions
+#SBATCH --partition=9a14a
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=192                # 192-core high-throughput scanning
+#SBATCH --account=tangsiqi
+#SBATCH --output=slurm_jobs/mc_predictions_%j.log
+#SBATCH --error=slurm_jobs/mc_predictions_%j.err
+
+#-----------------------------------------------------------------------------#
+# PyroBot: Unified Monte Carlo Prediction Slurm Scheduler (192 Cores)
+# Designed for Wuhan University HPC Cluster (9a14a CPU/GPU Partition)
+#-----------------------------------------------------------------------------#
+
+echo "======================================================================="
+echo "Starting Slurm Job: $SLURM_JOB_NAME (ID: $SLURM_JOB_ID)"
+echo "Node assigned:      $SLURM_JOB_NODELIST"
+echo "Submission dir:     $SLURM_SUBMIT_DIR"
+echo "Start time:         $(date)"
+echo "======================================================================="
+
+# Establish robust zero-configuration workspace anchoring
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_ROOT="$( dirname "$SCRIPT_DIR" )"
+cd "$PROJECT_ROOT"
+echo "Active workspace root: $(pwd)"
+
+# -----------------------------------------------------------------------------
+# Conda Environment Activation
+# -----------------------------------------------------------------------------
+echo "Initializing Anaconda..."
+if [ -f "$HOME/project/miniconda3/etc/profile.d/conda.sh" ]; then
+    source "$HOME/project/miniconda3/etc/profile.d/conda.sh"
+elif [ -f "/opt/anaconda3/etc/profile.d/conda.sh" ]; then
+    source "/opt/anaconda3/etc/profile.d/conda.sh"
+elif [ -f "$HOME/anaconda3/etc/profile.d/conda.sh" ]; then
+    source "$HOME/anaconda3/etc/profile.d/conda.sh"
+elif [ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]; then
+    source "$HOME/miniconda3/etc/profile.d/conda.sh"
+else
+    export PATH="$HOME/project/miniconda3/bin:$HOME/anaconda3/bin:$HOME/miniconda3/bin:$PATH"
+    source conda activate 2>/dev/null
+fi
+
+echo "Activating virtual environment: pyrolysis_model_dnn..."
+conda activate pyrolysis_model_dnn || conda activate base
+
+echo "Active Python interpreter: $(which python)"
+python --version
+
+# -----------------------------------------------------------------------------
+# Thread Isolation to Prevent Intel MKL / OpenBLAS Core Thrashing
+# -----------------------------------------------------------------------------
+export OMP_NUM_THREADS=1
+export MKL_NUM_THREADS=1
+export OPENBLAS_NUM_THREADS=1
+export NUMEXPR_NUM_THREADS=1
+export VECLIB_MAXIMUM_THREADS=1
+
+echo "Allocated CPU cores per task: $SLURM_CPUS_PER_TASK"
+echo "Running parallelized 2,000,000 Monte Carlo predictions (both Ea & Yield)..."
+
+# Execute central CLI orchestrator in unbuffered mode
+python -u run_pyrobot.py \
+    --mode mc \
+    --samples 2000000 \
+    --seed 2026 \
+    --cores $SLURM_CPUS_PER_TASK
+
+echo "======================================================================="
+echo "Monte Carlo Prediction finished successfully at: $(date)"
+echo "======================================================================="
