@@ -65,14 +65,26 @@ tail -f slurm_jobs/blending_optimizations_*.log
 ```
 Outputs (recipe CSV spreadsheets and ranking figures) are written to `results/optimized_blends/`.
 
-### 3. Serve Local Qwen3.6 MoE & Launch PyroBot Orchestrator
-Auto-detects active GPUs to spin up a local **vLLM** serving backend (or **llama.cpp** lock physical thread CPU execution), redirects Hugging Face caching registries to `/scratch` temporary calculations partitions, waits for Qwen3.6 to load, and fires up the closed-loop agent:
-```bash
-sbatch slurm_jobs/run_pyrobot_agent.sh
+### 3. Unified Local Qwen Serving & Autonomous Agent Orchestration
+The Slurm script `slurm_jobs/run_pyrobot_agent.sh` dynamically activates the virtual environment, redirects Hugging Face caches to `/scratch` to prevent home quota overflows, and spawns the local high-performance **llama.cpp** model server (supporting dynamic GPU CUDA-acceleration and 192-core CPU execution locks). 
 
-# Monitor logs
-tail -f slurm_jobs/pyrobot_agent_*.log
-```
+This unified script supports three dynamic run-time execution formats via shell parameters:
+
+*   **Interactive Conversational Chatbot Mode** (Launches the interactive terminal Chatbot shell inside active interactive allocations, e.g. `salloc`):
+    ```bash
+    bash slurm_jobs/run_pyrobot_agent.sh --chatbot
+    ```
+*   **Non-Interactive Custom Batch Query** (Ingests a custom target objective query directly in batch-command mode):
+    ```bash
+    bash slurm_jobs/run_pyrobot_agent.sh "Design a co-pyrolysis recipe with municipal sewage sludge that maximizes Biochar above 40%."
+    ```
+*   **Non-Interactive Default PNAS Demonstration Query** (Directly schedules a background Slurm job executing the target inverse design query from [pyrolysis_Bot.md](pyrolysis_Bot.md#L97-L99) as a zero-configuration demo):
+    ```bash
+    sbatch slurm_jobs/run_pyrobot_agent.sh
+    
+    # Monitor logs in real time
+    tail -f slurm_jobs/pyrobot_agent_*.log
+    ```
 
 ---
 
