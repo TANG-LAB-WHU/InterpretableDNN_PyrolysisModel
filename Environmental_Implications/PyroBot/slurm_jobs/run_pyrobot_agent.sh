@@ -55,63 +55,81 @@ echo "Activating virtual environment: pyrolysis_model_dnn..."
 conda activate pyrolysis_model_dnn || conda activate base
 
 # -----------------------------------------------------------------------------
-# 3. Serving Backend Deployment Strategy (Dynamic GPU/CPU Auto-Detection)
+# 3. Serving Backend Deployment Strategy (Dynamic GPU/CPU Auto-Detection with llama.cpp)
 # -----------------------------------------------------------------------------
 PORT=8000
 HOST="127.0.0.1"
 MODEL_ID="Qwen/Qwen3.6-27B-Instruct"
+GGUF_MODEL="/scratch/tangsiqi/ai_models/qwen/Qwen3.6-27B/Qwen3.6-27B-Q8_0.gguf"
 
-# Check for active CUDA GPUs
-if command -v nvidia-smi &> /dev/null && nvidia-smi &> /dev/null; then
-    echo "======================================================================="
-    echo "GPU DETECTED: Deploying high-throughput vLLM OpenAI API Server..."
-    echo "======================================================================="
-    
-    # Launch vLLM server in the background
-    python -m vllm.entrypoints.openai.api_server \
-        --model "$MODEL_ID" \
-        --tensor-parallel-size 1 \
-        --port "$PORT" \
-        --host "$HOST" \
-        --disable-log-requests &
-    VLLM_PID=$!
-    
-else
-    echo "======================================================================="
-    echo "CPU-ONLY NODE: Deploying localized llama.cpp or GGUF cache engine..."
-    echo "Utilizing OpenMP threads: $SLURM_CPUS_PER_TASK to execute Qwen3.6 MoE..."
-    echo "======================================================================="
-    
-    # Check if a llama.cpp binary exists in the path
-    if command -v llama-server &> /dev/null || command -v llama-cli &> /dev/null || command -v ./llama-cli &> /dev/null; then
-        # Serving localized GGUF MoE quantized weights in the background
-        # (Assuming GGUF version is downloaded to the project scratch)
-        GGUF_MODEL="/scratch/tangsiqi/ai_models/qwen/Qwen3.6-27B/Qwen3.6-27B-Q8_0.gguf"
-        if [ -f "$GGUF_MODEL" ]; then
-            llama-server \
+SERVER_PID=0
+LLAMA_BIN=""
+
+# Dynamic detection of local llama.cpp serving binary
+if command -v llama-server &> /dev/null; then
+    LLAMA_BIN="llama-server"
+elif command -v llama-cli &> /dev/null; then
+    LLAMA_BIN="llama-cli"
+elif [ -f "./llama-server" ]; then
+    LLAMA_BIN="./llama-server"
+elif [ -f "./llama-cli" ]; then
+    LLAMA_BIN="./llama-cli"
+fi
+
+if [ -n "$LLAMA_BIN" ]; then
+    if [ -f "$GGUF_MODEL" ]; then
+        # Check for active CUDA GPUs via nvidia-smi
+        if command -v nvidia-smi &> /dev/null && nvidia-smi &> /dev/null; then
+            echo "======================================================================="
+            echo "GPU DETECTED: Deploying llama.cpp server with CUDA GPU acceleration..."
+            echo "Offloading all layers (ngl=99) of Qwen3.6-27B-Q8 to the active GPU(s)."
+            echo "======================================================================="
+            
+            # Start llama-server with full GPU offloading for maximum throughput
+            "$LLAMA_BIN" \
                 --model "$GGUF_MODEL" \
                 --port "$PORT" \
                 --host "$HOST" \
-                --threads "$SLURM_CPUS_PER_TASK" &
-            VLLM_PID=$!
+                --threads "$SLURM_CPUS_PER_TASK" \
+                --n-gpu-layers 99 &
+            SERVER_PID=$!
         else
-            echo "Warning: GGUF model not found at $GGUF_MODEL. Falling back to native HF pipeline."
-            VLLM_PID=0
+            echo "======================================================================="
+            echo "CPU-ONLY NODE: Deploying llama.cpp server on CPU threads..."
+            echo "Utilizing OpenMP threads: $SLURM_CPUS_PER_TASK to execute Qwen3.6 MoE..."
+            echo "======================================================================="
+            
+            # Start llama-server in pure CPU thread mode (ngl=0)
+            "$LLAMA_BIN" \
+                --model "$GGUF_MODEL" \
+                --port "$PORT" \
+                --host "$HOST" \
+                --threads "$SLURM_CPUS_PER_TASK" \
+                --n-gpu-layers 0 &
+            SERVER_PID=$!
         fi
     else
-        echo "Llama.cpp not found. The agent orchestrator will fall back to loading the model"
+        echo "======================================================================="
+        echo "WARNING: GGUF model not found at $GGUF_MODEL."
+        echo "The agent orchestrator will fall back to loading the model"
         echo "locally using Hugging Face pipelines inside the orchestrator process."
-        VLLM_PID=0
+        echo "======================================================================="
     fi
+else
+    echo "======================================================================="
+    echo "WARNING: llama-server or llama-cli binaries not found in environment PATH."
+    echo "The agent orchestrator will fall back to loading the model"
+    echo "locally using Hugging Face pipelines inside the orchestrator process."
+    echo "======================================================================="
 fi
 
 # -----------------------------------------------------------------------------
 # 4. Serving Health Check (Wait for Qwen3.6 Brain to Come Online)
 # -----------------------------------------------------------------------------
-if [ "$VLLM_PID" -gt 0 ]; then
-    echo "Waiting for local model server to initialize and load weights (PID: $VLLM_PID)..."
+if [ "$SERVER_PID" -gt 0 ]; then
+    echo "Waiting for local model server to initialize and load weights (PID: $SERVER_PID)..."
     until curl -s "http://$HOST:$PORT/v1/models" > /dev/null; do
-        if ! kill -0 "$VLLM_PID" 2>/dev/null; then
+        if ! kill -0 "$SERVER_PID" 2>/dev/null; then
             echo "CRITICAL ERROR: Serving process died during loading phase. Check logs above."
             exit 1
         fi
@@ -139,10 +157,10 @@ python -u run_pyrobot.py \
     --cores "$SLURM_CPUS_PER_TASK"
 
 # Clean up background server processes if spawned
-if [ "$VLLM_PID" -gt 0 ]; then
-    echo "Shutting down local Qwen3.6 serving backend (PID: $VLLM_PID)..."
-    kill "$VLLM_PID"
-    wait "$VLLM_PID" 2>/dev/null
+if [ "$SERVER_PID" -gt 0 ]; then
+    echo "Shutting down local Qwen3.6 serving backend (PID: $SERVER_PID)..."
+    kill "$SERVER_PID"
+    wait "$SERVER_PID" 2>/dev/null
 fi
 
 echo "======================================================================="
