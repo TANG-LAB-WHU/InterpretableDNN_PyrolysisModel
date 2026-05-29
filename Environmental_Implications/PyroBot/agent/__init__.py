@@ -1,0 +1,3 @@
+"""
+PyroBot Autonomous Orchestration Agent
+"""
