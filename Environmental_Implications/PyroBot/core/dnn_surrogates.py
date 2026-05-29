@@ -212,11 +212,11 @@ def extract_neural_network_data(mat_data: dict) -> Tuple[np.ndarray, np.ndarray,
     net_struct = None
     
     # Locate inputs/outputs variables
-    for k in ['X', 'Xnorm', 'x', 'nn_input', 'Variables0', 'Feedstock4training']:
+    for k in ['input', 'X', 'Xnorm', 'x', 'nn_input', 'Variables0', 'Feedstock4training']:
         if k in mat_data:
             X = mat_data[k]
             break
-    for k in ['Y', 'y', 'Ynorm', 'nn_output', 'ProductsYield']:
+    for k in ['target', 'Y', 'y', 'Ynorm', 'nn_output', 'ProductsYield', 'Ea']:
         if k in mat_data:
             y = mat_data[k]
             break
@@ -227,10 +227,14 @@ def extract_neural_network_data(mat_data: dict) -> Tuple[np.ndarray, np.ndarray,
         raise ValueError("MATLAB data is missing critical neural network or training matrices variables.")
         
     # Enforce standard (samples, features) layout
-    if X.shape[0] < X.shape[1]:
-        X = X.T
     if len(y.shape) > 1 and y.shape[0] < y.shape[1]:
         y = y.T
+        
+    num_samples = y.shape[0]
+    if X.shape[0] != num_samples and X.shape[1] == num_samples:
+        X = X.T
+    elif X.shape[0] < X.shape[1]:
+        X = X.T
         
     return X, y, net_struct
 
@@ -251,6 +255,10 @@ def generate_feature_names(X: np.ndarray) -> list[str]:
         feature_names.append(f'FeedstockType_{i+1}')
     for i in range(feedstock_count):
         feature_names.append(f'MixingRatio_{i+1}')
+        
+    # Pad to ensure length matches total_features exactly
+    while len(feature_names) < total_features:
+        feature_names.append(f'PaddingFeature_{len(feature_names) + 1}')
         
     return feature_names
 
