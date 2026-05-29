@@ -150,12 +150,24 @@ echo "======================================================================="
 echo "Launching Qwen3.6-27B Autonomous Scientific Agent Orchestrator..."
 echo "======================================================================="
 
-# Run the agent in non-interactive batch-command mode for this job.
-# It automatically consumes the target demonstration query from pyrolysis_Bot.md:L97-L99:
-# "Design a ternary co-pyrolysis recipe with municipal sewage sludge that maximizes Biochar yield above 42% at a low target temperature of 450°C, while keeping the Apparent Activation Energy below 390 kJ/mol under Scenario B (80% sludge load) constraints."
-python -u run_pyrobot.py \
-    --mode agent \
-    --cores "$SLURM_CPUS_PER_TASK"
+# Initialize Python agent parameters array to ensure robust space and quote preservation
+AGENT_ARGS=("--mode" "agent" "--cores" "$SLURM_CPUS_PER_TASK")
+
+# Dynamic execution mode determination based on script arguments:
+# 1. run_pyrobot_agent.sh --chatbot  => Starts interactive conversational shell
+# 2. run_pyrobot_agent.sh "query"    => Starts batch mode with custom natural language query
+# 3. run_pyrobot_agent.sh            => Starts batch mode with default target demonstration query
+if [ "$1" == "--chatbot" ]; then
+    AGENT_ARGS+=("--chatbot")
+    echo "Execution Mode: Interactive Scientific Chatbot Shell"
+elif [ -n "$1" ]; then
+    AGENT_ARGS+=("--query" "$1")
+    echo "Execution Mode: Batch Command Mode (Custom query: \"$1\")"
+else
+    echo "Execution Mode: Batch Command Mode (Default PNAS target demonstration query)"
+fi
+
+python -u run_pyrobot.py "${AGENT_ARGS[@]}"
 
 # Clean up background server processes if spawned
 if [ "$SERVER_PID" -gt 0 ]; then
