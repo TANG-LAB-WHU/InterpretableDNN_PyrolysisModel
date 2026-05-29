@@ -83,7 +83,7 @@ else
     echo "======================================================================="
     
     # Check if a llama.cpp binary exists in the path
-    if command -v llama-cli &> /dev/null || command -v ./llama-cli &> /dev/null; then
+    if command -v llama-server &> /dev/null || command -v llama-cli &> /dev/null || command -v ./llama-cli &> /dev/null; then
         # Serving localized GGUF MoE quantized weights in the background
         # (Assuming GGUF version is downloaded to the project scratch)
         GGUF_MODEL="/scratch/tangsiqi/ai_models/qwen/Qwen3.6-27B/Qwen3.6-27B-Q8_0.gguf"
