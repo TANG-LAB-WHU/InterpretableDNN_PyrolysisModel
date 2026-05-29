@@ -414,3 +414,12 @@ class PyroBotOrchestrator:
                 
         # Fallback return if max attempts reached without success
         return "# PyroBot Autonomous Discovery Report\nWarning: Loop terminated after reaching maximum safety penalty adjustments. Optimization bounds were highly constrained."
+
+
+def main():
+    print("Agent orchestrator library loaded successfully.")
+
+
+if __name__ == "__main__":
+    main()
+

@@ -296,3 +296,12 @@ def optimize_multi_feedstock_blend(
     
     stats = {"Ea": ea, "Char_Yield": char, "Liquid_Yield": liq, "Gas_Yield": gas}
     return best_r, stats
+
+
+def main():
+    print("Continuous optimizer library loaded successfully.")
+
+
+if __name__ == "__main__":
+    main()
+

@@ -196,3 +196,12 @@ def plot_tg_dtg_simulations(
     fig.savefig(output_path, dpi=300)
     fig.savefig(output_path.with_suffix(".svg"), format="svg")
     plt.close(fig)
+
+
+def main():
+    print("TG differential simulator library loaded successfully.")
+
+
+if __name__ == "__main__":
+    main()
+

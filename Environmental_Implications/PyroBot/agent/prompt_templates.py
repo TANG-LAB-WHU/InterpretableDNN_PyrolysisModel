@@ -106,3 +106,12 @@ Output JSON:
   "scientific_analysis": "Your detailed publication-ready explanation."
 }}
 """
+
+
+def main():
+    print("Prompt templates loaded successfully.")
+
+
+if __name__ == "__main__":
+    main()
+

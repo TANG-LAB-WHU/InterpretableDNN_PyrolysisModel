@@ -276,3 +276,12 @@ def load_trained_model(mat_path: Path) -> Tuple[
     wrapper = MatlabNeuralNetworkWrapper(net_struct)
     
     return wrapper, feature_names, X_train, y_train
+
+
+def main():
+    print("Surrogate models library loaded successfully.")
+
+
+if __name__ == "__main__":
+    main()
+
