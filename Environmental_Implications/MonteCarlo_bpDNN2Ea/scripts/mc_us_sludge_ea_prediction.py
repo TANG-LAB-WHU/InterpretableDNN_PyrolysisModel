@@ -21,20 +21,31 @@ Workflow
     •  ``mc_ea_predictions.csv`` – raw predictions + sampled features.
     •  ``mc_ea_distribution.png`` / ``.svg`` – violin + histogram of Ea.
 
-Run
+Usage:
 ---
-    $ python mc_us_sludge_ea_prediction.py --samples 10000 --seed 123
+    python mc_us_sludge_ea_prediction.py --samples 10000 --seed 123
 
-All code is in **English** as requested.
 """
 
 from __future__ import annotations
 
-import argparse
+# Set threading environment variables before importing numpy to prevent OpenBLAS/MKL thread thrashing
 import os
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+
+import argparse
 import sys
+import multiprocessing
+import warnings
 from pathlib import Path
 from typing import Tuple
+
+# Suppress annoying SciPy warning about duplicate variable name 'None' in matlab files
+warnings.filterwarnings("ignore", message="Duplicate variable name")
 
 import numpy as np
 import pandas as pd
@@ -45,9 +56,10 @@ import seaborn as sns
 # Add project root so we can import helper utilities from shap_analysis_ea.py
 # -----------------------------------------------------------------------------
 SCRIPT_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = SCRIPT_DIR.parent  # bpDNN2Ea_AshOptimized
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
+PROJECT_ROOT = SCRIPT_DIR.parent
+
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
 
 # Import helper utilities defined in shap_analysis_ea.py (same folder level)
 from shap_analysis_ea import (  # type: ignore
@@ -82,9 +94,13 @@ def load_trained_model(mat_path: Path) -> Tuple[
 
 def align_sample_features(df_samples: pd.DataFrame, feature_names: list[str]) -> np.ndarray:
     """Ensure DataFrame columns are in the exact order expected by the model."""
-    aligned = pd.DataFrame(index=df_samples.index)
+    aligned_dict = {}
     for feat in feature_names:
-        aligned[feat] = df_samples.get(feat, 0.0)  # default zero if missing
+        if feat in df_samples.columns:
+            aligned_dict[feat] = df_samples[feat].values
+        else:
+            aligned_dict[feat] = np.zeros(len(df_samples))
+    aligned = pd.DataFrame(aligned_dict, index=df_samples.index)
     return aligned.values
 
 
@@ -277,8 +293,10 @@ OXIDE_KEYS = [
 ]
 
 
-def build_monte_carlo_samples(ranges: pd.DataFrame, constants: pd.Series, n: int) -> pd.DataFrame:
-    """Generate *n* Monte Carlo samples satisfying basic mass-balance constraints."""
+def _generate_chunk_worker(args: tuple) -> list[dict]:
+    """Generate a chunk of Monte Carlo samples with a local independent RNG."""
+    ranges, constants, chunk_size, child_seed = args
+    rng = np.random.default_rng(child_seed)
 
     def get_range(feature: str):
         if feature in ranges.index:
@@ -291,7 +309,7 @@ def build_monte_carlo_samples(ranges: pd.DataFrame, constants: pd.Series, n: int
     def rand_in(lo, hi):
         if np.isnan(lo) or np.isnan(hi) or np.isclose(lo, hi):
             return lo if not np.isnan(lo) else hi
-        return np.random.uniform(lo, hi)
+        return rng.uniform(lo, hi)
 
     def rand_int(lo, hi):
         if np.isnan(lo) or np.isnan(hi):
@@ -299,63 +317,122 @@ def build_monte_carlo_samples(ranges: pd.DataFrame, constants: pd.Series, n: int
         lo_i, hi_i = int(round(lo)), int(round(hi))
         if lo_i > hi_i:
             lo_i, hi_i = hi_i, lo_i
-        return lo_i if lo_i == hi_i else np.random.randint(lo_i, hi_i + 1)
+        return lo_i if lo_i == hi_i else rng.integers(lo_i, hi_i + 1)
 
-    def gen_sample(max_attempts: int = 5000):
-        for _ in range(max_attempts):
+    rows = []
+    
+    # Pre-cache ranges and properties to avoid slow repeated Pandas DataFrame indexing in the loop
+    vm_range = get_range(VM_KEY)
+    ash_range = get_range(ASH_KEY)
+    fc_range = get_range(FC_KEY)
+    c_range = get_range(C_KEY)
+    h_range = get_range(H_KEY)
+    n_range = get_range(N_KEY)
+    s_range = get_range(S_KEY)
+    o_range = get_range(O_KEY)
+
+    oxide_ranges = {oxide: get_range(oxide) for oxide in OXIDE_KEYS}
+
+    remaining_features = []
+    for feature in ranges.index:
+        canon_key = _canonical_no_space(feature)
+        if canon_key.startswith("feedstocktype") or canon_key.startswith("mixingratio"):
+            continue
+        if feature in (VM_KEY, FC_KEY, ASH_KEY, C_KEY, H_KEY, O_KEY, N_KEY, S_KEY) or feature in OXIDE_KEYS:
+            continue
+        remaining_features.append((feature, canon_key, get_range(feature)))
+
+    for _ in range(chunk_size):
+        success = False
+        for _ in range(5000):
             row: dict[str, float] = {}
             # Proximate analysis
-            vm = rand_in(*get_range(VM_KEY))
-            ash = rand_in(*get_range(ASH_KEY))
+            vm = rand_in(*vm_range)
+            ash = rand_in(*ash_range)
             fc = 100.0 - vm - ash
-            fc_lo, fc_hi = get_range(FC_KEY)
+            fc_lo, fc_hi = fc_range
             if fc < fc_lo or fc > fc_hi or fc < 0:
                 continue
-            row.update({VM_KEY: vm, FC_KEY: fc, ASH_KEY: ash})
+            row[VM_KEY] = vm
+            row[FC_KEY] = fc
+            row[ASH_KEY] = ash
+
             # Ultimate analysis
-            c = rand_in(*get_range(C_KEY))
-            h = rand_in(*get_range(H_KEY))
-            n = rand_in(*get_range(N_KEY))
-            s = rand_in(*get_range(S_KEY))
+            c = rand_in(*c_range)
+            h = rand_in(*h_range)
+            n = rand_in(*n_range)
+            s = rand_in(*s_range)
             o = 100.0 - (ash + c + h + n + s)
-            o_lo, o_hi = get_range(O_KEY)
+            o_lo, o_hi = o_range
             if o < o_lo or o > o_hi:
                 continue
-            row.update({C_KEY: c, H_KEY: h, N_KEY: n, S_KEY: s, O_KEY: o})
+            row[C_KEY] = c
+            row[H_KEY] = h
+            row[N_KEY] = n
+            row[S_KEY] = s
+            row[O_KEY] = o
+
             # Oxides
-            for oxide in OXIDE_KEYS:
-                val = rand_in(*get_range(oxide))
+            for oxide, ox_rng in oxide_ranges.items():
+                val = rand_in(*ox_rng)
                 if not np.isnan(val):
                     row[oxide] = val
+
             # Remaining features
-            for feature in ranges.index:
-                if feature in row:
-                    continue
-                # Skip categorical feedstock composition columns – these must come from
-                # the constants spreadsheet only (no stochastic variation).  This covers
-                # any column whose canonical, whitespace-free name begins with either
-                # "feedstocktype" or "mixingratio" (case-insensitive).
-                canon_key = _canonical_no_space(feature)
-                if canon_key.startswith("feedstocktype") or canon_key.startswith("mixingratio"):
-                    # Leave the value to be filled in later from *constants* so that the
-                    # final DataFrame always reflects the fixed baseline composition.
-                    continue
-                lo, hi = get_range(feature)
+            for feature, canon_key, feat_rng in remaining_features:
                 if canon_key in INT_SAMPLED_FEATURES:
-                    val = rand_int(lo, hi)
+                    val = rand_int(*feat_rng)
                 else:
-                    val = rand_in(lo, hi)
+                    val = rand_in(*feat_rng)
                 if not np.isnan(val):
                     row[feature] = val
+
             # Fill missing with constants
             for feature, value in constants.items():
                 if feature not in row or np.isnan(row.get(feature, np.nan)):
                     row[feature] = value
-            return row
-        raise RuntimeError("Unable to generate a valid sample within max_attempts")
 
-    rows = [gen_sample() for _ in range(n)]
-    return pd.DataFrame(rows)
+            rows.append(row)
+            success = True
+            break
+        if not success:
+            raise RuntimeError("Unable to generate a valid sample within max_attempts in worker process.")
+    return rows
+
+
+def build_monte_carlo_samples(
+    ranges: pd.DataFrame, 
+    constants: pd.Series, 
+    n: int, 
+    cores: int = 1, 
+    seed: int = 2026
+) -> pd.DataFrame:
+    """Generate *n* Monte Carlo samples satisfying basic mass-balance constraints, in parallel if cores > 1."""
+    if cores <= 1:
+        print("Running sample generation sequentially (1 core) ...", flush=True)
+        # Use single generator chunk worker directly
+        rows = _generate_chunk_worker((ranges, constants, n, seed))
+        return pd.DataFrame(rows)
+
+    print(f"Spawning parallel generators across {cores} CPU cores ...", flush=True)
+    ss = np.random.SeedSequence(seed)
+    child_seeds = ss.spawn(cores)
+
+    # Divide work evenly
+    chunk_size = n // cores
+    extra = n % cores
+
+    tasks = []
+    for i in range(cores):
+        current_chunk = chunk_size + (1 if i < extra else 0)
+        tasks.append((ranges, constants, current_chunk, child_seeds[i]))
+
+    with multiprocessing.Pool(processes=cores) as pool:
+        chunk_results = pool.map(_generate_chunk_worker, tasks)
+
+    # Flatten the list of lists
+    all_rows = [row for chunk in chunk_results for row in chunk]
+    return pd.DataFrame(all_rows)
 
 # Non-sampled categories/constants
 NON_SAMPLED_PREFIXES = ("feedstocktype", "mixingratio")
@@ -372,12 +449,16 @@ def main() -> None:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
-    parser.add_argument("--samples", type=int, default=10_000, help="Number of Monte-Carlo samples")
+    parser.add_argument("--samples", type=int, default=100_0000, help="Number of Monte-Carlo samples")
     parser.add_argument("--variation", type=float, default=0.10, help="Relative variation (e.g., 0.1 for ±10%) when only mean values are available")
-    parser.add_argument("--seed", type=int, default=2025, help="Random seed for reproducibility")
+    parser.add_argument("--seed", type=int, default=2026, help="Random seed for reproducibility")
+    # Added --cores argument, defaulting to SLURM_CPUS_PER_TASK if on supercomputer
+    default_cores = int(os.environ.get("SLURM_CPUS_PER_TASK", 1))
+    parser.add_argument("--cores", type=int, default=default_cores, help="Number of CPU cores for parallel sample generation")
     args = parser.parse_args()
 
     n_samples: int = args.samples
+    # We do NOT do legacy global np.random.seed(args.seed) for parallel generators, but still set it for main process jittering
     np.random.seed(args.seed)
 
     # Locate the trained .mat model
@@ -393,30 +474,18 @@ def main() -> None:
     # ------------------------------------------------------------------
     # Locate Excel spreadsheets with parameter ranges and constants
     # ------------------------------------------------------------------
-    candidate_dirs = [
-        PROJECT_ROOT.parent,            # one level above project (workspace root)
-        PROJECT_ROOT,                   # project directory itself
-    ]
+    range_path = PROJECT_ROOT / "data" / "raw" / "Municipal_Sludge_Data_cleaned_mean.xlsx"
+    constant_path = PROJECT_ROOT / "data" / "raw" / "US_SewageSludge.xlsx"
 
-    def _find_file(fname: str) -> Path:
-        for d in candidate_dirs:
-            p = d / fname
-            if p.exists():
-                return p
-        raise FileNotFoundError(f"{fname} not found in {candidate_dirs}")
-
-    range_path = _find_file("Municipal_Sludge_Data_cleaned_mean.xlsx")
-    constant_path = _find_file("US_SewageSludge.xlsx")
-
-    print("Reading parameter ranges …")
+    print("Reading parameter ranges …", flush=True)
     ranges_df = read_parameter_ranges(range_path)
     expand_single_point_ranges(ranges_df, rel_variation=args.variation)
 
-    print("Reading constant feature values …")
+    print("Reading constant feature values …", flush=True)
     constants_series = load_constant_features(constant_path)
 
-    print(f"Generating {n_samples} Monte Carlo samples …")
-    df_samples = build_monte_carlo_samples(ranges_df, constants_series, n_samples)
+    print(f"Generating {n_samples} Monte Carlo samples with {args.cores} core(s) …", flush=True)
+    df_samples = build_monte_carlo_samples(ranges_df, constants_series, n_samples, cores=args.cores, seed=args.seed)
 
     # No column renaming required (Heating rate not present)
 
@@ -491,26 +560,26 @@ def main() -> None:
     neg_mask = ea_series < 0
     if neg_mask.any():
         removed = int(neg_mask.sum())
-        print(f"Removing {removed} sample(s) with negative Ea to retain physical plausibility …")
+        print(f"Removing {removed} sample(s) with negative Ea to retain physical plausibility …", flush=True)
         ea_series = ea_series.loc[~neg_mask]
         df_samples = df_samples.loc[~neg_mask]
 
     # ------------------------------------------------------------------
     # Persist results
     # ------------------------------------------------------------------
-    output_dir = SCRIPT_DIR
+    output_dir = PROJECT_ROOT / "results" / "mc_outputs"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     csv_path = output_dir / "mc_ea_predictions.csv"
     df_out = df_samples.copy()
     df_out["Ea_kJmol"] = ea_series
     df_out.to_csv(csv_path, index=False)
-    print(f"Saved predictions CSV → {csv_path}")
+    print(f"Saved predictions CSV → {csv_path}", flush=True)
 
     # Plot distribution
     plot_path = output_dir / "mc_ea_distribution.png"
     plot_ea_distribution(ea_series, plot_path)
-    print(f"Saved distribution plot → {plot_path} (+ .svg)")
+    print(f"Saved distribution plot → {plot_path} (+ .svg)", flush=True)
 
 
 if __name__ == "__main__":

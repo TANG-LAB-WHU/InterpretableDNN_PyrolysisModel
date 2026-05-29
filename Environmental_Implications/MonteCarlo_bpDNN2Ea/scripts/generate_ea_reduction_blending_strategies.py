@@ -1,28 +1,61 @@
+"""
+Optimization of Feedstock Blending Strategies for Minimizing Activation Energy (Ea)
+==================================================================================
+This script analyzes SHAP attribution values of the Ea neural network model to identify
+optimal blending strategies. It features advanced continuous numerical optimization
+to break the discrete ratio limitation and supports 192-core HPC parallelization.
+
+Workflow
+--------
+1.  Load SHAP values to identify feedstocks whose presence/mixing ratio most strongly
+    reduce Ea (highest negative mean SHAP contribution).
+2.  Rank the 118 candidate feedstock types (additives) based on their combined negative SHAP score (Type + Ratio).
+3.  Perform forward neural-network simulations for the top candidates:
+    - Single feedstock optimization using Brent's Bounded method (minimize_scalar)
+      to find the exact mathematical optimal mixing ratio.
+    - Exhaustive combination search among negative-gain feedstocks.
+    - Joint feedstock ratio optimization under bounds and equality constraints
+      (sum of ratios = 1.0 - sludge_ratio) using SLSQP (minimize).
+4.  Optionally compute and plot ΔEa over a specified Degree_conversion grid.
+5.  Save results to:
+    - ``top_20_feedstocks_ea.csv`` - optimized single-feedstock ratios and ΔEa.
+    - ``combo_results.csv`` - optimized multi-feedstock joint mixtures.
+    - Figures (Violin/Bar/Line plots) for delta gain and conversion dependence.
+
+Usage:
+---
+    python generate_ea_reduction_blending_strategies.py --simulate --search_combos --method scipy
+
+"""
+
 import os
+# Set threading environment variables before importing numpy to prevent OpenBLAS/MKL thread thrashing
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+
+
 import argparse
 import logging
 from typing import List
+import multiprocessing
+import warnings
 
 import numpy as np
 import pandas as pd
 import matplotlib
 import itertools
+from scipy.optimize import minimize_scalar, minimize
+
+# Suppress duplicate variable name warnings from SciPy MATLAB loading
+warnings.filterwarnings("ignore", message="Duplicate variable name")
 
 matplotlib.use("Agg")  # Safe for headless execution
 import matplotlib.pyplot as plt
 
-# -----------------------------------------------------------------------------
-#  Feedstock Blending Strategy Generator for LOWERING Activation Energy (Ea)
-# -----------------------------------------------------------------------------
-# 1. Analyse SHAP values of an Ea neural-network model to find feedstocks whose
-#    presence / mixing ratio most strongly DECREASE Ea (i.e. negative SHAP).
-# 2. Rank the 118 candidate feedstock types by their combined negative SHAP
-#    contribution (FeedstockType + MixingRatio).
-# 3. Optionally run a forward simulation with the trained MATLAB neural network
-#    to estimate the absolute Ea that can be achieved at various mixing ratios
-#    for the top-N candidates.
-# 4. Write the ranked list (and plots) to the user-specified output directory.
-# -----------------------------------------------------------------------------
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -40,14 +73,138 @@ MR_PREFIX = "MixingRatio_"
 
 _RATIO_GRID_DEFAULT = (0.05, 0.50, 0.05)  # Default search grid if --simulate
 
+# Physical feedstock name mapping compiled from literature database (1 to 118)
+FEEDSTOCK_NAMES = {
+    1: "Alum sludge",
+    2: "Anaerobic sewage sludge",
+    3: "Paper mill sludge",
+    4: "Pharmaceutical sludge",
+    5: "Pulp and paper industry wastewater sludge",
+    6: "Sewage sludge",
+    7: "Sewage sludge anaerobically digested",
+    8: "Textile dyeing sludge",
+    9: "Activated sludge",
+    10: "Primary sludge",
+    11: "Almond shell",
+    12: "Amaranthus retroflexus L. biomass",
+    13: "Bambara groundnut shell",
+    14: "Corn stover",
+    15: "Corncob",
+    16: "Cornelian cherry stones",
+    17: "Cotton stalk",
+    18: "Dried distillers grains with solubles",
+    19: "Garlic biomass",
+    20: "Grape biomass",
+    21: "Hazelnut kernel husk",
+    22: "Lemon peel",
+    23: "Banana residues (peal and leaves)",
+    24: "Oat straw",
+    25: "Olive waste",
+    26: "Orange peel and pomace",
+    27: "Oreganum stalk",
+    28: "Palm kernel shell",
+    29: "Peanut shell biomass",
+    30: "Pepper stem",
+    31: "Pistachio shell",
+    32: "Rice husk",
+    33: "Rice straw",
+    34: "Saffron petals",
+    35: "Sugarcane biomass",
+    36: "Sunflower shell biomass",
+    37: "Tobacco leaf",
+    38: "Tobacco stalk",
+    39: "Ugu plant",
+    40: "Vine pruning biomass",
+    41: "Walnut shell",
+    42: "Waste cereals",
+    43: "Waste nuts and shells",
+    44: "Watermelon rind",
+    45: "Wheat straw",
+    46: "Oilseed rape straw",
+    47: "Waste tire",
+    48: "Chicken litter",
+    49: "Chicken bedding materials",
+    50: "Cattle manure",
+    51: "Goat manure",
+    52: "Camel manure",
+    53: "Swine manure",
+    54: "Poultry manure",
+    55: "Horse manure",
+    56: "Turkey litter",
+    57: "Water buffalo manure",
+    58: "Cladophora sp.",
+    59: "Lyngbya sp.",
+    60: "Ulva lactuca aquatic biomass",
+    61: "Beech wood",
+    62: "Coconut",
+    63: "Empty fruit bunch",
+    64: "Eucalyptus biomass",
+    65: "Hazelnut shell",
+    66: "Maesopsis eminii wood",
+    67: "Mesocarp fiber",
+    68: "Bamboo biomass",
+    69: "Palm shell",
+    70: "Pine wood",
+    71: "Rubber wood",
+    72: "Spruce wood",
+    73: "Willow",
+    74: "Wood sawdust",
+    75: "Bone residues",
+    76: "Food waste anaerobically digested",
+    77: "Meat and bone meal",
+    78: "Raw food waste",
+    79: "Waste plastic mixture",
+    80: "Polyethylene",
+    81: "Polypropylene",
+    82: "Polystyrene",
+    83: "Cellulose",
+    84: "Hemicellulose",
+    85: "Lignin",
+    86: "Xylan",
+    87: "Humic acid",
+    88: "Fulvic acid",
+    89: "Humin",
+    90: "Al2O3",
+    91: "Ca(OH)2",
+    92: "Ca-bentonite",
+    93: "CaO",
+    94: "K2CO3",
+    95: "Kaolin",
+    96: "MgO",
+    97: "Algal biomass",
+    98: "Sewage sludge aerobically digested",
+    99: "Poplar wood",
+    100: "Polyethylene terephthalate",
+    101: "Aquatic plant biomass",
+    102: "HZSM-5",
+    103: "Potato peel",
+    104: "Co(NO3)2",
+    105: "Ni(NO3)2",
+    106: "Fe(NO3)3",
+    107: "Durian waste",
+    108: "Mango waste",
+    109: "Tomato peel",
+    110: "Herbaceous plant biomass",
+    111: "Mesquite tree",
+    112: "Shrubby plant biomass",
+    113: "Arbor tree plant biomass",
+    114: "Coffee husk",
+    115: "Refuse-derived fuel",
+    116: "Low-density polyethylene",
+    117: "Macroalgae",
+    118: "High-density polyethylene"
+}
+
 # -----------------------------------------------------------------------------
 #  Helper utilities (imported from shap_analysis_ea.py residing at project root)
 # -----------------------------------------------------------------------------
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir, os.pardir))
-if PROJECT_ROOT not in os.sys.path:
-    os.sys.path.append(PROJECT_ROOT)
+from pathlib import Path
+import sys
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.append(str(SCRIPT_DIR))
 
 try:
     from shap_analysis_ea import (
@@ -211,6 +368,104 @@ def generate_ratio_vectors(num_feeds: int, total_ratio: float, grid: np.ndarray,
 # -----------------------------------------------------------------------------
 #  Main processing routine
 # -----------------------------------------------------------------------------
+def _optimize_combo_worker(args: tuple) -> dict | None:
+    """Optimize a single feedstock combination using SLSQP in parallel."""
+    (
+        combo,
+        feat_names_net,
+        baseline_vec,
+        train_min,
+        train_range,
+        y_train_min,
+        y_range,
+        tgt_01,
+        leftover_ratio,
+        combo_max_ratio,
+        baseline_ea,
+        mat_file,
+    ) = args
+
+    # Local imports inside child processes to ensure independence
+    import numpy as np
+    from scipy.optimize import minimize
+    from shap_analysis_ea import (
+        load_matlab_data,
+        extract_neural_network_data,
+        MatlabNeuralNetworkWrapper,
+    )
+
+    try:
+        # Load network locally in worker to avoid ctypes/MATLAB pickling issues
+        mat_data = load_matlab_data(mat_file)
+        _, _, net_struct = extract_neural_network_data(mat_data)
+        wrapper = MatlabNeuralNetworkWrapper(net_struct)
+    except Exception:
+        return None
+
+    def combo_obj_fun(ratios):
+        x = baseline_vec.copy()
+        for fid, ratio_val in zip(combo, ratios):
+            ft_col = feat_names_net.index(f"FeedstockType_{fid}")
+            mr_col = feat_names_net.index(f"MixingRatio_{fid}")
+            x[ft_col] = 1.0
+            x[mr_col] = ratio_val
+
+        # Scale input
+        x_scaled = np.clip((x - train_min) / train_range, 0.0, 1.0)
+        y_pred_scaled = wrapper.predict(x_scaled.reshape(1, -1))[0]
+        if tgt_01:
+            ea = y_pred_scaled * y_range + y_train_min
+        else:
+            ea = ((y_pred_scaled + 1.0) / 2.0) * y_range + y_train_min
+        return float(ea)
+
+    # SLSQP Setup: Sum of auxiliary ratios must EXACTLY equal leftover_ratio (1.0 - sludge_ratio)
+    # This enforces a strictly fixed sludge ratio across all combinations, maintaining rigorous scientific control.
+    cons = {"type": "eq", "fun": lambda r: np.sum(r) - leftover_ratio}
+    bounds = [(0.0, combo_max_ratio) for _ in range(len(combo))]
+    # Initialize guess, clipping to combo_max_ratio to stay within bounds
+    x0 = np.minimum(np.array([leftover_ratio / len(combo)] * len(combo)), combo_max_ratio)
+
+    res = minimize(combo_obj_fun, x0, method="SLSQP", bounds=bounds, constraints=cons)
+
+    if not res.success:
+        return None
+
+    best_ea_val = float(res.fun)
+    best_ratio_assignment = res.x
+
+    # Sparsity & Physical Consistency Check:
+    # Enforce that all selected feedstocks in a Size=k combination are genuinely active (ratio >= 0.1%).
+    # This mathematically prevents degenerate representations where a larger size combo collapses 
+    # to a smaller one by setting redundant variables to exactly 0.00%.
+    if np.any(best_ratio_assignment < 0.001):
+        return None
+
+    actual_sum = float(np.sum(best_ratio_assignment))
+
+    combo_names = " + ".join(FEEDSTOCK_NAMES.get(fid, f"ID_{fid}") for fid in combo)
+    mixing_ratios_names = " + ".join(
+        f"{FEEDSTOCK_NAMES.get(fid, f'ID_{fid}')}:{ratio_val:.4f}" for fid, ratio_val in zip(combo, best_ratio_assignment)
+    )
+
+    return {
+        "Combo": "-".join(map(str, combo)),
+        "Combo_Names": combo_names,
+        "Size": len(combo),
+        "Pred_Ea_kJmol": best_ea_val,
+        "Delta_Ea_kJmol": best_ea_val - baseline_ea,
+        "MixingRatios": "-".join(
+            f"{fid}:{ratio_val:.4f}" for fid, ratio_val in zip(combo, best_ratio_assignment)
+        ),
+        "MixingRatios_Names": mixing_ratios_names,
+        "TotalFeedRatio": round(actual_sum, 4),
+        "SludgeRatio": round(1.0 - actual_sum, 4),
+    }
+
+
+# -----------------------------------------------------------------------------
+#  Main processing routine
+# -----------------------------------------------------------------------------
 
 def process_ea(
     shap_dir: str,
@@ -224,6 +479,9 @@ def process_ea(
     search_combos: bool = False,
     combo_max_ratio: float = 0.5,
     sludge_ratio: float = 0.5,
+    method: str = "scipy",
+    cores: int = 1,
+    max_single_ratio: float = 0.20,
 ):
     # Ensure output directory exists early for any plots
     os.makedirs(out_dir, exist_ok=True)
@@ -239,6 +497,8 @@ def process_ea(
 
     df_rank = summarise_feedstock_shap(shap_values, feature_names)
     df_top = df_rank.head(top_n).copy()
+    # Insert physical feedstock names as a separate column for direct read
+    df_top.insert(1, "Feedstock_Name", df_top["Feedstock_ID"].map(FEEDSTOCK_NAMES))
 
     # Optional forward simulation ------------------------------------------------
     if simulate:
@@ -264,30 +524,47 @@ def process_ea(
         pred_eas = []
         delta_eas = []
 
+        logger.info("Finding optimal mixing ratios for top %d feedstocks (method: %s) ...", len(df_top), method)
         for row in df_top.itertuples():
             feed_id = int(row.Feedstock_ID)
             ft_col = feat_names_net.index(f"{FT_PREFIX}{feed_id}")
             mr_col = feat_names_net.index(f"{MR_PREFIX}{feed_id}")
 
-            best_ea_val = np.inf
-            best_ratio = None
+            if method == "scipy":
+                # Continuous numerical optimization using minimize_scalar (Brent's Bounded method)
+                def single_obj(ratio):
+                    x = baseline_vec.copy()
+                    x[ft_col] = 1.0
+                    x[mr_col] = ratio
+                    return predict_ea(wrapper, x, train_min, train_range, y_train_min, y_range, tgt_01)
 
-            for ratio in ratio_grid:
-                x = baseline_vec.copy()
-                x[ft_col] = 1.0
-                x[mr_col] = ratio
-                ea_val = predict_ea(
-                    wrapper,
-                    x,
-                    train_min,
-                    train_range,
-                    y_train_min,
-                    y_range,
-                    tgt_01,
-                )
-                if ea_val < best_ea_val:
-                    best_ea_val = ea_val
-                    best_ratio = ratio
+                res = minimize_scalar(single_obj, bounds=(0.0, max_single_ratio), method="bounded")
+                best_ea_val = float(res.fun)
+                best_ratio = float(res.x)
+            else:
+                # Traditional discrete grid search
+                best_ea_val = np.inf
+                best_ratio = None
+                # Filter ratio grid to respect max_single_ratio constraint
+                active_grid = ratio_grid[ratio_grid <= max_single_ratio] if len(ratio_grid) > 0 else ratio_grid
+                if len(active_grid) == 0:
+                    active_grid = np.array([max_single_ratio])
+                for ratio in active_grid:
+                    x = baseline_vec.copy()
+                    x[ft_col] = 1.0
+                    x[mr_col] = ratio
+                    ea_val = predict_ea(
+                        wrapper,
+                        x,
+                        train_min,
+                        train_range,
+                        y_train_min,
+                        y_range,
+                        tgt_01,
+                    )
+                    if ea_val < best_ea_val:
+                        best_ea_val = ea_val
+                        best_ratio = ratio
 
             best_ratios.append(best_ratio)
             pred_eas.append(best_ea_val)
@@ -324,8 +601,10 @@ def process_ea(
                             x[mr_col] = ratio_use
                             ea_val = predict_ea(wrapper, x, train_min, train_range, y_train_min, y_range, tgt_01)
                             deltas_series.append(ea_val - baseline_ea)
-                        ax_conv.plot(conversion_values, deltas_series, label=f"ID {feed_id}")
-                        conv_data[f"ID_{feed_id}"] = deltas_series
+                        feed_name = FEEDSTOCK_NAMES.get(feed_id, "")
+                        label_str = f"ID {feed_id} ({feed_name})" if feed_name else f"ID {feed_id}"
+                        ax_conv.plot(conversion_values, deltas_series, label=label_str)
+                        conv_data[f"ID_{feed_id} ({feed_name})"] = deltas_series
                     ax_conv.set_xlabel("Degree_conversion")
                     ax_conv.set_ylabel("Δ Ea (kJ/mol) vs baseline")
                     ax_conv.set_title("ΔEa vs Conversion for Negative-Gain Candidates")
@@ -350,52 +629,95 @@ def process_ea(
             neg_ids = df_top[df_top["Delta_Ea_kJmol"] < 0]["Feedstock_ID"].astype(int).tolist()
             logger.info("Searching combinations among %d negative-gain feedstocks …", len(neg_ids))
 
-            combo_records = []
             max_feed_ratio = combo_max_ratio
             leftover_ratio = max(0.0, 1.0 - sludge_ratio)
-            for r in range(2, len(neg_ids) + 1):
-                for combo in itertools.combinations(neg_ids, r):
-                    # If per-feed cap already prevents feasible allocation, skip early
-                    if leftover_ratio > r * max_feed_ratio + 1e-8:
-                        continue
 
-                    # Generate candidate ratio vectors (order-sensitive permutations considered later)
-                    ratio_vectors = generate_ratio_vectors(r, leftover_ratio, ratio_grid, max_feed_ratio)
-                    if not ratio_vectors:
-                        continue
+            if method == "scipy":
+                # Continuous optimization with multi-core parallelization
+                combos = []
+                for r in range(2, len(neg_ids) + 1):
+                    for combo in itertools.combinations(neg_ids, r):
+                        # Skip early if bounds are mathematically infeasible
+                        if leftover_ratio > r * max_feed_ratio + 1e-8:
+                            continue
+                        combos.append(combo)
 
-                    best_ea_val = np.inf
-                    best_ratio_assignment: list[float] | None = None
+                if combos:
+                    tasks = [
+                        (
+                            combo,
+                            feat_names_net,
+                            baseline_vec,
+                            train_min,
+                            train_range,
+                            y_train_min,
+                            y_range,
+                            tgt_01,
+                            leftover_ratio,
+                            max_feed_ratio,
+                            baseline_ea,
+                            mat_file,
+                        )
+                        for combo in combos
+                    ]
+                    logger.info("Launching parallel SLSQP optimization across %d cores for %d combinations ...", cores, len(combos))
+                    with multiprocessing.Pool(processes=cores) as pool:
+                        results = pool.map(_optimize_combo_worker, tasks)
+                    combo_records = [r for r in results if r is not None]
+                else:
+                    combo_records = []
+            else:
+                # Traditional discrete grid search (single-threaded)
+                combo_records = []
+                for r in range(2, len(neg_ids) + 1):
+                    for combo in itertools.combinations(neg_ids, r):
+                        # If per-feed cap already prevents feasible allocation, skip early
+                        if leftover_ratio > r * max_feed_ratio + 1e-8:
+                            continue
 
-                    # Test each ratio vector and its permutations (if r > 1)
-                    for vec in ratio_vectors:
-                        perms = [vec] if r == 1 else set(itertools.permutations(vec))
-                        for perm in perms:
-                            x = baseline_vec.copy()
-                            for fid, ratio_val in zip(combo, perm):
-                                ft_col = feat_names_net.index(f"{FT_PREFIX}{fid}")
-                                mr_col = feat_names_net.index(f"{MR_PREFIX}{fid}")
-                                x[ft_col] = 1.0
-                                x[mr_col] = ratio_val
-                            ea_val = predict_ea(wrapper, x, train_min, train_range, y_train_min, y_range, tgt_01)
-                            if ea_val < best_ea_val:
-                                best_ea_val = ea_val
-                                best_ratio_assignment = perm
+                        # Generate candidate ratio vectors (order-sensitive permutations considered later)
+                        ratio_vectors = generate_ratio_vectors(r, leftover_ratio, ratio_grid, max_feed_ratio)
+                        if not ratio_vectors:
+                            continue
 
-                    if best_ratio_assignment is None:
-                        continue
+                        best_ea_val = np.inf
+                        best_ratio_assignment = None
 
-                    combo_records.append({
-                        "Combo": "-".join(map(str, combo)),
-                        "Size": r,
-                        "Pred_Ea_kJmol": best_ea_val,
-                        "Delta_Ea_kJmol": best_ea_val - baseline_ea,
-                        "MixingRatios": "-".join(
-                            f"{fid}:{ratio_val:.3f}" for fid, ratio_val in zip(combo, best_ratio_assignment)
-                        ),
-                        "TotalFeedRatio": leftover_ratio,
-                        "SludgeRatio": sludge_ratio,
-                    })
+                        # Test each ratio vector and its permutations (if r > 1)
+                        for vec in ratio_vectors:
+                            perms = [vec] if r == 1 else set(itertools.permutations(vec))
+                            for perm in perms:
+                                x = baseline_vec.copy()
+                                for fid, ratio_val in zip(combo, perm):
+                                    ft_col = feat_names_net.index(f"{FT_PREFIX}{fid}")
+                                    mr_col = feat_names_net.index(f"{MR_PREFIX}{fid}")
+                                    x[ft_col] = 1.0
+                                    x[mr_col] = ratio_val
+                                ea_val = predict_ea(wrapper, x, train_min, train_range, y_train_min, y_range, tgt_01)
+                                if ea_val < best_ea_val:
+                                    best_ea_val = ea_val
+                                    best_ratio_assignment = perm
+
+                        if best_ratio_assignment is None:
+                            continue
+
+                        combo_names = " + ".join(FEEDSTOCK_NAMES.get(fid, f"ID_{fid}") for fid in combo)
+                        mixing_ratios_names = " + ".join(
+                            f"{FEEDSTOCK_NAMES.get(fid, f'ID_{fid}')}:{ratio_val:.3f}" for fid, ratio_val in zip(combo, best_ratio_assignment)
+                        )
+                        combo_records.append({
+                            "Combo": "-".join(map(str, combo)),
+                            "Combo_Names": combo_names,
+                            "Size": r,
+                            "Pred_Ea_kJmol": best_ea_val,
+                            "Delta_Ea_kJmol": best_ea_val - baseline_ea,
+                            "MixingRatios": "-".join(
+                                f"{fid}:{ratio_val:.3f}" for fid, ratio_val in zip(combo, best_ratio_assignment)
+                            ),
+                            "MixingRatios_Names": mixing_ratios_names,
+                            "TotalFeedRatio": leftover_ratio,
+                            "SludgeRatio": sludge_ratio,
+                        })
 
             if combo_records:
                 df_combo = pd.DataFrame(combo_records)
@@ -495,12 +817,26 @@ def process_ea(
             logger.warning("Failed to create ΔEa plot: %s", e)
 
 
-# -----------------------------------------------------------------------------
-#  Entry-point
-# -----------------------------------------------------------------------------
-
-
 def main():
+    from pathlib import Path
+    
+    script_dir = Path(__file__).resolve().parent
+    project_root = script_dir.parent
+    
+    # Dynamically locate the latest SHAP results folder if available
+    shap_outputs_dir = project_root / "results" / "shap_outputs"
+    latest_shap_dir = ""
+    if shap_outputs_dir.exists():
+        subdirs = [d for d in shap_outputs_dir.iterdir() if d.is_dir() and d.name.startswith("SHAP_Analysis_Ea_Results_")]
+        if subdirs:
+            latest_shap_dir = str(max(subdirs, key=lambda d: d.name))
+    if not latest_shap_dir:
+        latest_shap_dir = str(shap_outputs_dir)
+        
+    default_output_dir = project_root / "results" / "blending_outputs"
+    default_mat_file = project_root / "bpDNN4Ea_modelfiles" / "Results_trained.mat"
+    default_mc_csv = project_root / "results" / "mc_outputs" / "mc_ea_predictions.csv"
+
     parser = argparse.ArgumentParser(
         description="Generate feedstock blending strategies that reduce activation energy (Ea).",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -508,13 +844,13 @@ def main():
     parser.add_argument(
         "--shap_dir",
         type=str,
-        default="../../SHAP_Analysis_Ea_Results_20250701_000529",
+        default=latest_shap_dir,
         help="Directory containing SHAP results for Ea (shap_values.npy & 00_feature_names_used.txt)",
     )
     parser.add_argument(
         "--output_dir",
         type=str,
-        default="./",
+        default=str(default_output_dir),
         help="Directory to write CSV and plots",
     )
     parser.add_argument(
@@ -531,13 +867,13 @@ def main():
     parser.add_argument(
         "--mat_file",
         type=str,
-        default="../../bpDNN4Ea_modelfiles/Results_trained.mat",
+        default=str(default_mat_file),
         help="Path to MATLAB .mat file with trained neural-network (required for --simulate)",
     )
     parser.add_argument(
         "--mc_csv",
         type=str,
-        default="../mc_ea_predictions.csv",
+        default=str(default_mc_csv),
         help="Monte-Carlo CSV containing baseline predictions (required for --simulate)",
     )
     parser.add_argument(
@@ -566,7 +902,7 @@ def main():
     parser.add_argument(
         "--combo_max_ratio",
         type=float,
-        default=0.5,
+        default=0.20,
         help="Maximum ratio per feedstock when searching combinations.",
     )
     parser.add_argument(
@@ -574,6 +910,30 @@ def main():
         type=float,
         default=0.5,
         help="Fraction of sludge in the final blend. Feedstock ratios in each combo will sum to (1 - sludge_ratio).",
+    )
+    parser.add_argument(
+        "--method",
+        type=str,
+        choices=["scipy", "grid"],
+        default="scipy",
+        help="Optimization method: 'scipy' for continuous optimization, 'grid' for discrete scan.",
+    )
+    
+    # Added --cores CLI option, defaulting to SLURM_CPUS_PER_TASK for HPC scaling
+    default_cores = int(os.environ.get("SLURM_CPUS_PER_TASK", 1))
+    parser.add_argument(
+        "--cores",
+        type=int,
+        default=default_cores,
+        help="Number of CPU cores for parallel combination search.",
+    )
+    
+    # Added --max-single-ratio CLI option to limit the single-feedstock replacement ratio and respect waste disposal constraints
+    parser.add_argument(
+        "--max-single-ratio",
+        type=float,
+        default=0.20,
+        help="Maximum mixing ratio for a single feedstock optimization (e.g. 0.20 for 20%% addition limit, keeping sludge at >=80%%).",
     )
     args = parser.parse_args()
 
@@ -617,10 +977,13 @@ def main():
         search_combos=args.search_combos,
         combo_max_ratio=args.combo_max_ratio,
         sludge_ratio=args.sludge_ratio,
+        method=args.method,
+        cores=args.cores,
+        max_single_ratio=args.max_single_ratio,
     )
 
     logger.info("Analysis completed.")
 
 
 if __name__ == "__main__":
-    main() 
+    main()

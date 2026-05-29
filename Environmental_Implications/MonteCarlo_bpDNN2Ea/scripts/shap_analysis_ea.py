@@ -1,6 +1,4 @@
 """
-SHAP Analysis for Activation Energy (Ea) Prediction Neural Network
-
 This script loads a pre-trained neural network model from MATLAB .mat file
 and performs SHAP (SHapley Additive exPlanations) analysis to interpret the model
 that predicts activation energy for pyrolysis reactions.
@@ -44,11 +42,6 @@ import datetime
 import sklearn
 from sklearn.dummy import DummyRegressor
 
-# -----------------------------------------------------------------------------
-# Added logging, deterministic seeding, and helper utilities (borrowed from
-# shap_analysis.py for consistency across scripts).
-# -----------------------------------------------------------------------------
-
 import logging
 import random  # ensure reproducibility across Python's RNG as well
 
@@ -60,6 +53,10 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+
+# Suppress noisy third-party logging from matplotlib and fontTools
+logging.getLogger('matplotlib').setLevel(logging.WARNING)
+logging.getLogger('fontTools').setLevel(logging.WARNING)
 
 
 # Helper to print only in debug mode (mimics the behaviour in shap_analysis.py)
@@ -669,25 +666,36 @@ def save_plot_multi_format(file_path_without_ext, dpi=600, bbox_inches='tight', 
     print(f"Saving plot to: {eps_path}")
     try:
         # Set matplotlib backend parameters for better EPS compatibility
-        import matplotlib
-        original_backend = matplotlib.get_backend()
+        import matplotlib as mpl
+        # Set font type globally in matplotlib to embed TrueType fonts (Type 42)
+        # This prevents font embedding issues when importing into Adobe Illustrator
+        mpl.rcParams['ps.fonttype'] = 42
+        mpl.rcParams['pdf.fonttype'] = 42
         
         plt.savefig(eps_path, 
                    bbox_inches=bbox_inches, 
                    facecolor=facecolor, 
                    format='eps',
                    transparent=False,
-                   edgecolor='none',
-                   # EPS-specific parameters for Adobe Illustrator compatibility
-                   ps_fonttype=42,  # Use TrueType fonts (Type 42) instead of Type 3
-                   orientation='portrait',
-                   papertype='letter')
+                   edgecolor='none')
     except Exception as e:
         print(f"Error saving EPS plot: {e}, trying with minimal options")
         try:
-            plt.savefig(eps_path, format='eps', ps_fonttype=42)
+            plt.savefig(eps_path, format='eps', bbox_inches=bbox_inches)
         except Exception as e2:
-            print(f"Failed to save EPS plot: {e2}")
+            print(f"Failed to save EPS plot with minimal options: {e2}")
+            try:
+                plt.savefig(eps_path, format='eps')
+            except Exception as e3:
+                print(f"Failed to save EPS plot completely: {e3}")
+                # Try PDF as fallback for vector format
+                try:
+                    pdf_path = f"{file_path_without_ext}.pdf"
+                    print(f"Trying PDF as fallback for Adobe Illustrator compatibility: {pdf_path}")
+                    plt.savefig(pdf_path, format='pdf', bbox_inches=bbox_inches, facecolor=facecolor)
+                    print(f"Successfully saved PDF as fallback for EPS")
+                except Exception as e4:
+                    print(f"Failed to save PDF fallback: {e4}")
 
 def create_custom_waterfall_plot(explainer, shap_values, X_test_df, output_dir, instance_idx=0, plot_number=1):
     """
@@ -712,28 +720,30 @@ def create_custom_waterfall_plot(explainer, shap_values, X_test_df, output_dir, 
     # Get the feature values for the specific instance
     instance_values = X_test_df.iloc[instance_idx]
     
-    # Create the waterfall plot
-    try:
-        shap.plots._waterfall.waterfall_legacy(
-            expected_value,
-            shap_values[instance_idx],
-            X_test_df.iloc[instance_idx],
-            max_display=20,  # Display top 20 features
-            show=False,
-            pos_color="#FF0052",  # Bright red for positive values
-            neg_color="#0088FF",  # Bright blue for negative values
-            linewidth=0,
-            alpha=0.8
-        )
-    except TypeError as e:
-        print(f"Warning: Falling back to standard parameters due to error: {e}")
-        shap.plots._waterfall.waterfall_legacy(
-            expected_value,
-            shap_values[instance_idx],
-            X_test_df.iloc[instance_idx],
-            max_display=20,
-            show=False
-        )
+    # Create the waterfall plot using ONLY standard parameters (guarantees no API errors)
+    shap.plots._waterfall.waterfall_legacy(
+        expected_value,
+        shap_values[instance_idx],
+        X_test_df.iloc[instance_idx],
+        max_display=20,  # Display top 20 features
+        show=False
+    )
+    
+    # Optimize the plot styling via matplotlib post-processing to avoid SHAP version conflicts
+    import matplotlib.patches as patches
+    ax = plt.gca()
+    for patch in ax.patches:
+        if isinstance(patch, patches.Rectangle):
+            # Check original color to distinguish positive (reddish) vs negative (bluish) bars
+            rgba = patch.get_facecolor()
+            if rgba[0] > rgba[2]:  # More Red than Blue -> Positive contribution
+                patch.set_facecolor("#FF0052")
+            elif rgba[2] > rgba[0]:  # More Blue than Red -> Negative contribution
+                patch.set_facecolor("#0088FF")
+            
+            # Apply other custom styling parameters
+            patch.set_linewidth(0)
+            patch.set_alpha(0.8)
     
     # Get current y-axis labels
     ax = plt.gca()
@@ -971,9 +981,13 @@ def run_shap_analysis(matlab_file, debug=False):
         print("DEBUG MODE ENABLED - Will print detailed debugging information")
     
     # Create a single organized output directory with timestamp
+    from pathlib import Path
+    script_dir = Path(__file__).resolve().parent
+    project_root = script_dir.parent
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    main_output_dir = f'SHAP_Analysis_Ea_Results_{timestamp}'
-    os.makedirs(main_output_dir, exist_ok=True)
+    main_output_dir = project_root / "results" / "shap_outputs" / f"SHAP_Analysis_Ea_Results_{timestamp}"
+    main_output_dir.mkdir(parents=True, exist_ok=True)
+    main_output_dir = str(main_output_dir)
     print(f"Creating main output directory: {main_output_dir}")
     
     # Create a README file explaining the analysis
@@ -1181,7 +1195,10 @@ def run_shap_analysis(matlab_file, debug=False):
 def main():
     """Main function to run SHAP analysis for Ea prediction"""
     # Default MATLAB file path
-    matlab_file = 'bpDNN4Ea_modelfiles/Results_trained.mat'
+    from pathlib import Path
+    script_dir = Path(__file__).resolve().parent
+    project_root = script_dir.parent
+    matlab_file = str(project_root / "bpDNN4Ea_modelfiles" / "Results_trained.mat")
     
     # Parse command line arguments
     debug = False  # Default: debug mode off

@@ -98,6 +98,11 @@ def draw_dependence(
 # -----------------------------------------------------------------------------
 
 def main() -> None:
+    from pathlib import Path
+    script_dir = Path(__file__).resolve().parent
+    project_root = script_dir.parent
+    default_csv = project_root / "results" / "mc_outputs" / "mc_ea_predictions.csv"
+
     parser = argparse.ArgumentParser(
         description="Plot Ea dependence scatter plot from Monte-Carlo predictions CSV.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -105,7 +110,7 @@ def main() -> None:
     parser.add_argument(
         "--csv_path",
         type=str,
-        default="mc_ea_predictions.csv",
+        default=str(default_csv),
         help="Path to the Monte-Carlo predictions CSV file.",
     )
     parser.add_argument(
