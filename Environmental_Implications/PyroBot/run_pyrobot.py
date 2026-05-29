@@ -382,6 +382,12 @@ def main():
     parser.add_argument("--scenario", type=str, default="B", choices=["A", "B"], help="Optimization locked scenario limits")
     parser.add_argument("--cores", type=int, default=1, help="CPU cores allocated")
     parser.add_argument("--chatbot", action="store_true", help="Launch interactive Chatbot Shell in agent mode")
+    parser.add_argument(
+        "--query",
+        type=str,
+        default="Design a ternary co-pyrolysis recipe with municipal sewage sludge that maximizes Biochar yield above 42% at a low target temperature of 450°C, while keeping the Apparent Activation Energy below 390 kJ/mol under Scenario B (80% sludge load) constraints.",
+        help="Command-line query for inverse design when chatbot mode is disabled"
+    )
     args = parser.parse_args()
     
     project_root = Path(__file__).resolve().parent
@@ -424,8 +430,9 @@ def main():
                 except (KeyboardInterrupt, EOFError):
                     break
         else:
-            # Command mode inverse design sweep
-            user_input = "Design a ternary co-pyrolysis recipe with municipal sewage sludge that lowers Apparent Ea while maximizing Biochar."
+            # Command mode inverse design sweep using provided or default target query
+            user_input = args.query
+            print(f"\n[Command Mode] Submitted target objective query to PyroBot Agent:\n\"{user_input}\"\n")
             report = orchestrator.execute_inverse_design(user_input)
             print(report)
 

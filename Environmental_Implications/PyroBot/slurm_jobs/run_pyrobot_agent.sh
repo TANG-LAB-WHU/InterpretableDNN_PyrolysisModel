@@ -150,10 +150,11 @@ echo "======================================================================="
 echo "Launching Qwen3.6-27B Autonomous Scientific Agent Orchestrator..."
 echo "======================================================================="
 
-# Run the agent in non-interactive batch-command mode for this job
+# Run the agent in non-interactive batch-command mode for this job.
+# It automatically consumes the target demonstration query from pyrolysis_Bot.md:L97-L99:
+# "Design a ternary co-pyrolysis recipe with municipal sewage sludge that maximizes Biochar yield above 42% at a low target temperature of 450°C, while keeping the Apparent Activation Energy below 390 kJ/mol under Scenario B (80% sludge load) constraints."
 python -u run_pyrobot.py \
     --mode agent \
-    --chatbot \
     --cores "$SLURM_CPUS_PER_TASK"
 
 # Clean up background server processes if spawned
