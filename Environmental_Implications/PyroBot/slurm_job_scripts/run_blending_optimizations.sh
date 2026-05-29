@@ -1,15 +1,15 @@
 #!/bin/bash
-#SBATCH --job-name=PyroBot_MC_Predictions
+#SBATCH --job-name=PyroBot_Blending_Optimizations
 #SBATCH --partition=9a14a
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=192                # 192-core high-throughput scanning
+#SBATCH --cpus-per-task=192                # Parallel processing for continuous optimizations
 #SBATCH --account=tangsiqi
-#SBATCH --output=mc_predictions_%j.log
-#SBATCH --error=mc_predictions_%j.err
+#SBATCH --output=blending_optimizations_%j.log
+#SBATCH --error=blending_optimizations_%j.err
 
 #-----------------------------------------------------------------------------#
-# PyroBot: Unified Monte Carlo Prediction Slurm Scheduler (192 Cores)
+# PyroBot: Continuous simplex recipe optimizations Slurm Scheduler (192 Cores)
 # Designed for Wuhan University HPC Cluster (9a14a CPU/GPU Partition)
 #-----------------------------------------------------------------------------#
 
@@ -24,15 +24,15 @@ echo "======================================================================="
 if [ -n "$SLURM_SUBMIT_DIR" ]; then
     # Running under Slurm scheduler context (prevents spool copy path errors)
     case "$SLURM_SUBMIT_DIR" in
-        */slurm_jobs) PROJECT_ROOT="$( dirname "$SLURM_SUBMIT_DIR" )" ;;
-        *)            PROJECT_ROOT="$SLURM_SUBMIT_DIR" ;;
+        */slurm_job_scripts) PROJECT_ROOT="$( dirname "$SLURM_SUBMIT_DIR" )" ;;
+        *)                   PROJECT_ROOT="$SLURM_SUBMIT_DIR" ;;
     esac
 else
     # Running under direct shell execution context
     SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     case "$SCRIPT_DIR" in
-        */slurm_jobs) PROJECT_ROOT="$( dirname "$SCRIPT_DIR" )" ;;
-        *)            PROJECT_ROOT="$SCRIPT_DIR" ;;
+        */slurm_job_scripts) PROJECT_ROOT="$( dirname "$SCRIPT_DIR" )" ;;
+        *)                   PROJECT_ROOT="$SCRIPT_DIR" ;;
     esac
 fi
 cd "$PROJECT_ROOT"
@@ -58,9 +58,6 @@ fi
 echo "Activating virtual environment: pyrolysis_model_dnn..."
 conda activate pyrolysis_model_dnn || conda activate base
 
-echo "Active Python interpreter: $(which python)"
-python --version
-
 # -----------------------------------------------------------------------------
 # Thread Isolation to Prevent Intel MKL / OpenBLAS Core Thrashing
 # -----------------------------------------------------------------------------
@@ -70,32 +67,47 @@ export OPENBLAS_NUM_THREADS=1
 export NUMEXPR_NUM_THREADS=1
 export VECLIB_MAXIMUM_THREADS=1
 
+echo "OMP_NUM_THREADS is set to: $OMP_NUM_THREADS"
 echo "Allocated CPU cores per task: $SLURM_CPUS_PER_TASK"
-echo "Running parallelized 2,000,000 Monte Carlo predictions (both Ea & Yield)..."
+echo "Optimizing co-pyrolysis blending recipes under dual industrial scenarios..."
 
 # Define task-aligned output directory with Slurm ID
 if [ -n "$SLURM_JOB_ID" ]; then
-    OUT_DIR="results/mc_predictions_${SLURM_JOB_ID}"
+    OUT_DIR="results/blending_optimizations_${SLURM_JOB_ID}"
 else
-    OUT_DIR="results/mc_predictions_local"
+    OUT_DIR="results/blending_optimizations_local"
 fi
 mkdir -p "$OUT_DIR"
 
-# Execute central CLI orchestrator in unbuffered mode
+# SCENARIO A: Integrated Regional Multi-Waste Co-Processing Model
+# Sludge lock = 50%, Individual additive ratio limit = 25% (total additive space = 50%)
+echo "======================================================================="
+echo "Executing SCENARIO A (50% Sewage Sludge locked, 25% max per additive)"
+echo "======================================================================="
 python -u run_pyrobot.py \
-    --mode mc \
-    --samples 2000000 \
-    --seed 2026 \
+    --mode optimize \
+    --scenario A \
     --cores $SLURM_CPUS_PER_TASK \
-    --out-dir "$OUT_DIR"
+    --out-dir "${OUT_DIR}/blending_outputs_50"
+
+# SCENARIO B: High-Throughput Sludge Disposal & Catalytic Co-processing Model
+# Sludge lock = 80%, Individual additive ratio limit = 10% (total additive space = 20%)
+echo "======================================================================="
+echo "Executing SCENARIO B (80% Sewage Sludge locked, 10% max per additive)"
+echo "======================================================================="
+python -u run_pyrobot.py \
+    --mode optimize \
+    --scenario B \
+    --cores $SLURM_CPUS_PER_TASK \
+    --out-dir "${OUT_DIR}/blending_outputs_20"
 
 # Copy Slurm log and error files to the consolidated output directory at the end and clean up originals
 if [ -n "$SLURM_JOB_ID" ]; then
-    cp "$SLURM_SUBMIT_DIR/mc_predictions_${SLURM_JOB_ID}.log" "$OUT_DIR/" 2>/dev/null
-    cp "$SLURM_SUBMIT_DIR/mc_predictions_${SLURM_JOB_ID}.err" "$OUT_DIR/" 2>/dev/null
-    rm -f "$SLURM_SUBMIT_DIR/mc_predictions_${SLURM_JOB_ID}.log" "$SLURM_SUBMIT_DIR/mc_predictions_${SLURM_JOB_ID}.err" 2>/dev/null
+    cp "$SLURM_SUBMIT_DIR/blending_optimizations_${SLURM_JOB_ID}.log" "$OUT_DIR/" 2>/dev/null
+    cp "$SLURM_SUBMIT_DIR/blending_optimizations_${SLURM_JOB_ID}.err" "$OUT_DIR/" 2>/dev/null
+    rm -f "$SLURM_SUBMIT_DIR/blending_optimizations_${SLURM_JOB_ID}.log" "$SLURM_SUBMIT_DIR/blending_optimizations_${SLURM_JOB_ID}.err" 2>/dev/null
 fi
 
 echo "======================================================================="
-echo "Monte Carlo Prediction finished successfully at: $(date)"
+echo "Dual-Scenario recipe optimizations finished successfully at: $(date)"
 echo "======================================================================="

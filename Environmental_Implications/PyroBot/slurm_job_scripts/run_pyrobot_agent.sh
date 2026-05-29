@@ -24,15 +24,15 @@ echo "======================================================================="
 if [ -n "$SLURM_SUBMIT_DIR" ]; then
     # Running under Slurm scheduler context (prevents spool copy path errors)
     case "$SLURM_SUBMIT_DIR" in
-        */slurm_jobs) PROJECT_ROOT="$( dirname "$SLURM_SUBMIT_DIR" )" ;;
-        *)            PROJECT_ROOT="$SLURM_SUBMIT_DIR" ;;
+        */slurm_job_scripts) PROJECT_ROOT="$( dirname "$SLURM_SUBMIT_DIR" )" ;;
+        *)                   PROJECT_ROOT="$SLURM_SUBMIT_DIR" ;;
     esac
 else
     # Running under direct shell execution context
     SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     case "$SCRIPT_DIR" in
-        */slurm_jobs) PROJECT_ROOT="$( dirname "$SCRIPT_DIR" )" ;;
-        *)            PROJECT_ROOT="$SCRIPT_DIR" ;;
+        */slurm_job_scripts) PROJECT_ROOT="$( dirname "$SCRIPT_DIR" )" ;;
+        *)                   PROJECT_ROOT="$SCRIPT_DIR" ;;
     esac
 fi
 cd "$PROJECT_ROOT"
