@@ -73,12 +73,27 @@ export VECLIB_MAXIMUM_THREADS=1
 echo "Allocated CPU cores per task: $SLURM_CPUS_PER_TASK"
 echo "Running parallelized 2,000,000 Monte Carlo predictions (both Ea & Yield)..."
 
+# Define task-aligned output directory with Slurm ID
+if [ -n "$SLURM_JOB_ID" ]; then
+    OUT_DIR="results/mc_predictions_${SLURM_JOB_ID}"
+else
+    OUT_DIR="results/mc_predictions_local"
+fi
+mkdir -p "$OUT_DIR"
+
 # Execute central CLI orchestrator in unbuffered mode
 python -u run_pyrobot.py \
     --mode mc \
     --samples 2000000 \
     --seed 2026 \
-    --cores $SLURM_CPUS_PER_TASK
+    --cores $SLURM_CPUS_PER_TASK \
+    --out-dir "$OUT_DIR"
+
+# Copy Slurm log and error files to the consolidated output directory at the end
+if [ -n "$SLURM_JOB_ID" ]; then
+    cp "slurm_jobs/mc_predictions_${SLURM_JOB_ID}.log" "$OUT_DIR/" 2>/dev/null
+    cp "slurm_jobs/mc_predictions_${SLURM_JOB_ID}.err" "$OUT_DIR/" 2>/dev/null
+fi
 
 echo "======================================================================="
 echo "Monte Carlo Prediction finished successfully at: $(date)"

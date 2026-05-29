@@ -71,6 +71,14 @@ echo "OMP_NUM_THREADS is set to: $OMP_NUM_THREADS"
 echo "Allocated CPU cores per task: $SLURM_CPUS_PER_TASK"
 echo "Optimizing co-pyrolysis blending recipes under dual industrial scenarios..."
 
+# Define task-aligned output directory with Slurm ID
+if [ -n "$SLURM_JOB_ID" ]; then
+    OUT_DIR="results/blending_optimizations_${SLURM_JOB_ID}"
+else
+    OUT_DIR="results/blending_optimizations_local"
+fi
+mkdir -p "$OUT_DIR"
+
 # SCENARIO A: Integrated Regional Multi-Waste Co-Processing Model
 # Sludge lock = 50%, Individual additive ratio limit = 25% (total additive space = 50%)
 echo "======================================================================="
@@ -79,7 +87,8 @@ echo "======================================================================="
 python -u run_pyrobot.py \
     --mode optimize \
     --scenario A \
-    --cores $SLURM_CPUS_PER_TASK
+    --cores $SLURM_CPUS_PER_TASK \
+    --out-dir "${OUT_DIR}/blending_outputs_50"
 
 # SCENARIO B: High-Throughput Sludge Disposal & Catalytic Co-processing Model
 # Sludge lock = 80%, Individual additive ratio limit = 10% (total additive space = 20%)
@@ -89,7 +98,14 @@ echo "======================================================================="
 python -u run_pyrobot.py \
     --mode optimize \
     --scenario B \
-    --cores $SLURM_CPUS_PER_TASK
+    --cores $SLURM_CPUS_PER_TASK \
+    --out-dir "${OUT_DIR}/blending_outputs_20"
+
+# Copy Slurm log and error files to the consolidated output directory at the end
+if [ -n "$SLURM_JOB_ID" ]; then
+    cp "slurm_jobs/blending_optimizations_${SLURM_JOB_ID}.log" "$OUT_DIR/" 2>/dev/null
+    cp "slurm_jobs/blending_optimizations_${SLURM_JOB_ID}.err" "$OUT_DIR/" 2>/dev/null
+fi
 
 echo "======================================================================="
 echo "Dual-Scenario recipe optimizations finished successfully at: $(date)"

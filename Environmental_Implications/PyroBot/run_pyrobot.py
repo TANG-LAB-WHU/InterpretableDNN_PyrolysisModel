@@ -162,7 +162,7 @@ def generate_mc_samples(ranges: pd.DataFrame, constants: pd.Series, n: int, core
         
     return pd.DataFrame([row for chunk_res in results for row in chunk_res])
 
-def run_mc_predictions_pipeline(n_samples: int, seed: int, cores: int, project_root: Path):
+def run_mc_predictions_pipeline(n_samples: int, seed: int, cores: int, project_root: Path, out_dir_arg: str = ""):
     """Run parallelized Monte Carlo prediction simulation for both Ea and Yields."""
     print(f"\n[Monte Carlo Pipeline] Scanning baseline sewage sludge properties ({n_samples} samples)...")
     
@@ -235,7 +235,10 @@ def run_mc_predictions_pipeline(n_samples: int, seed: int, cores: int, project_r
     pred_df = pred_df[valid_mask].reset_index(drop=True)
     
     # Export CSV results
-    out_dir = project_root / "results" / "mc_predictions"
+    if out_dir_arg:
+        out_dir = Path(out_dir_arg).resolve()
+    else:
+        out_dir = project_root / "results" / "mc_predictions"
     out_dir.mkdir(parents=True, exist_ok=True)
     csv_path = out_dir / "mc_predictions_complete.csv"
     
@@ -269,7 +272,7 @@ def run_mc_predictions_pipeline(n_samples: int, seed: int, cores: int, project_r
 # -----------------------------------------------------------------------------
 # 2. Continuous Sweeper Optimizer Pipeline
 # -----------------------------------------------------------------------------
-def run_blending_optimizations_pipeline(scenario: str, cores: int, project_root: Path):
+def run_blending_optimizations_pipeline(scenario: str, cores: int, project_root: Path, out_dir_arg: str = ""):
     """Run Scipy SLSQP continuous optimization sweep over Scenario A or B parameters."""
     print(f"\n[Optimizer Pipeline] Running recipe sweep under Scenario {scenario}...")
     
@@ -344,7 +347,10 @@ def run_blending_optimizations_pipeline(scenario: str, cores: int, project_root:
         
     df_results = pd.DataFrame(rows).sort_values("Apparent_Ea", ascending=True)
     
-    out_dir = project_root / "results" / "optimized_blends" / out_folder
+    if out_dir_arg:
+        out_dir = Path(out_dir_arg).resolve()
+    else:
+        out_dir = project_root / "results" / "optimized_blends" / out_folder
     out_dir.mkdir(parents=True, exist_ok=True)
     csv_path = out_dir / "combo_optimized_recipes.csv"
     df_results.to_csv(csv_path, index=False)
@@ -382,6 +388,7 @@ def main():
     parser.add_argument("--scenario", type=str, default="B", choices=["A", "B"], help="Optimization locked scenario limits")
     parser.add_argument("--cores", type=int, default=1, help="CPU cores allocated")
     parser.add_argument("--chatbot", action="store_true", help="Launch interactive Chatbot Shell in agent mode")
+    parser.add_argument("--out-dir", type=str, default="", help="Custom output directory for results")
     parser.add_argument(
         "--query",
         type=str,
@@ -393,13 +400,13 @@ def main():
     project_root = Path(__file__).resolve().parent
     
     if args.mode == "mc":
-        run_mc_predictions_pipeline(args.samples, args.seed, args.cores, project_root)
+        run_mc_predictions_pipeline(args.samples, args.seed, args.cores, project_root, args.out_dir)
         
     elif args.mode == "optimize":
-        run_blending_optimizations_pipeline(args.scenario, args.cores, project_root)
+        run_blending_optimizations_pipeline(args.scenario, args.cores, project_root, args.out_dir)
         
     elif args.mode == "agent":
-        orchestrator = PyroBotOrchestrator(cores=args.cores)
+        orchestrator = PyroBotOrchestrator(cores=args.cores, results_dir=Path(args.out_dir) if args.out_dir else None)
         
         if args.chatbot:
             print("\n" + "="*80)

@@ -165,6 +165,15 @@ echo "======================================================================="
 # Initialize Python agent parameters array to ensure robust space and quote preservation
 AGENT_ARGS=("--mode" "agent" "--cores" "$SLURM_CPUS_PER_TASK")
 
+# Define task-aligned output directory with Slurm ID
+if [ -n "$SLURM_JOB_ID" ]; then
+    OUT_DIR="results/pyrobot_agent_${SLURM_JOB_ID}"
+else
+    OUT_DIR="results/pyrobot_agent_local"
+fi
+mkdir -p "$OUT_DIR"
+AGENT_ARGS+=("--out-dir" "$OUT_DIR")
+
 # Dynamic execution mode determination based on script arguments:
 # 1. run_pyrobot_agent.sh --chatbot  => Starts interactive conversational shell
 # 2. run_pyrobot_agent.sh "query"    => Starts batch mode with custom natural language query
@@ -186,6 +195,12 @@ if [ "$SERVER_PID" -gt 0 ]; then
     echo "Shutting down local Qwen3.6 serving backend (PID: $SERVER_PID)..."
     kill "$SERVER_PID"
     wait "$SERVER_PID" 2>/dev/null
+fi
+
+# Copy Slurm log and error files to the consolidated output directory at the end
+if [ -n "$SLURM_JOB_ID" ]; then
+    cp "slurm_jobs/pyrobot_agent_${SLURM_JOB_ID}.log" "$OUT_DIR/" 2>/dev/null
+    cp "slurm_jobs/pyrobot_agent_${SLURM_JOB_ID}.err" "$OUT_DIR/" 2>/dev/null
 fi
 
 echo "======================================================================="

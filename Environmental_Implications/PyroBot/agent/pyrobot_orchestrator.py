@@ -35,7 +35,7 @@ from .prompt_templates import (
 
 class PyroBotOrchestrator:
     """The central orchestration layer managing data flows, solvers, and reasoning."""
-    def __init__(self, cores: int = 1):
+    def __init__(self, cores: int = 1, results_dir: Optional[Path] = None):
         self.cores = cores
         
         # Path anchoring
@@ -43,7 +43,11 @@ class PyroBotOrchestrator:
         self.project_root = self.agent_dir.parent
         self.data_dir = self.project_root / "data"
         self.models_dir = self.project_root / "models"
-        self.results_dir = self.project_root / "results"
+        
+        if results_dir:
+            self.results_dir = Path(results_dir).resolve()
+        else:
+            self.results_dir = self.project_root / "results"
         
         # Core inputs
         self.range_xlsx = self.data_dir / "raw" / "Municipal_Sludge_Data_cleaned_mean.xlsx"
