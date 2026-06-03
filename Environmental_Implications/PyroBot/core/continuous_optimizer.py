@@ -41,8 +41,10 @@ def evaluate_blend_properties(
     blend_vector: np.ndarray,  # mixing ratio of additives (excludes locked sludge)
     sludge_ratio: float,
     active_additive_ids: list[int],
-    baseline_vector: np.ndarray,
-    feature_names: list[str],
+    ea_baseline_vector: np.ndarray,
+    ea_feature_names: list[str],
+    yield_baseline_vector: np.ndarray,
+    yield_feature_names: list[str],
     ea_wrapper: MatlabNeuralNetworkWrapper,
     ea_train_X: np.ndarray,
     ea_train_y: np.ndarray,
@@ -56,44 +58,51 @@ def evaluate_blend_properties(
     Returns:
         Predicted apparent Ea (kJ/mol), Biochar Yield (%), Bioliquid Yield (%), Biogas Yield (%)
     """
-    # 1. Reconstruct full 24-feature (or co-pyrolysis feature) vector
-    x_raw = baseline_vector.copy()
-    
-    # Map locked sludge (Feedstock ID = 6 usually)
-    # Ratios and IDs are mapped into FeedstockType_i and MixingRatio_i columns
-    # Find positions
-    ft_cols = [i for i, name in enumerate(feature_names) if name.startswith("FeedstockType_")]
-    mr_cols = [i for i, name in enumerate(feature_names) if name.startswith("MixingRatio_")]
-    
-    # Reset all co-pyrolysis additive slots first to prevent residual mapping leak
-    for col_idx in ft_cols + mr_cols:
-        x_raw[col_idx] = 0.0
+    def build_x_raw(baseline_vector: np.ndarray, feature_names: list[str]) -> np.ndarray:
+        x_raw = baseline_vector.copy()
         
-    # The first co-pyrolysis component slot is reserved for locked Sewage Sludge (ID = 6)
-    x_raw[ft_cols[0]] = 6.0
-    x_raw[mr_cols[0]] = sludge_ratio
-    
-    # Fill remaining slots with active candidate additives
-    for slot_idx, (add_id, ratio) in enumerate(zip(active_additive_ids, blend_vector), start=1):
-        if slot_idx < len(ft_cols):
-            x_raw[ft_cols[slot_idx]] = float(add_id)
-            x_raw[mr_cols[slot_idx]] = float(ratio)
+        # Find positions
+        ft_cols = [i for i, name in enumerate(feature_names) if name.startswith("FeedstockType_")]
+        mr_cols = [i for i, name in enumerate(feature_names) if name.startswith("MixingRatio_")]
+        
+        # Reset all co-pyrolysis additive slots first to prevent residual mapping leak
+        for col_idx in ft_cols + mr_cols:
+            x_raw[col_idx] = 0.0
             
-    # Calculate derived kinetic attributes: ReactionTime = TargetTemperature / HeatingRate + deltaTime
-    tt_idx = feature_names.index("TargetTemperature/Celsius")
-    hr_idx = feature_names.index("HeatingRate/(K/min)") if "HeatingRate/(K/min)" in feature_names else feature_names.index("Heating rate")
-    rt_idx = feature_names.index("ReactionTime/min") if "ReactionTime/min" in feature_names else feature_names.index("Reaction time")
-    
-    if x_raw[hr_idx] > 0:
-        x_raw[rt_idx] = x_raw[tt_idx] / x_raw[hr_idx]
+        # The first co-pyrolysis component slot is reserved for locked Sewage Sludge (ID = 6)
+        if len(ft_cols) > 0 and len(mr_cols) > 0:
+            x_raw[ft_cols[0]] = 6.0
+            x_raw[mr_cols[0]] = sludge_ratio
+        
+        # Fill remaining slots with active candidate additives
+        for slot_idx, (add_id, ratio) in enumerate(zip(active_additive_ids, blend_vector), start=1):
+            if slot_idx < len(ft_cols):
+                x_raw[ft_cols[slot_idx]] = float(add_id)
+                x_raw[mr_cols[slot_idx]] = float(ratio)
+                
+        # Calculate derived kinetic attributes: ReactionTime = TargetTemperature / HeatingRate + deltaTime
+        try:
+            tt_idx = feature_names.index("TargetTemperature/Celsius")
+            hr_idx = feature_names.index("HeatingRate/(K/min)") if "HeatingRate/(K/min)" in feature_names else feature_names.index("Heating rate")
+            rt_idx = feature_names.index("ReactionTime/min") if "ReactionTime/min" in feature_names else feature_names.index("Reaction time")
+            if x_raw[hr_idx] > 0:
+                x_raw[rt_idx] = x_raw[tt_idx] / x_raw[hr_idx]
+        except ValueError:
+            pass # ignore if features missing
+            
+        return x_raw
+
+    # 1. Reconstruct full feature vectors for each model separately
+    x_raw_ea = build_x_raw(ea_baseline_vector, ea_feature_names)
+    x_raw_yield = build_x_raw(yield_baseline_vector, yield_feature_names)
         
     # 2. apparent Ea forward prediction
-    x_scaled_ea = scale_features(x_raw.reshape(1, -1), ea_train_X)
+    x_scaled_ea = scale_features(x_raw_ea.reshape(1, -1), ea_train_X)
     ea_pred_norm = ea_wrapper.predict(x_scaled_ea)[0]
     ea_val = unscale_outputs(ea_pred_norm, ea_train_y)
     
     # 3. Product yields forward prediction (multi-output)
-    x_scaled_yield = scale_features(x_raw.reshape(1, -1), yield_train_X)
+    x_scaled_yield = scale_features(x_raw_yield.reshape(1, -1), yield_train_X)
     
     # Yield outputs unscaling index loop (Biochar=0, Bioliquid=1, Biogas=2)
     yields = []
@@ -105,7 +114,6 @@ def evaluate_blend_properties(
         
     return float(ea_val), float(yields[0]), float(yields[1]), float(yields[2])
 
-
 # -----------------------------------------------------------------------------
 # Brent Single-Additive Continuous Optimizer
 # -----------------------------------------------------------------------------
@@ -113,8 +121,10 @@ def optimize_single_additive_blend(
     additive_id: int,
     sludge_ratio: float,
     max_additive_ratio: float,
-    baseline_vector: np.ndarray,
-    feature_names: list[str],
+    ea_baseline_vector: np.ndarray,
+    ea_feature_names: list[str],
+    yield_baseline_vector: np.ndarray,
+    yield_feature_names: list[str],
     ea_wrapper: MatlabNeuralNetworkWrapper,
     ea_train_X: np.ndarray,
     ea_train_y: np.ndarray,
@@ -135,8 +145,10 @@ def optimize_single_additive_blend(
             blend_vector=np.array([ratio]),
             sludge_ratio=sludge_ratio,
             active_additive_ids=[additive_id],
-            baseline_vector=baseline_vector,
-            feature_names=feature_names,
+            ea_baseline_vector=ea_baseline_vector,
+            ea_feature_names=ea_feature_names,
+            yield_baseline_vector=yield_baseline_vector,
+            yield_feature_names=yield_feature_names,
             ea_wrapper=ea_wrapper,
             ea_train_X=ea_train_X,
             ea_train_y=ea_train_y,
@@ -161,8 +173,10 @@ def optimize_single_additive_blend(
         blend_vector=np.array([best_ratio]),
         sludge_ratio=sludge_ratio,
         active_additive_ids=[additive_id],
-        baseline_vector=baseline_vector,
-        feature_names=feature_names,
+        ea_baseline_vector=ea_baseline_vector,
+        ea_feature_names=ea_feature_names,
+        yield_baseline_vector=yield_baseline_vector,
+        yield_feature_names=yield_feature_names,
         ea_wrapper=ea_wrapper,
         ea_train_X=ea_train_X,
         ea_train_y=ea_train_y,
@@ -182,8 +196,10 @@ def optimize_multi_feedstock_blend(
     active_additive_ids: list[int],
     sludge_ratio: float,
     max_individual_ratio: float,
-    baseline_vector: np.ndarray,
-    feature_names: list[str],
+    ea_baseline_vector: np.ndarray,
+    ea_feature_names: list[str],
+    yield_baseline_vector: np.ndarray,
+    yield_feature_names: list[str],
     ea_wrapper: MatlabNeuralNetworkWrapper,
     ea_train_X: np.ndarray,
     ea_train_y: np.ndarray,
@@ -219,8 +235,10 @@ def optimize_multi_feedstock_blend(
             blend_vector=r,
             sludge_ratio=sludge_ratio,
             active_additive_ids=active_additive_ids,
-            baseline_vector=baseline_vector,
-            feature_names=feature_names,
+            ea_baseline_vector=ea_baseline_vector,
+            ea_feature_names=ea_feature_names,
+            yield_baseline_vector=yield_baseline_vector,
+            yield_feature_names=yield_feature_names,
             ea_wrapper=ea_wrapper,
             ea_train_X=ea_train_X,
             ea_train_y=ea_train_y,
@@ -254,8 +272,10 @@ def optimize_multi_feedstock_blend(
         blend_vector=best_r,
         sludge_ratio=sludge_ratio,
         active_additive_ids=active_additive_ids,
-        baseline_vector=baseline_vector,
-        feature_names=feature_names,
+        ea_baseline_vector=ea_baseline_vector,
+        ea_feature_names=ea_feature_names,
+        yield_baseline_vector=yield_baseline_vector,
+        yield_feature_names=yield_feature_names,
         ea_wrapper=ea_wrapper,
         ea_train_X=ea_train_X,
         ea_train_y=ea_train_y,

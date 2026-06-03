@@ -18,7 +18,7 @@ def solve_pyrolysis_kinetics_ode(
     ea_kjmol: float,
     beta_kmin: float,
     ash_pct: float,
-    pre_exponential_a: float = 2.4e10,  # Standard catalytic frequency factor in min^-1
+    pre_exponential_a: Optional[float] = None,  # Standard catalytic frequency factor in min^-1. Dynamically calculated if None.
     reaction_order_n: float = 1.0,
     temp_start_c: float = 100.0,
     temp_end_c: float = 900.0,
@@ -35,6 +35,21 @@ def solve_pyrolysis_kinetics_ode(
     """
     R = 8.314e-3  # Universal gas constant in kJ/(mol * K)
     
+    # Clamp apparent Ea to physically realistic boundaries (10.0 to 400.0 kJ/mol)
+    # to prevent out-of-distribution neural network extrapolation from causing numerical stagnation (flat TG curves)
+    if ea_kjmol > 400.0 or ea_kjmol < 10.0:
+        clamped_ea = float(np.clip(ea_kjmol, 10.0, 400.0))
+        print(f"[Kinetics Warning] Predicted Apparent Ea ({ea_kjmol:.2f} kJ/mol) is physically unrealistic. Clamping to {clamped_ea:.2f} kJ/mol for ODE stability.")
+        ea_kjmol = clamped_ea
+        
+    # Dynamic Kinetic Compensation Effect (KCE) calculation
+    # If pre_exponential_a is not explicitly provided, calculate it dynamically using
+    # a literature-validated sewage sludge/biomass pyrolysis compensation relation:
+    # ln(A) = 0.19 * Ea + 0.43 (corresponding to T_iso ≈ 360°C and k_iso ≈ 1.54 min^-1)
+    if pre_exponential_a is None:
+        pre_exponential_a = float(np.exp(0.19 * ea_kjmol + 0.43))
+        # print(f"[Kinetics Physics] Dynamic KCE applied: A = {pre_exponential_a:.2e} min^-1 linked to Ea = {ea_kjmol:.2f} kJ/mol")
+        
     # Boundary conversion to Kelvin
     T_start = temp_start_c + 273.15
     T_end = temp_end_c + 273.15

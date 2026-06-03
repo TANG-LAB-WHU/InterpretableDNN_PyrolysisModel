@@ -8,7 +8,9 @@ simplex continuous optimizers, and ODE thermogravimetric kinetics simulators.
 
 from __future__ import annotations
 import os
+import re
 import json
+import textwrap
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional
 import numpy as np
@@ -68,7 +70,8 @@ class PyroBotOrchestrator:
         self.ea_train_y: Optional[np.ndarray] = None
         self.yield_train_X: Optional[np.ndarray] = None
         self.yield_train_y: Optional[np.ndarray] = None
-        self.baseline_vec: Optional[np.ndarray] = None
+        self.ea_baseline_vec: Optional[np.ndarray] = None
+        self.yield_baseline_vec: Optional[np.ndarray] = None
         self.baseline_ash: float = 0.0
 
     def load_resources(self):
@@ -96,14 +99,41 @@ class PyroBotOrchestrator:
         const_series.index = [canonicalize_feature_name(idx) for idx in const_series.index]
         
         # Align features with apparent Ea model feature structure
-        self.baseline_vec = np.zeros(len(self.ea_features))
+        self.ea_baseline_vec = np.zeros(len(self.ea_features))
         for i, feat in enumerate(self.ea_features):
             if feat in const_series.index:
-                self.baseline_vec[i] = const_series[feat]
+                self.ea_baseline_vec[i] = const_series[feat]
+
+        # Align features with yield model feature structure
+        self.yield_baseline_vec = np.zeros(len(self.yield_features))
+        for i, feat in enumerate(self.yield_features):
+            if feat in const_series.index:
+                self.yield_baseline_vec[i] = const_series[feat]
                 
         # Cache baseline ash content for ODE kinetics scaling
         self.baseline_ash = float(const_series.get("Ash/%", 35.0))
         print("PyroBot resources successfully cached.", flush=True)
+
+    @staticmethod
+    def extract_json_from_response(text: str) -> dict:
+        """
+        Robustly extract a JSON object from Qwen3's raw output,
+        which may contain <think>...</think> reasoning blocks and
+        markdown code fences.
+        """
+        # Step 1: Strip <think>...</think> reasoning blocks
+        cleaned = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL)
+
+        # Step 2: Strip markdown code fences (```json ... ``` or ``` ... ```)
+        cleaned = re.sub(r'```(?:json)?\s*(.*?)\s*```', r'\1', cleaned, flags=re.DOTALL)
+
+        # Step 3: Locate JSON object by bracket matching
+        start = cleaned.find('{')
+        end = cleaned.rfind('}') + 1
+        if start != -1 and end > start:
+            return json.loads(cleaned[start:end])
+
+        raise ValueError(f"No JSON object found in response: {text[:200]}...")
 
     def run_agent_query(self, system_prompt: str, user_prompt: str) -> str:
         """
@@ -118,13 +148,14 @@ class PyroBotOrchestrator:
                 client = openai.OpenAI(base_url=api_base, api_key="local-token")
                 
                 response = client.chat.completions.create(
-                    model="Qwen/Qwen3.6-35B-A3B-Instruct",
+                    model="Qwen/Qwen3.6-27B-Instruct",
                     messages=[
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": user_prompt}
                     ],
-                    temperature=0.2,
-                    max_tokens=1500
+                    temperature=0.6,
+                    top_p=0.95,
+                    max_tokens=16384
                 )
                 return str(response.choices[0].message.content)
             except Exception as e:
@@ -167,7 +198,7 @@ class PyroBotOrchestrator:
             risk = "LOW"
             
             # Read baselines to verify
-            if "high" in user_lower:
+            if "slagging risk assessment: high" in user_lower or "runaway risk assessment: high" in user_lower:
                 passed = False
                 risk = "HIGH"
                 
@@ -186,7 +217,7 @@ class PyroBotOrchestrator:
 
     def execute_inverse_design(self, user_query: str) -> str:
         """Run the complete closed-loop inverse design workflow."""
-        if self.baseline_vec is None:
+        if self.ea_baseline_vec is None or self.yield_baseline_vec is None:
             self.load_resources()
             
         print("\n" + "="*80)
@@ -205,10 +236,7 @@ class PyroBotOrchestrator:
         )
         
         try:
-            # Extract JSON block
-            if "```json" in parsed_str:
-                parsed_str = parsed_str.split("```json")[1].split("```")[0].strip()
-            params = json.loads(parsed_str)
+            params = self.extract_json_from_response(parsed_str)
         except Exception as e:
             print(f"Error parsing Qwen response: {e}. Fallback to Scenario B parameters.")
             params = {
@@ -249,8 +277,10 @@ class PyroBotOrchestrator:
                 active_additive_ids=active_ids,
                 sludge_ratio=sludge_ratio,
                 max_individual_ratio=adjusted_bounds,
-                baseline_vector=self.baseline_vec,
-                feature_names=self.ea_features,
+                ea_baseline_vector=self.ea_baseline_vec,
+                ea_feature_names=self.ea_features,
+                yield_baseline_vector=self.yield_baseline_vec,
+                yield_feature_names=self.yield_features,
                 ea_wrapper=self.ea_wrapper,
                 ea_train_X=self.ea_train_X,
                 ea_train_y=self.ea_train_y,
@@ -278,8 +308,10 @@ class PyroBotOrchestrator:
                 blend_vector=best_r,
                 sludge_ratio=sludge_ratio,
                 active_additive_ids=active_ids,
-                baseline_vector=self.baseline_vec,
-                feature_names=self.ea_features,
+                ea_baseline_vector=self.ea_baseline_vec,
+                ea_feature_names=self.ea_features,
+                yield_baseline_vector=self.yield_baseline_vec,
+                yield_feature_names=self.yield_features,
                 ea_wrapper=self.ea_wrapper,
                 ea_train_X=self.ea_train_X,
                 ea_train_y=self.ea_train_y,
@@ -349,9 +381,7 @@ class PyroBotOrchestrator:
             )
             
             try:
-                if "```json" in action_str:
-                    action_str = action_str.split("```json")[1].split("```")[0].strip()
-                action_data = json.loads(action_str)
+                action_data = self.extract_json_from_response(action_str)
             except Exception:
                 action_data = {"safe": audit['passed'], "action": "finalize" if audit['passed'] else "re_optimize"}
                 
@@ -384,26 +414,27 @@ class PyroBotOrchestrator:
                 )
                 
                 # Generate central scientific report
-                report = f"""# PyroBot Autonomous Discovery Report
-## 🔬 Blending Formulation Optimization Summary
-* **User Target Specification**: "{user_query}"
-* **Optimal Blending Recipe**: {recipe_str}
-* **Predicted Activation Energy Apparent $E_a$**: {ea:.2f} kJ/mol
-* **Predicted Biochar Yield**: {char:.2f}%
-* **Predicted Bioliquid Yield**: {liq:.2f}%
-* **Predicted Biogas Yield**: {gas:.2f}%
-
-## 📈 Physics-Informed Kinetics & Safeguard Audit
-* **DTG Pyrolysis Peak Temperature**: {audit['peak_temp_c']:.1f}°C
-* **Max Mass Loss Rate**: {audit['max_dtg_rate']:.3f}%/°C
-* **Basicity Slagging Index**: {audit['slagging_index']:.2f}
-* **Fluidized Bed Slagging Risk**: {audit['slagging_risk']}
-* **Exothermic Thermal Runaway Risk**: {audit['runaway_risk']}
-* **Validation Status**: **PASSED 🟢**
-
-## 💡 Qwen3.6-35B Scientific Analysis & Explanation
-{scientific_analysis}
-"""
+                report = textwrap.dedent(f"""\
+                    # PyroBot Autonomous Discovery Report
+                    ## 🔬 Blending Formulation Optimization Summary
+                    * **User Target Specification**: "{user_query}"
+                    * **Optimal Blending Recipe**: {recipe_str}
+                    * **Predicted Activation Energy Apparent $E_a$**: {ea:.2f} kJ/mol
+                    * **Predicted Biochar Yield**: {char:.2f}%
+                    * **Predicted Bioliquid Yield**: {liq:.2f}%
+                    * **Predicted Biogas Yield**: {gas:.2f}%
+                    
+                    ## 📈 Physics-Informed Kinetics & Safeguard Audit
+                    * **DTG Pyrolysis Peak Temperature**: {audit['peak_temp_c']:.1f}°C
+                    * **Max Mass Loss Rate**: {audit['max_dtg_rate']:.3f}%/°C
+                    * **Basicity Slagging Index**: {audit['slagging_index']:.2f}
+                    * **Fluidized Bed Slagging Risk**: {audit['slagging_risk']}
+                    * **Exothermic Thermal Runaway Risk**: {audit['runaway_risk']}
+                    * **Validation Status**: **PASSED 🟢**
+                    
+                    ## 💡 Qwen3.6-27B Scientific Analysis & Explanation
+                    {scientific_analysis}
+                    """)
                 return report
                 
             else:
